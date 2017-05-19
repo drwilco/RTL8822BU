@@ -1898,8 +1898,12 @@ void rtw_cfg80211_indicate_scan_done(_adapter *adapter, bool aborted)
 		/* avoid WARN_ON(request != wiphy_to_dev(request->wiphy)->scan_req); */
 		if (pwdev_priv->scan_request->wiphy != pwdev_priv->rtw_wdev->wiphy)
 			RTW_INFO("error wiphy compare\n");
-		else
-			cfg80211_scan_done(pwdev_priv->scan_request, aborted);
+		else {
+			struct cfg80211_scan_info info = {
+				.aborted = aborted,
+			};
+			cfg80211_scan_done(pwdev_priv->scan_request, &info);
+		}
 
 		pwdev_priv->scan_request = NULL;
 	} else {
