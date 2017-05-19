@@ -38,7 +38,7 @@
  * Wi-Fi Functions Config
  */
 
-#define CONFIG_IEEE80211_BAND_5GHZ 1
+#define CONFIG_NL80211_BAND_5GHZ 1
 #define CONFIG_80211N_HT	1
 #ifdef CONFIG_80211N_HT
 	#define CONFIG_80211AC_VHT 1

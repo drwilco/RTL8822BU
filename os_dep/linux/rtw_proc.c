@@ -1398,7 +1398,7 @@ static int proc_get_hal_txpwr_info(struct seq_file *m, void *v)
 	if (hal_is_band_support(adapter, BAND_ON_2_4G))
 		dump_hal_txpwr_info_2g(m, adapter, hal_spec->rfpath_num_2g, hal_spec->max_tx_cnt);
 
-#ifdef CONFIG_IEEE80211_BAND_5GHZ
+#ifdef CONFIG_NL80211_BAND_5GHZ
 	if (hal_is_band_support(adapter, BAND_ON_5G))
 		dump_hal_txpwr_info_5g(m, adapter, hal_spec->rfpath_num_5g, hal_spec->max_tx_cnt);
 #endif
@@ -1645,7 +1645,7 @@ static ssize_t proc_set_kfree_bb_gain(struct file *file, const char __user *buff
 		}
 		if (strcmp("2G", ch_band_Group) == 0)
 			chidx = BB_GAIN_2G;
-#ifdef CONFIG_IEEE80211_BAND_5GHZ
+#ifdef CONFIG_NL80211_BAND_5GHZ
 		else if (strcmp("5GLB1", ch_band_Group) == 0)
 			chidx = BB_GAIN_5GLB1;
 		else if (strcmp("5GLB2", ch_band_Group) == 0)
@@ -1656,7 +1656,7 @@ static ssize_t proc_set_kfree_bb_gain(struct file *file, const char __user *buff
 			chidx = BB_GAIN_5GMB2;
 		else if (strcmp("5GHB", ch_band_Group) == 0)
 			chidx = BB_GAIN_5GHB;
-#endif /*CONFIG_IEEE80211_BAND_5GHZ*/
+#endif /*CONFIG_NL80211_BAND_5GHZ*/
 		else {
 			RTW_INFO("Error Head Format, channel Group select\n,Please input:\t 2G , 5GLB1 , 5GLB2 , 5GMB1 , 5GMB2 , 5GHB\n");
 			return count;

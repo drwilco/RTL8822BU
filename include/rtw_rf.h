@@ -258,7 +258,7 @@ struct country_chplan {
 const struct country_chplan *rtw_get_chplan_from_country(const char *country_code);
 
 #define BB_GAIN_2G 0
-#ifdef CONFIG_IEEE80211_BAND_5GHZ
+#ifdef CONFIG_NL80211_BAND_5GHZ
 #define BB_GAIN_5GLB1 1
 #define BB_GAIN_5GLB2 2
 #define BB_GAIN_5GMB1 3
@@ -266,7 +266,7 @@ const struct country_chplan *rtw_get_chplan_from_country(const char *country_cod
 #define BB_GAIN_5GHB 5
 #endif
 
-#ifdef CONFIG_IEEE80211_BAND_5GHZ
+#ifdef CONFIG_NL80211_BAND_5GHZ
 #define BB_GAIN_NUM 6
 #else
 #define BB_GAIN_NUM 1

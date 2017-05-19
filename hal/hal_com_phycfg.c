@@ -466,7 +466,7 @@ static u8 hal_chk_pg_txpwr_info_2g(_adapter *adapter, TxPowerInfo24G *pwr_info)
 
 static u8 hal_chk_pg_txpwr_info_5g(_adapter *adapter, TxPowerInfo5G *pwr_info)
 {
-#ifdef CONFIG_IEEE80211_BAND_5GHZ
+#ifdef CONFIG_NL80211_BAND_5GHZ
 	struct hal_spec_t *hal_spec = GET_HAL_SPEC(adapter);
 	u8 path, group, tx_idx;
 
@@ -490,7 +490,7 @@ static u8 hal_chk_pg_txpwr_info_5g(_adapter *adapter, TxPowerInfo5G *pwr_info)
 				return _FAIL;
 		}
 	}
-#endif /* CONFIG_IEEE80211_BAND_5GHZ */
+#endif /* CONFIG_NL80211_BAND_5GHZ */
 	return _SUCCESS;
 }
 
@@ -533,7 +533,7 @@ static inline void hal_init_pg_txpwr_info_2g(_adapter *adapter, TxPowerInfo24G *
 
 static inline void hal_init_pg_txpwr_info_5g(_adapter *adapter, TxPowerInfo5G *pwr_info)
 {
-#ifdef CONFIG_IEEE80211_BAND_5GHZ
+#ifdef CONFIG_NL80211_BAND_5GHZ
 	struct hal_spec_t *hal_spec = GET_HAL_SPEC(adapter);
 	u8 path, group, tx_idx;
 
@@ -561,7 +561,7 @@ static inline void hal_init_pg_txpwr_info_5g(_adapter *adapter, TxPowerInfo5G *p
 		/* dummy diff */
 		pwr_info->BW40_Diff[path][0] = 0; /* 5G BW40-1S */
 	}
-#endif /* CONFIG_IEEE80211_BAND_5GHZ */
+#endif /* CONFIG_NL80211_BAND_5GHZ */
 }
 
 #if DBG_PG_TXPWR_READ
@@ -717,7 +717,7 @@ u16 hal_load_pg_txpwr_info_path_5g(
 	u8 tmp_base;
 	s8 tmp_diff;
 
-#ifdef CONFIG_IEEE80211_BAND_5GHZ
+#ifdef CONFIG_NL80211_BAND_5GHZ
 	if (pwr_info == NULL || !hal_chk_band_cap(adapter, BAND_CAP_5G))
 #endif
 	{
@@ -725,7 +725,7 @@ u16 hal_load_pg_txpwr_info_path_5g(
 		goto exit;
 	}
 	
-#ifdef CONFIG_IEEE80211_BAND_5GHZ
+#ifdef CONFIG_NL80211_BAND_5GHZ
 	if (DBG_PG_TXPWR_READ)
 		RTW_INFO("%s[%c] eaddr:0x%03x\n", __func__, rf_path_char(path), offset);
 
@@ -855,7 +855,7 @@ u16 hal_load_pg_txpwr_info_path_5g(
 		rtw_warn_on(1);
 	}
 
-#endif /* #ifdef CONFIG_IEEE80211_BAND_5GHZ */
+#endif /* #ifdef CONFIG_NL80211_BAND_5GHZ */
 
 exit:
 	return offset;
@@ -975,7 +975,7 @@ void hal_load_txpwr_info(
 bypass_2g:
 		;
 
-#ifdef CONFIG_IEEE80211_BAND_5GHZ
+#ifdef CONFIG_NL80211_BAND_5GHZ
 		if (!pwr_info_5g || !HAL_SPEC_CHK_RF_PATH_5G(hal_spec, rfpath))
 			goto bypass_5g;
 
@@ -1009,7 +1009,7 @@ bypass_2g:
 		}
 bypass_5g:
 		;
-#endif /* CONFIG_IEEE80211_BAND_5GHZ */
+#endif /* CONFIG_NL80211_BAND_5GHZ */
 	}
 }
 
@@ -1100,7 +1100,7 @@ void dump_hal_txpwr_info_2g(void *sel, _adapter *adapter, u8 rfpath_num, u8 max_
 
 void dump_hal_txpwr_info_5g(void *sel, _adapter *adapter, u8 rfpath_num, u8 max_tx_cnt)
 {
-#ifdef CONFIG_IEEE80211_BAND_5GHZ
+#ifdef CONFIG_NL80211_BAND_5GHZ
 	HAL_DATA_TYPE *hal_data = GET_HAL_DATA(adapter);
 	int path, ch_idx, tx_idx;
 	u8 dump_section = 0;
@@ -1200,7 +1200,7 @@ void dump_hal_txpwr_info_5g(void *sel, _adapter *adapter, u8 rfpath_num, u8 max_
 		_RTW_PRINT_SEL(sel, "\n");
 	}
 	RTW_PRINT_SEL(sel, "\n");
-#endif /* CONFIG_IEEE80211_BAND_5GHZ */
+#endif /* CONFIG_NL80211_BAND_5GHZ */
 }
 
 /*
@@ -1224,7 +1224,7 @@ s8 rtw_regsty_get_target_tx_power(
 	}
 
 	if (Band != BAND_ON_2_4G
-		#ifdef CONFIG_IEEE80211_BAND_5GHZ
+		#ifdef CONFIG_NL80211_BAND_5GHZ
 		&& Band != BAND_ON_5G
 		#endif
 	) {
@@ -1233,7 +1233,7 @@ s8 rtw_regsty_get_target_tx_power(
 	}
 
 	if (RateSection >= RATE_SECTION_NUM
-		#ifdef CONFIG_IEEE80211_BAND_5GHZ
+		#ifdef CONFIG_NL80211_BAND_5GHZ
 		|| (Band == BAND_ON_5G && RateSection == CCK)
 		#endif
 	) {
@@ -1244,7 +1244,7 @@ s8 rtw_regsty_get_target_tx_power(
 
 	if (Band == BAND_ON_2_4G)
 		value = regsty->target_tx_pwr_2g[RfPath][RateSection];
-#ifdef CONFIG_IEEE80211_BAND_5GHZ
+#ifdef CONFIG_NL80211_BAND_5GHZ
 	else /* BAND_ON_5G */
 		value = regsty->target_tx_pwr_5g[RfPath][RateSection - 1];
 #endif
@@ -2227,7 +2227,7 @@ PHY_GetTxPowerIndexBase(
 			/*	pHalData->BW40_24G_Diff[RFPath][TX_3S], pHalData->BW40_24G_Diff[RFPath][TX_4S]); */
 		}
 	}
-#ifdef CONFIG_IEEE80211_BAND_5GHZ
+#ifdef CONFIG_NL80211_BAND_5GHZ
 	else { /* 3 ============================== 5 G ============================== */
 		if (MGN_6M <= Rate)
 			txPower = pHalData->Index5G_BW40_Base[RFPath][chnlIdx];
@@ -2296,7 +2296,7 @@ PHY_GetTxPowerIndexBase(
 			/*	pHalData->BW80_5G_Diff[RFPath][TX_3S], pHalData->BW80_5G_Diff[RFPath][TX_4S]); */
 		}
 	}
-#endif /* CONFIG_IEEE80211_BAND_5GHZ */
+#endif /* CONFIG_NL80211_BAND_5GHZ */
 
 	return txPower;
 }

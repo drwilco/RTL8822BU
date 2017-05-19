@@ -235,7 +235,7 @@ struct kfree_data_t {
 	u8 flag;
 	s8 bb_gain[BB_GAIN_NUM][RF_PATH_MAX];
 
-#ifdef CONFIG_IEEE80211_BAND_5GHZ
+#ifdef CONFIG_NL80211_BAND_5GHZ
 	s8 pa_bias_5g[RF_PATH_MAX];
 	s8 pad_bias_5g[RF_PATH_MAX];
 #endif
@@ -405,7 +405,7 @@ typedef struct hal_com_data {
 	s8	BW40_24G_Diff[MAX_RF_PATH][MAX_TX_COUNT];
 
 	/* 5G TX power info for target TX power*/
-#ifdef CONFIG_IEEE80211_BAND_5GHZ
+#ifdef CONFIG_NL80211_BAND_5GHZ
 	u8	Index5G_BW40_Base[MAX_RF_PATH][CENTER_CH_5G_ALL_NUM];
 	u8	Index5G_BW80_Base[MAX_RF_PATH][CENTER_CH_5G_80M_NUM];
 	s8	OFDM_5G_Diff[MAX_RF_PATH][MAX_TX_COUNT];
