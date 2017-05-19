@@ -2051,5 +2051,9 @@ clean:
 	rm -fr Module.symvers ; rm -fr Module.markers ; rm -fr modules.order
 	rm -fr *.mod.c *.mod *.o .*.cmd *.ko *~
 	rm -fr .tmp_versions
+
+dkms.conf: dkms.conf.in Makefile
+	cat $@.in | sed 's/@MODULE_NAME@/$(MODULE_NAME)/g' > $@
+
 endif
 
