@@ -232,7 +232,7 @@ void usb_c2h_hisr_hdl(_adapter *adapter, u8 *buf)
 		return;
 
 	if (0)
-		RTW_PRINT("%s C2H == %d\n", __func__, id);
+		RTW_DBG("%s C2H == %d\n", __func__, id);
 
 	if (rtw_hal_c2h_id_handle_directly(adapter, id, seq, plen, payload)) {
 		/* Handle directly */

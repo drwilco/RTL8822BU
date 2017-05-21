@@ -995,7 +995,7 @@ void rtw_cfg80211_ibss_indicate_connect(_adapter *padapter)
 		}
 
 		if (!rtw_cfg80211_check_bss(padapter))
-			RTW_PRINT(FUNC_ADPT_FMT" BSS not found !!\n", FUNC_ADPT_ARG(padapter));
+			RTW_ERR(FUNC_ADPT_FMT" BSS not found !!\n", FUNC_ADPT_ARG(padapter));
 	}
 	/* notify cfg80211 that device joined an IBSS */
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 15, 0))
@@ -1076,7 +1076,7 @@ void rtw_cfg80211_indicate_connect(_adapter *padapter)
 
 check_bss:
 	if (!rtw_cfg80211_check_bss(padapter))
-		RTW_PRINT(FUNC_ADPT_FMT" BSS not found !!\n", FUNC_ADPT_ARG(padapter));
+		RTW_ERR(FUNC_ADPT_FMT" BSS not found !!\n", FUNC_ADPT_ARG(padapter));
 
 	_enter_critical_bh(&pwdev_priv->connect_req_lock, &irqL);
 
@@ -2496,7 +2496,7 @@ u32 rtw_cfg80211_wait_scan_req_empty(_adapter *adapter, u32 timeout_ms)
 	pass_ms = rtw_get_passing_time_ms(start);
 
 	if (empty == _FALSE && pass_ms > timeout_ms)
-		RTW_PRINT(FUNC_ADPT_FMT" pass_ms:%u, timeout\n"
+		RTW_WARN(FUNC_ADPT_FMT" pass_ms:%u, timeout\n"
 			, FUNC_ADPT_ARG(adapter), pass_ms);
 
 	return pass_ms;
@@ -6134,7 +6134,7 @@ static s32 cfg80211_rtw_update_ft_ies(struct wiphy *wiphy,
 	}
 
 	if (rtw_ft_roam_status(padapter, RTW_FT_AUTHENTICATED_STA)) {
-		RTW_PRINT("auth success, start reassoc\n");
+		RTW_DBG("auth success, start reassoc\n");
 		rtw_ft_lock_set_status(padapter, RTW_FT_ASSOCIATING_STA, &irqL);
 		start_clnt_assoc(padapter);
 	}

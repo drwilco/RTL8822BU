@@ -1175,7 +1175,7 @@ s16 rtw_get_camid(_adapter *adapter, u8 *addr, s16 kid, u8 gk)
 	s16 cam_id = -1;
 
 	if (addr == NULL) {
-		RTW_PRINT(FUNC_ADPT_FMT" mac_address is NULL\n"
+		RTW_WARN(FUNC_ADPT_FMT" mac_address is NULL\n"
 			  , FUNC_ADPT_ARG(adapter));
 		rtw_warn_on(1);
 		goto _exit;
@@ -1203,7 +1203,7 @@ s16 rtw_get_camid(_adapter *adapter, u8 *addr, s16 kid, u8 gk)
 	}
 
 	if (i == cam_ctl->num) {
-		RTW_PRINT(FUNC_ADPT_FMT" %s key with "MAC_FMT" id:%u no room\n"
+		RTW_WARN(FUNC_ADPT_FMT" %s key with "MAC_FMT" id:%u no room\n"
 			, FUNC_ADPT_ARG(adapter), gk ? "group" : "pairwise", MAC_ARG(addr), kid);
 		rtw_warn_on(1);
 		goto _exit;
@@ -1237,7 +1237,7 @@ s16 rtw_camid_alloc(_adapter *adapter, struct sta_info *sta, u8 kid, u8 gk, bool
 #ifndef CONFIG_CONCURRENT_MODE
 		/* static alloction to default key by key ID when concurrent is not defined */
 		if (kid > 3) {
-			RTW_PRINT(FUNC_ADPT_FMT" group key with invalid key id:%u\n"
+			RTW_WARN(FUNC_ADPT_FMT" group key with invalid key id:%u\n"
 				  , FUNC_ADPT_ARG(adapter), kid);
 			rtw_warn_on(1);
 			goto bitmap_handle;
@@ -1248,7 +1248,7 @@ s16 rtw_camid_alloc(_adapter *adapter, struct sta_info *sta, u8 kid, u8 gk, bool
 
 		cam_id = rtw_get_camid(adapter, addr, kid, gk);
 		if (1)
-			RTW_PRINT(FUNC_ADPT_FMT" group key with "MAC_FMT" assigned cam_id:%u\n"
+			RTW_DBG(FUNC_ADPT_FMT" group key with "MAC_FMT" assigned cam_id:%u\n"
 				, FUNC_ADPT_ARG(adapter), MAC_ARG(addr), cam_id);
 #endif
 	} else {
@@ -1432,7 +1432,7 @@ void flush_all_cam_entry(_adapter *padapter)
 		u8 *addr = adapter_mac_addr(padapter);
 
 		while ((cam_id = rtw_camid_search(padapter, addr, -1, -1)) >= 0) {
-			RTW_PRINT("clear wep or group key for addr:"MAC_FMT", camid:%d\n", MAC_ARG(addr), cam_id);
+			RTW_DBG("clear wep or group key for addr:"MAC_FMT", camid:%d\n", MAC_ARG(addr), cam_id);
 			clear_cam_entry(padapter, cam_id);
 			rtw_camid_free(padapter, cam_id);
 		}

@@ -1973,12 +1973,12 @@ static void hw_port_reconfig(_adapter * if_ap, _adapter *if_port0)
 	u8 port = if_ap->hw_port;
 
 	if (port > (hal_spec->port_num - 1)) {
-		RTW_INFO("[WARN] "ADPT_FMT"- hw_port : %d,will switch to invalid port-%d\n",
+		RTW_WARN(ADPT_FMT"- hw_port : %d,will switch to invalid port-%d\n",
 			 ADPT_ARG(if_port0), if_port0->hw_port, port);
 		rtw_warn_on(1);
 	}
 
-	RTW_PRINT(ADPT_FMT" - hw_port : %d,will switch to port-%d\n",
+	RTW_INFO(ADPT_FMT" - hw_port : %d,will switch to port-%d\n",
 		  ADPT_ARG(if_port0), if_port0->hw_port, port);
 
 	/*backup*/

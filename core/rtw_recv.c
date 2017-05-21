@@ -2247,19 +2247,17 @@ sint validate_recv_frame(_adapter *adapter, union recv_frame *precv_frame)
 		ptdlsinfo->collect_pkt_num[ptdlsinfo->cur_channel - 1]++;
 #endif /* CONFIG_TDLS */
 
-#ifdef RTK_DMP_PLATFORM
-	if (0) {
-		RTW_INFO("++\n");
-		{
-			int i;
-			for (i = 0; i < 64; i = i + 8)
-				RTW_INFO("%02X:%02X:%02X:%02X:%02X:%02X:%02X:%02X:", *(ptr + i),
-					*(ptr + i + 1), *(ptr + i + 2) , *(ptr + i + 3) , *(ptr + i + 4), *(ptr + i + 5), *(ptr + i + 6), *(ptr + i + 7));
+#if defined(RTK_DMP_PLATFORM) && defined(CONFIG_RTW_DEBUG)
+	RTW_DBG("++\n");
+	{
+		int i;
+		for (i = 0; i < 64; i = i + 8)
+			RTW_DBG("%02X:%02X:%02X:%02X:%02X:%02X:%02X:%02X:", *(ptr + i),
+				*(ptr + i + 1), *(ptr + i + 2) , *(ptr + i + 3) , *(ptr + i + 4), *(ptr + i + 5), *(ptr + i + 6), *(ptr + i + 7));
 
-		}
-		RTW_INFO("--\n");
 	}
-#endif /* RTK_DMP_PLATFORM */
+	RTW_DBG("--\n");
+#endif /* defined(RTK_DMP_PLATFORM) && defined(CONFIG_RTW_DEBUG) */
 
 	/* add version chk */
 	if (ver != 0) {
@@ -4750,7 +4748,7 @@ void rx_query_phy_status(
 #endif
 
 		if ((start_time == 0) || (rtw_get_passing_time_ms(start_time) > 5000)) {
-			RTW_PRINT("Warning!!! %s: Confilc mac addr!!\n", __func__);
+			RTW_WARN("%s: Confilc mac addr!!\n", __func__);
 			start_time = rtw_get_current_time();
 		}
 		precvpriv->dbg_rx_conflic_mac_addr_cnt++;

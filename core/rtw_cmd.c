@@ -554,7 +554,7 @@ thread_return rtw_cmd_thread(thread_context context)
 
 	while (1) {
 		if (_rtw_down_sema(&pcmdpriv->cmd_queue_sema) == _FAIL) {
-			RTW_PRINT(FUNC_ADPT_FMT" _rtw_down_sema(&pcmdpriv->cmd_queue_sema) return _FAIL, break\n", FUNC_ADPT_ARG(padapter));
+			RTW_ERR(FUNC_ADPT_FMT" _rtw_down_sema(&pcmdpriv->cmd_queue_sema) return _FAIL, break\n", FUNC_ADPT_ARG(padapter));
 			break;
 		}
 
@@ -576,7 +576,7 @@ thread_return rtw_cmd_thread(thread_context context)
 
 _next:
 		if (RTW_CANNOT_RUN(padapter)) {
-			RTW_PRINT("%s: DriverStopped(%s) SurpriseRemoved(%s) break at line %d\n",
+			RTW_ERR("%s: DriverStopped(%s) SurpriseRemoved(%s) break at line %d\n",
 				  __func__
 				, rtw_is_drv_stopped(padapter) ? "True" : "False"
 				, rtw_is_surprise_removed(padapter) ? "True" : "False"
@@ -630,7 +630,7 @@ _next:
 		else {
 			if (rtw_register_cmd_alive(padapter) != _SUCCESS) {
 				if (DBG_CMD_EXECUTE)
-					RTW_PRINT("%s: wait to leave LPS_LCLK\n", __func__);
+					RTW_ERR("%s: wait to leave LPS_LCLK\n", __func__);
 
 				pcmd->res = H2C_ENQ_HEAD;
 				ret = _rtw_enqueue_cmd(&pcmdpriv->cmd_queue, pcmd, 1);
@@ -661,8 +661,8 @@ post_process:
 
 		_enter_critical_mutex(&(pcmd->padapter->cmdpriv.sctx_mutex), NULL);
 		if (pcmd->sctx) {
-			if (0)
-				RTW_PRINT(FUNC_ADPT_FMT" pcmd->sctx\n", FUNC_ADPT_ARG(pcmd->padapter));
+			RTW_DBG(FUNC_ADPT_FMT" pcmd->sctx\n",
+				  FUNC_ADPT_ARG(pcmd->padapter));
 			if (pcmd->res == H2C_SUCCESS)
 				rtw_sctx_done(&pcmd->sctx);
 			else
@@ -709,8 +709,7 @@ post_process:
 		if (pcmd == NULL)
 			break;
 
-		if (0)
-			RTW_INFO("%s: leaving... drop "CMD_FMT"\n", __func__, CMD_ARG(pcmd));
+		RTW_DBG("%s: leaving... drop "CMD_FMT"\n", __func__, CMD_ARG(pcmd));
 
 		if (pcmd->cmdcode == GEN_CMD_CODE(_Set_Drv_Extra)) {
 			extra_parm = (struct drvextra_cmd_parm *)pcmd->parmbuf;
@@ -1320,7 +1319,7 @@ static void rtw_ft_validate_akm_type(_adapter  *padapter,
 	u32 tmp_len;
 	u8 *ptmp;
 
-	/*IEEE802.11-2012 Std. Table 8-101¡XAKM suite selectors*/
+	/*IEEE802.11-2012 Std. Table 8-101ï¿½XAKM suite selectors*/
 	if (rtw_ft_valid_akm(padapter, psecuritypriv->rsn_akm_suite_type)) {
 		ptmp = rtw_get_ie(&pnetwork->network.IEs[12], 
 				_MDIE_, &tmp_len, (pnetwork->network.IELength-12));
@@ -1745,7 +1744,7 @@ u8 rtw_clearstakey_cmd(_adapter *padapter, struct sta_info *sta, u8 enqueue)
 
 	if (!enqueue) {
 		while ((cam_id = rtw_camid_search(padapter, sta->cmn.mac_addr, -1, -1)) >= 0) {
-			RTW_PRINT("clear key for addr:"MAC_FMT", camid:%d\n", MAC_ARG(sta->cmn.mac_addr), cam_id);
+			RTW_DBG("clear key for addr:"MAC_FMT", camid:%d\n", MAC_ARG(sta->cmn.mac_addr), cam_id);
 			clear_cam_entry(padapter, cam_id);
 			rtw_camid_free(padapter, cam_id);
 		}
@@ -2246,18 +2245,18 @@ inline u8 rtw_set_country_cmd(_adapter *adapter, int flags, const char *country_
 	if (is_alpha(country_code[0]) == _FALSE
 	    || is_alpha(country_code[1]) == _FALSE
 	   ) {
-		RTW_PRINT("%s input country_code is not alpha2\n", __func__);
+		RTW_ERR("%s input country_code is not alpha2\n", __func__);
 		return _FAIL;
 	}
 
 	ent = rtw_get_chplan_from_country(country_code);
 
 	if (ent == NULL) {
-		RTW_PRINT("%s unsupported country_code:\"%c%c\"\n", __func__, country_code[0], country_code[1]);
+		RTW_ERR("%s unsupported country_code:\"%c%c\"\n", __func__, country_code[0], country_code[1]);
 		return _FAIL;
 	}
 
-	RTW_PRINT("%s country_code:\"%c%c\" mapping to chplan:0x%02x\n", __func__, country_code[0], country_code[1], ent->chplan);
+	RTW_INFO("%s country_code:\"%c%c\" mapping to chplan:0x%02x\n", __func__, country_code[0], country_code[1], ent->chplan);
 
 	return _rtw_set_chplan_cmd(adapter, flags, RTW_CHPLAN_UNSPECIFIED, ent, swconfig);
 }
@@ -4476,10 +4475,9 @@ void session_tracker_chk_for_sta(_adapter *adapter, struct sta_info *sta)
 			continue;
 
 		#ifdef CONFIG_WFD
-		if (0)
-			RTW_INFO(FUNC_ADPT_FMT" local:%u, remote:%u, rtsp:%u, %u, %u\n", FUNC_ADPT_ARG(adapter)
-				, ntohs(st->local_port), ntohs(st->remote_port), adapter->wfd_info.rtsp_ctrlport, adapter->wfd_info.tdls_rtsp_ctrlport
-				, adapter->wfd_info.peer_rtsp_ctrlport);
+		RTW_DBG(FUNC_ADPT_FMT" local:%u, remote:%u, rtsp:%u, %u, %u\n", FUNC_ADPT_ARG(adapter)
+			, ntohs(st->local_port), ntohs(st->remote_port), adapter->wfd_info.rtsp_ctrlport, adapter->wfd_info.tdls_rtsp_ctrlport
+			, adapter->wfd_info.peer_rtsp_ctrlport);
 		if (ntohs(st->local_port) == adapter->wfd_info.rtsp_ctrlport)
 			op_wfd_mode |= MIRACAST_SINK;
 		if (ntohs(st->local_port) == adapter->wfd_info.tdls_rtsp_ctrlport)

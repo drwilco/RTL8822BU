@@ -17,17 +17,19 @@
 #include <drv_types.h>
 #include <hal_data.h>
 
-#ifdef CONFIG_RTW_DEBUG
 const char *rtw_log_level_str[] = {
 	"_DRV_NONE_ = 0",
 	"_DRV_ALWAYS_ = 1",
 	"_DRV_ERR_ = 2",
 	"_DRV_WARNING_ = 3",
 	"_DRV_INFO_ = 4",
+#ifdef CONFIG_RTW_DEBUG
 	"_DRV_DEBUG_ = 5",
 	"_DRV_MAX_ = 6",
+#else
+	"_DRV_MAX_ = 5",
+#endif /* CONFIG_RTW_DEBUG */
 };
-#endif
 
 #ifdef CONFIG_DEBUG_RTL871X
 	u64 GlobalDebugComponents = 0;
@@ -193,7 +195,6 @@ void dump_drv_cfg(void *sel)
 
 void dump_log_level(void *sel)
 {
-#ifdef CONFIG_RTW_DEBUG
 	int i;
 
 	RTW_PRINT_SEL(sel, "drv_log_level:%d\n", rtw_drv_log_level);
@@ -202,9 +203,6 @@ void dump_log_level(void *sel)
 			RTW_PRINT_SEL(sel, "%c %s = %d\n",
 				(rtw_drv_log_level == i) ? '+' : ' ', rtw_log_level_str[i], i);
 	}
-#else
-	RTW_PRINT_SEL(sel, "CONFIG_RTW_DEBUG is disabled\n");
-#endif
 }
 
 #ifdef CONFIG_SDIO_HCI

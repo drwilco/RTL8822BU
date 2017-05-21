@@ -1059,7 +1059,7 @@ static void deinit_priv(struct halmacpriv *priv)
 				rtw_mfree((u8 *)sctx, sizeof(*sctx));
 			}
 		}
-#endif /* !CONFIG_RTW_DEBUG */
+#endif /* CONFIG_RTW_DEBUG */
 		size = sizeof(*indicator) * count;
 		rtw_mfree((u8 *)indicator, size);
 	}

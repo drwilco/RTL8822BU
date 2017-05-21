@@ -80,7 +80,7 @@ void _ips_enter(_adapter *padapter)
 
 	if (rf_off == pwrpriv->change_rfpwrstate) {
 		pwrpriv->bpower_saving = _TRUE;
-		RTW_PRINT("nolinked power save enter\n");
+		RTW_DBG("nolinked power save enter\n");
 
 		if (pwrpriv->ips_mode == IPS_LEVEL_2)
 			pwrpriv->bkeepfwalive = _TRUE;
@@ -119,7 +119,7 @@ int _ips_leave(_adapter *padapter)
 		pwrpriv->bips_processing = _TRUE;
 		pwrpriv->change_rfpwrstate = rf_on;
 		pwrpriv->ips_leave_cnts++;
-		RTW_INFO("==>ips_leave cnts:%d\n", pwrpriv->ips_leave_cnts);
+		RTW_DBG("==>ips_leave cnts:%d\n", pwrpriv->ips_leave_cnts);
 
 		result = rtw_ips_pwr_up(padapter);
 		if (result == _SUCCESS)
@@ -129,9 +129,9 @@ int _ips_leave(_adapter *padapter)
 		pwrpriv->pwr_saving_time += rtw_get_passing_time_ms(pwrpriv->pwr_saving_start_time);
 #endif /* CONFIG_RTW_CFGVEDNOR_LLSTATS */
 
-		RTW_PRINT("nolinked power save leave\n");
+		RTW_INFO("nolinked power save leave\n");
 
-		RTW_INFO("==> ips_leave.....LED(0x%08x)...\n", rtw_read32(padapter, 0x4c));
+		RTW_DBG("==> ips_leave.....LED(0x%08x)...\n", rtw_read32(padapter, 0x4c));
 		pwrpriv->bips_processing = _FALSE;
 
 		pwrpriv->bkeepfwalive = _FALSE;
@@ -244,8 +244,8 @@ bool rtw_pwr_unassociated_idle(_adapter *adapter)
 
 	if (pxmit_priv->free_xmitbuf_cnt != NR_XMITBUFF ||
 	    pxmit_priv->free_xmit_extbuf_cnt != NR_XMIT_EXTBUFF) {
-		RTW_PRINT("There are some pkts to transmit\n");
-		RTW_PRINT("free_xmitbuf_cnt: %d, free_xmit_extbuf_cnt: %d\n",
+		RTW_DBG("There are some pkts to transmit\n");
+		RTW_DBG("free_xmitbuf_cnt: %d, free_xmit_extbuf_cnt: %d\n",
 			pxmit_priv->free_xmitbuf_cnt, pxmit_priv->free_xmit_extbuf_cnt);
 		goto exit;
 	}

@@ -1400,7 +1400,7 @@ int rtw_ndev_init(struct net_device *dev)
 {
 	_adapter *adapter = rtw_netdev_priv(dev);
 
-	RTW_PRINT(FUNC_ADPT_FMT" if%d mac_addr="MAC_FMT"\n"
+	RTW_DBG(FUNC_ADPT_FMT" if%d mac_addr="MAC_FMT"\n"
 		, FUNC_ADPT_ARG(adapter), (adapter->iface_id + 1), MAC_ARG(dev->dev_addr));
 	strncpy(adapter->old_ifname, dev->name, IFNAMSIZ);
 	adapter->old_ifname[IFNAMSIZ - 1] = '\0';
@@ -1413,7 +1413,7 @@ void rtw_ndev_uninit(struct net_device *dev)
 {
 	_adapter *adapter = rtw_netdev_priv(dev);
 
-	RTW_PRINT(FUNC_ADPT_FMT" if%d\n"
+	RTW_DBG(FUNC_ADPT_FMT" if%d\n"
 		  , FUNC_ADPT_ARG(adapter), (adapter->iface_id + 1));
 	rtw_adapter_proc_deinit(dev);
 }
@@ -3940,10 +3940,10 @@ void rtw_dev_unload(PADAPTER padapter)
 		}
 		/* check the status of IPS */
 		if (rtw_hal_check_ips_status(padapter) == _TRUE || pwrctl->rf_pwrstate == rf_off) { /* check HW status and SW state */
-			RTW_PRINT("%s: driver in IPS-FWLPS\n", __func__);
+			RTW_DBG("%s: driver in IPS-FWLPS\n", __func__);
 			pdbgpriv->dbg_dev_unload_inIPS_cnt++;
 		} else
-			RTW_PRINT("%s: driver not in IPS\n", __func__);
+			RTW_DBG("%s: driver not in IPS\n", __func__);
 
 		if (!rtw_is_surprise_removed(padapter)) {
 #ifdef CONFIG_BT_COEXIST
@@ -3952,7 +3952,7 @@ void rtw_dev_unload(PADAPTER padapter)
 #ifdef CONFIG_WOWLAN
 			if (pwrctl->bSupportRemoteWakeup == _TRUE &&
 			    pwrctl->wowlan_mode == _TRUE)
-				RTW_PRINT("%s bSupportRemoteWakeup==_TRUE  do not run rtw_hal_deinit()\n", __FUNCTION__);
+				RTW_DBG("%s bSupportRemoteWakeup==_TRUE  do not run rtw_hal_deinit()\n", __FUNCTION__);
 			else
 #endif
 			{
@@ -4021,13 +4021,13 @@ int rtw_suspend_free_assoc_resource(_adapter *padapter)
 		rtw_free_network_queue(padapter, _TRUE);
 
 	if (check_fwstate(pmlmepriv, _FW_UNDER_SURVEY)) {
-		RTW_PRINT("%s: fw_under_survey\n", __func__);
+		RTW_DBG("%s: fw_under_survey\n", __func__);
 		rtw_indicate_scan_done(padapter, 1);
 		clr_fwstate(pmlmepriv, _FW_UNDER_SURVEY);
 	}
 
 	if (check_fwstate(pmlmepriv, _FW_UNDER_LINKING) == _TRUE) {
-		RTW_PRINT("%s: fw_under_linking\n", __FUNCTION__);
+		RTW_DBG("%s: fw_under_linking\n", __FUNCTION__);
 		rtw_indicate_disconnect(padapter, 0, _FALSE);
 	}
 
@@ -4110,10 +4110,10 @@ int rtw_suspend_wow(_adapter *padapter)
 			}
 		}
 
-		RTW_PRINT("%s: wowmode suspending\n", __func__);
+		RTW_INFO("%s: wowmode suspending\n", __func__);
 
 		if (check_fwstate(pmlmepriv, _FW_UNDER_SURVEY) == _TRUE) {
-			RTW_PRINT("%s: fw_under_survey\n", __func__);
+			RTW_DBG("%s: fw_under_survey\n", __func__);
 			rtw_indicate_scan_done(padapter, 1);
 			clr_fwstate(pmlmepriv, _FW_UNDER_SURVEY);
 		}
@@ -4144,7 +4144,7 @@ int rtw_suspend_wow(_adapter *padapter)
 #endif
 
 		if (pwrpriv->wowlan_pno_enable) {
-			RTW_PRINT("%s: pno: %d\n", __func__,
+			RTW_DBG("%s: pno: %d\n", __func__,
 				  pwrpriv->wowlan_pno_enable);
 #ifdef CONFIG_FWLPS_IN_IPS
 			rtw_set_fw_in_ips_mode(padapter, _TRUE);
@@ -4160,7 +4160,7 @@ int rtw_suspend_wow(_adapter *padapter)
 #endif /* #ifdef CONFIG_LPS */
 
 	} else
-		RTW_PRINT("%s: ### ERROR ### wowlan_mode=%d\n", __FUNCTION__, pwrpriv->wowlan_mode);
+		RTW_ERR("%s: wowlan_mode=%d\n", __FUNCTION__, pwrpriv->wowlan_mode);
 	RTW_INFO("<== "FUNC_ADPT_FMT" exit....\n", FUNC_ADPT_ARG(padapter));
 	return ret;
 }
@@ -4216,7 +4216,7 @@ int rtw_suspend_ap_wow(_adapter *padapter)
 	poidparam.subcode = WOWLAN_AP_ENABLE;
 	rtw_hal_set_hwreg(padapter, HW_VAR_WOWLAN, (u8 *)&poidparam);
 
-	RTW_PRINT("%s: wowmode suspending\n", __func__);
+	RTW_INFO("%s: wowmode suspending\n", __func__);
 #if 1
 	if (rtw_mi_check_status(padapter, MI_LINKED)) {
 		ch =  rtw_mi_get_union_chan(padapter);
@@ -4285,7 +4285,7 @@ int rtw_suspend_normal(_adapter *padapter)
 
 	if ((rtw_hal_check_ips_status(padapter) == _TRUE)
 	    || (adapter_to_pwrctl(padapter)->rf_pwrstate == rf_off))
-		RTW_PRINT("%s: ### ERROR #### driver in IPS ####ERROR###!!!\n", __FUNCTION__);
+		RTW_ERR("%s: driver in IPS ####ERROR###!!!\n", __FUNCTION__);
 
 
 #ifdef CONFIG_CONCURRENT_MODE
@@ -4317,7 +4317,7 @@ int rtw_suspend_common(_adapter *padapter)
 	int ret = 0;
 	systime start_time = rtw_get_current_time();
 
-	RTW_PRINT(" suspend start\n");
+	RTW_DBG(" suspend start\n");
 	RTW_INFO("==> %s (%s:%d)\n", __FUNCTION__, current->comm, current->pid);
 
 	pdbgpriv->dbg_suspend_cnt++;
@@ -4379,7 +4379,7 @@ int rtw_suspend_common(_adapter *padapter)
 	}
 
 
-	RTW_PRINT("rtw suspend success in %d ms\n",
+	RTW_DBG("rtw suspend success in %d ms\n",
 		  rtw_get_passing_time_ms(start_time));
 
 exit:
@@ -4481,7 +4481,7 @@ int rtw_resume_process_wow(_adapter *padapter)
 
 	} else
 
-		RTW_PRINT("%s: ### ERROR ### wowlan_mode=%d\n", __FUNCTION__, pwrpriv->wowlan_mode);
+		RTW_ERR("%s: wowlan_mode=%d\n", __FUNCTION__, pwrpriv->wowlan_mode);
 
 	if (padapter->pid[1] != 0) {
 		RTW_INFO("pid[1]:%d\n", padapter->pid[1]);
@@ -4517,7 +4517,7 @@ int rtw_resume_process_wow(_adapter *padapter)
 		rtw_set_pwr_state_check_timer(pwrpriv);
 #endif
 	} else
-		RTW_PRINT("do not reset timer\n");
+		RTW_DBG("do not reset timer\n");
 
 	pwrpriv->wowlan_mode = _FALSE;
 
@@ -4781,7 +4781,7 @@ int rtw_resume_common(_adapter *padapter)
 	if (pwrpriv->bInSuspend == _FALSE)
 		return 0;
 
-	RTW_PRINT("resume start\n");
+	RTW_DBG("resume start\n");
 	RTW_INFO("==> %s (%s:%d)\n", __FUNCTION__, current->comm, current->pid);
 
 	if (rtw_mi_check_status(padapter, WIFI_AP_STATE) == _FALSE) {
@@ -4804,7 +4804,7 @@ int rtw_resume_common(_adapter *padapter)
 		pwrpriv->bInSuspend = _FALSE;
 		pwrpriv->wowlan_in_resume = _FALSE;
 	}
-	RTW_PRINT("%s:%d in %d ms\n", __FUNCTION__ , ret,
+	RTW_DBG("%s:%d in %d ms\n", __FUNCTION__ , ret,
 		  rtw_get_passing_time_ms(start_time));
 
 
