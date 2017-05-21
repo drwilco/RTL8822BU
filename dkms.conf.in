@@ -1,7 +1,7 @@
 PACKAGE_NAME="#MODULE_NAME#"
 PACKAGE_VERSION="#MODULE_VERSION#"
 BUILT_MODULE_NAME[0]="@MODULE_NAME@"
-MAKE="'make'"
+MAKE="'make' KVER=$kernelver -j `grep ^processor /proc/cpuinfo | wc -l`"
 CLEAN="'make' clean"
 DEST_MODULE_LOCATION[0]="/kernel/drivers/net/wireless"
 AUTOINSTALL="YES"
