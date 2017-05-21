@@ -2052,7 +2052,7 @@ config_r:
 	/bin/bash script/Configure script/config.in
 
 
-.PHONY: modules clean
+.PHONY: modules clean dkms-install
 
 clean:
 	#$(MAKE) -C $(KSRC) M=$(shell pwd) clean
@@ -2071,6 +2071,19 @@ clean:
 
 dkms.conf: dkms.conf.in Makefile
 	cat $@.in | sed 's/@MODULE_NAME@/$(MODULE_NAME)/g' > $@
+
+DRV_NAME=RTL8822BU
+DRV_VERSION=5.1.7_19806.20161025_BTCOEX20161024-3333-0.1
+DKMS_DIR=/usr/src/$(DRV_NAME)-$(DRV_VERSION)
+
+dkms-install:
+	rm -rf $(DKMS_DIR)
+	install -m 755 -d $(DKMS_DIR)
+	git archive HEAD | tar -x -C $(DKMS_DIR)
+	$(MAKE) -C $(DKMS_DIR) dkms.conf
+	dkms add --all -m $(DRV_NAME) -v $(DRV_VERSION)
+	dkms build --all -m $(DRV_NAME) -v $(DRV_VERSION)
+	dkms install --all -m $(DRV_NAME) -v $(DRV_VERSION)
 
 endif
 
