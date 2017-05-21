@@ -723,7 +723,7 @@ u32	rtw_tkip_encrypt(_adapter *padapter, u8 *pxmitframe)
 				}
 				else
 				{
-					RTW_INFO("%s, call rtw_get_stainfo()\n", __func__);
+					RTW_DBG("%s, call rtw_get_stainfo()\n", __func__);
 					stainfo=rtw_get_stainfo(&padapter->stapriv ,&pattrib->ra[0] );
 				}
 		*/
@@ -732,7 +732,7 @@ u32	rtw_tkip_encrypt(_adapter *padapter, u8 *pxmitframe)
 			/*
 						if(!(stainfo->state &_FW_LINKED))
 						{
-							RTW_INFO("%s, psta->state(0x%x) != _FW_LINKED\n", __func__, stainfo->state);
+							RTW_DBG("%s, psta->state(0x%x) != _FW_LINKED\n", __func__, stainfo->state);
 							return _FAIL;
 						}
 			*/
@@ -784,7 +784,7 @@ u32	rtw_tkip_encrypt(_adapter *padapter, u8 *pxmitframe)
 		}
 		/*
 				else{
-					RTW_INFO("%s, psta==NUL\n", __func__);
+					RTW_DBG("%s, psta==NUL\n", __func__);
 					res=_FAIL;
 				}
 		*/
@@ -861,7 +861,7 @@ u32 rtw_tkip_decrypt(_adapter *padapter, u8 *precvframe)
 				no_gkey_bc_cnt = 0;
 				no_gkey_mc_cnt = 0;
 
-				/* RTW_INFO("rx bc/mc packets, to perform sw rtw_tkip_decrypt\n"); */
+				/* RTW_DBG("rx bc/mc packets, to perform sw rtw_tkip_decrypt\n"); */
 				/* prwskey = psecuritypriv->dot118021XGrpKey[psecuritypriv->dot118021XGrpKeyid].skey; */
 				prwskey = psecuritypriv->dot118021XGrpKey[prxattrib->key_index].skey;
 				prwskeylen = 16;
@@ -1597,7 +1597,7 @@ u32	rtw_aes_encrypt(_adapter *padapter, u8 *pxmitframe)
 				}
 				else
 				{
-					RTW_INFO("%s, call rtw_get_stainfo()\n", __func__);
+					RTW_DBG("%s, call rtw_get_stainfo()\n", __func__);
 					stainfo=rtw_get_stainfo(&padapter->stapriv ,&pattrib->ra[0] );
 				}
 		*/
@@ -1606,7 +1606,7 @@ u32	rtw_aes_encrypt(_adapter *padapter, u8 *pxmitframe)
 			/*
 						if(!(stainfo->state &_FW_LINKED))
 						{
-							RTW_INFO("%s, psta->state(0x%x) != _FW_LINKED\n", __func__, stainfo->state);
+							RTW_DBG("%s, psta->state(0x%x) != _FW_LINKED\n", __func__, stainfo->state);
 							return _FAIL;
 						}
 			*/
@@ -1624,7 +1624,7 @@ u32	rtw_aes_encrypt(_adapter *padapter, u8 *pxmitframe)
 				struct	sta_info		*ptdls_sta;
 				ptdls_sta = rtw_get_stainfo(&padapter->stapriv , &pattrib->dst[0]);
 				if ((ptdls_sta != NULL) && (ptdls_sta->tdls_sta_state & TDLS_LINKED_STATE)) {
-					RTW_INFO("[%s] for tdls link\n", __FUNCTION__);
+					RTW_DBG("[%s] for tdls link\n", __FUNCTION__);
 					prwskey = &ptdls_sta->tpk.tk[0];
 				}
 			}
@@ -1652,7 +1652,7 @@ u32	rtw_aes_encrypt(_adapter *padapter, u8 *pxmitframe)
 		}
 		/*
 				else{
-					RTW_INFO("%s, psta==NUL\n", __func__);
+					RTW_DBG("%s, psta==NUL\n", __func__);
 					res=_FAIL;
 				}
 		*/
@@ -1917,7 +1917,7 @@ static sint aes_decipher(u8 *key, uint	hdrlen,
 	/* compare the mic */
 	for (i = 0; i < 8; i++) {
 		if (pframe[hdrlen + 8 + plen - 8 + i] != message[hdrlen + 8 + plen - 8 + i]) {
-			RTW_INFO("aes_decipher:mic check error mic[%d]: pframe(%x) != message(%x)\n",
+			RTW_ERR("aes_decipher:mic check error mic[%d]: pframe(%x) != message(%x)\n",
 				i, pframe[hdrlen + 8 + plen - 8 + i], message[hdrlen + 8 + plen - 8 + i]);
 			res = _FAIL;
 		}
@@ -1957,7 +1957,7 @@ u32	rtw_aes_decrypt(_adapter *padapter, u8 *precvframe)
 				static u32 no_gkey_bc_cnt = 0;
 				static u32 no_gkey_mc_cnt = 0;
 
-				/* RTW_INFO("rx bc/mc packets, to perform sw rtw_aes_decrypt\n"); */
+				/* RTW_DBG("rx bc/mc packets, to perform sw rtw_aes_decrypt\n"); */
 				/* prwskey = psecuritypriv->dot118021XGrpKey[psecuritypriv->dot118021XGrpKeyid].skey; */
 				if (psecuritypriv->binstallGrpkey == _FALSE) {
 					res = _FAIL;
@@ -2046,7 +2046,7 @@ u32	rtw_BIP_verify(_adapter *padapter, u8 *precvframe)
 	BIP_AAD = rtw_zmalloc(ori_len);
 
 	if (BIP_AAD == NULL) {
-		RTW_INFO("BIP AAD allocate fail\n");
+		RTW_DBG("BIP AAD allocate fail\n");
 		return _FAIL;
 	}
 	/* PKT start */
@@ -2066,14 +2066,14 @@ u32	rtw_BIP_verify(_adapter *padapter, u8 *precvframe)
 		temp_ipn = le64_to_cpu(temp_ipn);
 		/* BIP packet number should bigger than previous BIP packet */
 		if (temp_ipn < pmlmeext->mgnt_80211w_IPN_rx) {
-			RTW_INFO("replay BIP packet\n");
+			RTW_DBG("replay BIP packet\n");
 			goto BIP_exit;
 		}
 		/* copy key index */
 		_rtw_memcpy(&keyid, p + 2, 2);
 		keyid = le16_to_cpu(keyid);
 		if (keyid != padapter->securitypriv.dot11wBIPKeyid) {
-			RTW_INFO("BIP key index error!\n");
+			RTW_ERR("BIP key index error!\n");
 			goto BIP_exit;
 		}
 		/* clear the MIC field of MME to zero */
@@ -2095,20 +2095,20 @@ u32	rtw_BIP_verify(_adapter *padapter, u8 *precvframe)
 		/* management packet content */
 		{
 			int pp;
-			RTW_INFO("pkt: ");
+			RTW_DBG("pkt: ");
 			for (pp = 0; pp < pattrib->pkt_len; pp++)
 				printk(" %02x ", pframe[pp]);
-			RTW_INFO("\n");
+			RTW_DBG("\n");
 			/* BIP AAD + management frame body + MME(MIC is zero) */
-			RTW_INFO("AAD+PKT: ");
+			RTW_DBG("AAD+PKT: ");
 			for (pp = 0; pp < ori_len; pp++)
-				RTW_INFO(" %02x ", BIP_AAD[pp]);
-			RTW_INFO("\n");
+				RTW_DBG(" %02x ", BIP_AAD[pp]);
+			RTW_DBG("\n");
 			/* show the MIC result */
-			RTW_INFO("mic: ");
+			RTW_DBG("mic: ");
 			for (pp = 0; pp < 16; pp++)
-				RTW_INFO(" %02x ", mic[pp]);
-			RTW_INFO("\n");
+				RTW_DBG(" %02x ", mic[pp]);
+			RTW_DBG("\n");
 		}
 #endif
 		/* MIC field should be last 8 bytes of packet (packet without FCS) */
@@ -2116,7 +2116,7 @@ u32	rtw_BIP_verify(_adapter *padapter, u8 *precvframe)
 			pmlmeext->mgnt_80211w_IPN_rx = temp_ipn;
 			res = _SUCCESS;
 		} else
-			RTW_INFO("BIP MIC error!\n");
+			RTW_ERR("BIP MIC error!\n");
 
 	} else
 		res = RTW_RX_HANDLED;
@@ -2919,7 +2919,7 @@ int wpa_tdls_ftie_mic(u8 *kck, u8 trans_seq,
 		  2 + timeoutie[1] + 2 + ftie[1];
 	buf = rtw_zmalloc(len);
 	if (!buf) {
-		RTW_INFO("TDLS: No memory for MIC calculation\n");
+		RTW_DBG("TDLS: No memory for MIC calculation\n");
 		return -1;
 	}
 
@@ -2976,7 +2976,7 @@ int wpa_tdls_teardown_ftie_mic(u8 *kck, u8 *lnkid, u16 reason,
 
 	buf = rtw_zmalloc(len);
 	if (!buf) {
-		RTW_INFO("TDLS: No memory for MIC calculation\n");
+		RTW_DBG("TDLS: No memory for MIC calculation\n");
 		return -1;
 	}
 
@@ -3059,7 +3059,7 @@ int tdls_verify_mic(u8 *kck, u8 trans_seq,
 	}
 
 	/* Invalid MIC */
-	RTW_INFO("[%s] Invalid MIC\n", __FUNCTION__);
+	RTW_DBG("[%s] Invalid MIC\n", __FUNCTION__);
 	return _FAIL;
 
 }

@@ -80,11 +80,11 @@ void rtw_set_tx_chksum_offload(_pkt *pkt, struct pkt_attrib *pattrib)
 			const struct iphdr *ip = ip_hdr(skb);
 			if (ip->protocol == IPPROTO_TCP) {
 				/* TCP checksum offload by HW */
-				RTW_INFO("CHECKSUM_PARTIAL TCP\n");
+				RTW_DBG("CHECKSUM_PARTIAL TCP\n");
 				pattrib->hw_tcp_csum = 1;
 				/* skb_checksum_help(skb); */
 			} else if (ip->protocol == IPPROTO_UDP) {
-				/* RTW_INFO("CHECKSUM_PARTIAL UDP\n"); */
+				/* RTW_DBG("CHECKSUM_PARTIAL UDP\n"); */
 #if 1
 				skb_checksum_help(skb);
 #else
@@ -93,11 +93,11 @@ void rtw_set_tx_chksum_offload(_pkt *pkt, struct pkt_attrib *pattrib)
 				udp->check = 0;
 #endif
 			} else {
-				RTW_INFO("%s-%d TCP CSUM offload Error!!\n", __FUNCTION__, __LINE__);
+				RTW_ERR("%s-%d TCP CSUM offload Error!!\n", __FUNCTION__, __LINE__);
 				WARN_ON(1);     /* we need a WARN() */
 			}
 		} else { /* IP fragmentation case */
-			RTW_INFO("%s-%d nr_frags != 0, using skb_checksum_help(skb);!!\n", __FUNCTION__, __LINE__);
+			RTW_DBG("%s-%d nr_frags != 0, using skb_checksum_help(skb);!!\n", __FUNCTION__, __LINE__);
 			skb_checksum_help(skb);
 		}
 	}
@@ -133,7 +133,7 @@ int rtw_os_xmit_resource_alloc(_adapter *padapter, struct xmit_buf *pxmitbuf, u3
 		for (i = 0; i < 8; i++) {
 			pxmitbuf->pxmit_urb[i] = usb_alloc_urb(0, GFP_KERNEL);
 			if (pxmitbuf->pxmit_urb[i] == NULL) {
-				RTW_INFO("pxmitbuf->pxmit_urb[i]==NULL");
+				RTW_DBG("pxmitbuf->pxmit_urb[i]==NULL");
 				return _FAIL;
 			}
 		}
@@ -250,13 +250,13 @@ void rtw_os_pkt_complete(_adapter *padapter, _pkt *pkt)
 	qidx = skb_get_queue_mapping(pkt);
 	if (rtw_os_need_wake_queue(padapter, qidx)) {
 		if (DBG_DUMP_OS_QUEUE_CTL)
-			RTW_INFO(FUNC_ADPT_FMT": netif_wake_subqueue[%d]\n", FUNC_ADPT_ARG(padapter), qidx);
+			RTW_DBG(FUNC_ADPT_FMT": netif_wake_subqueue[%d]\n", FUNC_ADPT_ARG(padapter), qidx);
 		netif_wake_subqueue(padapter->pnetdev, qidx);
 	}
 #else
 	if (rtw_os_need_wake_queue(padapter, 0)) {
 		if (DBG_DUMP_OS_QUEUE_CTL)
-			RTW_INFO(FUNC_ADPT_FMT": netif_wake_queue\n", FUNC_ADPT_ARG(padapter));
+			RTW_DBG(FUNC_ADPT_FMT": netif_wake_queue\n", FUNC_ADPT_ARG(padapter));
 		netif_wake_queue(padapter->pnetdev);
 	}
 #endif
@@ -319,14 +319,14 @@ static bool rtw_check_xmit_resource(_adapter *padapter, _pkt *pkt)
 	qidx = skb_get_queue_mapping(pkt);
 	if (rtw_os_need_stop_queue(padapter, qidx)) {
 		if (DBG_DUMP_OS_QUEUE_CTL)
-			RTW_INFO(FUNC_ADPT_FMT": netif_stop_subqueue[%d]\n", FUNC_ADPT_ARG(padapter), qidx);
+			RTW_DBG(FUNC_ADPT_FMT": netif_stop_subqueue[%d]\n", FUNC_ADPT_ARG(padapter), qidx);
 		netif_stop_subqueue(padapter->pnetdev, qidx);
 		busy = _TRUE;
 	}
 #else
 	if (rtw_os_need_stop_queue(padapter, 0)) {
 		if (DBG_DUMP_OS_QUEUE_CTL)
-			RTW_INFO(FUNC_ADPT_FMT": netif_stop_queue\n", FUNC_ADPT_ARG(padapter));
+			RTW_DBG(FUNC_ADPT_FMT": netif_stop_queue\n", FUNC_ADPT_ARG(padapter));
 		rtw_netif_stop_queue(padapter->pnetdev);
 		busy = _TRUE;
 	}
@@ -345,7 +345,7 @@ void rtw_os_wake_queue_at_free_stainfo(_adapter *padapter, int *qcnt_freed)
 
 		if (rtw_os_need_wake_queue(padapter, i)) {
 			if (DBG_DUMP_OS_QUEUE_CTL)
-				RTW_INFO(FUNC_ADPT_FMT": netif_wake_subqueue[%d]\n", FUNC_ADPT_ARG(padapter), i);
+				RTW_DBG(FUNC_ADPT_FMT": netif_wake_subqueue[%d]\n", FUNC_ADPT_ARG(padapter), i);
 			netif_wake_subqueue(padapter->pnetdev, i);
 		}
 	}
@@ -353,7 +353,7 @@ void rtw_os_wake_queue_at_free_stainfo(_adapter *padapter, int *qcnt_freed)
 	if (qcnt_freed[0] || qcnt_freed[1] || qcnt_freed[2] || qcnt_freed[3]) {
 		if (rtw_os_need_wake_queue(padapter, 0)) {
 			if (DBG_DUMP_OS_QUEUE_CTL)
-				RTW_INFO(FUNC_ADPT_FMT": netif_wake_queue\n", FUNC_ADPT_ARG(padapter));
+				RTW_DBG(FUNC_ADPT_FMT": netif_wake_queue\n", FUNC_ADPT_ARG(padapter));
 			netif_wake_queue(padapter->pnetdev);
 		}
 	}
@@ -420,13 +420,13 @@ int rtw_mlcst2unicst(_adapter *padapter, struct sk_buff *skb)
 			res = rtw_xmit(padapter, &newskb);
 			if (res < 0) {
 				DBG_COUNTER(padapter->tx_logs.os_tx_m2u_entry_err_xmit);
-				RTW_INFO("%s()-%d: rtw_xmit() return error! res=%d\n", __FUNCTION__, __LINE__, res);
+				RTW_ERR("%s()-%d: rtw_xmit() return error! res=%d\n", __FUNCTION__, __LINE__, res);
 				pxmitpriv->tx_drop++;
 				rtw_skb_free(newskb);
 			}
 		} else {
 			DBG_COUNTER(padapter->tx_logs.os_tx_m2u_entry_err_skb);
-			RTW_INFO("%s-%d: rtw_skb_copy() failed!\n", __FUNCTION__, __LINE__);
+			RTW_DBG("%s-%d: rtw_skb_copy() failed!\n", __FUNCTION__, __LINE__);
 			pxmitpriv->tx_drop++;
 			/* rtw_skb_free(skb); */
 			return _FALSE;	/* Caller shall tx this multicast frame via normal way. */
@@ -454,7 +454,7 @@ int _rtw_xmit_entry(_pkt *pkt, _nic_hdl pnetdev)
 
 
 	if (padapter->registrypriv.mp_mode) {
-		RTW_INFO("MP_TX_DROP_OS_FRAME\n");
+		RTW_DBG("MP_TX_DROP_OS_FRAME\n");
 		goto drop_packet;
 	}
 	DBG_COUNTER(padapter->tx_logs.os_tx);
@@ -462,7 +462,7 @@ int _rtw_xmit_entry(_pkt *pkt, _nic_hdl pnetdev)
 	if (rtw_if_up(padapter) == _FALSE) {
 		DBG_COUNTER(padapter->tx_logs.os_tx_err_up);
 		#ifdef DBG_TX_DROP_FRAME
-		RTW_INFO("DBG_TX_DROP_FRAME %s if_up fail\n", __FUNCTION__);
+		RTW_DBG("DBG_TX_DROP_FRAME %s if_up fail\n", __FUNCTION__);
 		#endif
 		goto drop_packet;
 	}
@@ -485,8 +485,8 @@ int _rtw_xmit_entry(_pkt *pkt, _nic_hdl pnetdev)
 			if (res == _TRUE)
 				goto exit;
 		} else {
-			/* RTW_INFO("Stop M2U(%d, %d)! ", pxmitpriv->free_xmitframe_cnt, pxmitpriv->free_xmitbuf_cnt); */
-			/* RTW_INFO("!m2u ); */
+			/* RTW_DBG("Stop M2U(%d, %d)! ", pxmitpriv->free_xmitframe_cnt, pxmitpriv->free_xmitbuf_cnt); */
+			/* RTW_DBG("!m2u ); */
 			DBG_COUNTER(padapter->tx_logs.os_tx_m2u_stop);
 		}
 	}
@@ -495,7 +495,7 @@ int _rtw_xmit_entry(_pkt *pkt, _nic_hdl pnetdev)
 	res = rtw_xmit(padapter, &pkt);
 	if (res < 0) {
 		#ifdef DBG_TX_DROP_FRAME
-		RTW_INFO("DBG_TX_DROP_FRAME %s rtw_xmit fail\n", __FUNCTION__);
+		RTW_DBG("DBG_TX_DROP_FRAME %s rtw_xmit fail\n", __FUNCTION__);
 		#endif
 		goto drop_packet;
 	}

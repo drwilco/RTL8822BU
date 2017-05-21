@@ -89,7 +89,7 @@ void _dynamic_check_timer_handlder(void *FunctionContext)
 
 #if (MP_DRIVER == 1)
 	if (adapter->registrypriv.mp_mode == 1 && adapter->mppriv.mp_dm == 0) { /* for MP ODM dynamic Tx power tracking */
-		/* RTW_INFO("_dynamic_check_timer_handlder mp_dm =0 return\n"); */
+		/* RTW_DBG("_dynamic_check_timer_handlder mp_dm =0 return\n"); */
 		_set_timer(&pdvobj->dynamic_chk_timer, 2000);
 		return;
 	}
@@ -230,7 +230,7 @@ void rtw_reset_securitypriv(_adapter *adapter)
 	/* add for CONFIG_IEEE80211W, none 11w also can use */
 	_exit_critical_bh(&adapter->security_key_mutex, &irqL);
 
-	RTW_INFO(FUNC_ADPT_FMT" - End to Disconnect\n", FUNC_ADPT_ARG(adapter));
+	RTW_DBG(FUNC_ADPT_FMT" - End to Disconnect\n", FUNC_ADPT_ARG(adapter));
 }
 
 void rtw_os_indicate_disconnect(_adapter *adapter,  u16 reason, u8 locally_generated)
@@ -268,7 +268,7 @@ void rtw_report_sec_ie(_adapter *adapter, u8 authmode, u8 *sec_ie)
 
 		buff = rtw_zmalloc(IW_CUSTOM_MAX);
 		if (NULL == buff) {
-			RTW_INFO(FUNC_ADPT_FMT ": alloc memory FAIL!!\n",
+			RTW_DBG(FUNC_ADPT_FMT ": alloc memory FAIL!!\n",
 				 FUNC_ADPT_ARG(adapter));
 			return;
 		}
@@ -409,7 +409,7 @@ void rtw_indicate_sta_assoc_event(_adapter *padapter, struct sta_info *psta)
 
 	_rtw_memcpy(wrqu.addr.sa_data, psta->hwaddr, ETH_ALEN);
 
-	RTW_INFO("+rtw_indicate_sta_assoc_event\n");
+	RTW_DBG("+rtw_indicate_sta_assoc_event\n");
 
 #ifndef CONFIG_IOCTL_CFG80211
 	wireless_send_event(padapter->pnetdev, IWEVREGISTERED, &wrqu, NULL);
@@ -436,7 +436,7 @@ void rtw_indicate_sta_disassoc_event(_adapter *padapter, struct sta_info *psta)
 
 	_rtw_memcpy(wrqu.addr.sa_data, psta->hwaddr, ETH_ALEN);
 
-	RTW_INFO("+rtw_indicate_sta_disassoc_event\n");
+	RTW_DBG("+rtw_indicate_sta_disassoc_event\n");
 
 #ifndef CONFIG_IOCTL_CFG80211
 	wireless_send_event(padapter->pnetdev, IWEVEXPIRED, &wrqu, NULL);
@@ -452,7 +452,7 @@ static int mgnt_xmit_entry(struct sk_buff *skb, struct net_device *pnetdev)
 	struct hostapd_priv *phostapdpriv = rtw_netdev_priv(pnetdev);
 	_adapter *padapter = (_adapter *)phostapdpriv->padapter;
 
-	/* RTW_INFO("%s\n", __FUNCTION__); */
+	RTW_DBG("%s\n", __FUNCTION__);
 
 	return rtw_hal_hostap_mgnt_xmit_entry(padapter, skb);
 }
@@ -461,7 +461,7 @@ static int mgnt_netdev_open(struct net_device *pnetdev)
 {
 	struct hostapd_priv *phostapdpriv = rtw_netdev_priv(pnetdev);
 
-	RTW_INFO("mgnt_netdev_open: MAC Address:" MAC_FMT "\n", MAC_ARG(pnetdev->dev_addr));
+	RTW_DBG("mgnt_netdev_open: MAC Address:" MAC_FMT "\n", MAC_ARG(pnetdev->dev_addr));
 
 
 	init_usb_anchor(&phostapdpriv->anchored);
@@ -478,7 +478,7 @@ static int mgnt_netdev_close(struct net_device *pnetdev)
 {
 	struct hostapd_priv *phostapdpriv = rtw_netdev_priv(pnetdev);
 
-	RTW_INFO("%s\n", __FUNCTION__);
+	RTW_DBG("%s\n", __FUNCTION__);
 
 	usb_kill_anchored_urbs(&phostapdpriv->anchored);
 
@@ -528,7 +528,7 @@ int hostapd_mode_init(_adapter *padapter)
 
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 29))
 
-	RTW_INFO("register rtl871x_mgnt_netdev_ops to netdev_ops\n");
+	RTW_DBG("register rtl871x_mgnt_netdev_ops to netdev_ops\n");
 
 	pnetdev->netdev_ops = &rtl871x_mgnt_netdev_ops;
 
@@ -559,7 +559,7 @@ int hostapd_mode_init(_adapter *padapter)
 
 
 	if (dev_alloc_name(pnetdev, "mgnt.wlan%d") < 0)
-		RTW_INFO("hostapd_mode_init(): dev_alloc_name, fail!\n");
+		RTW_DBG("hostapd_mode_init(): dev_alloc_name, fail!\n");
 
 
 	/* SET_NETDEV_DEV(pnetdev, pintfpriv->udev); */
@@ -580,7 +580,7 @@ int hostapd_mode_init(_adapter *padapter)
 
 	/* Tell the network stack we exist */
 	if (register_netdev(pnetdev) != 0) {
-		RTW_INFO("hostapd_mode_init(): register_netdev fail!\n");
+		RTW_DBG("hostapd_mode_init(): register_netdev fail!\n");
 
 		if (pnetdev)
 			rtw_free_netdev(pnetdev);

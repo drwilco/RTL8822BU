@@ -350,7 +350,7 @@ u8 WapiIncreasePN(u8 *PN, u8 AddCount)
 	/* YJ,test,091102 */
 	/*
 	if(AddCount == 2){
-		RTW_INFO("############################%s(): PN[0]=0x%x\n", __FUNCTION__, PN[0]);
+		RTW_DBG("############################%s(): PN[0]=0x%x\n", __FUNCTION__, PN[0]);
 		if(PN[0] == 0x48){
 			PN[0] += AddCount;
 			return 1;

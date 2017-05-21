@@ -58,11 +58,11 @@ int platform_wifi_power_on(void)
 		/* ----------get usb_wifi_usbc_num------------- */
 		ret = script_parser_fetch("usb_wifi_para", "usb_wifi_usbc_num", (int *)&usb_wifi_host, 64);
 		if (ret != 0) {
-			RTW_INFO("ERR: script_parser_fetch usb_wifi_usbc_num failed\n");
+			RTW_DBG("ERR: script_parser_fetch usb_wifi_usbc_num failed\n");
 			ret = -ENOMEM;
 			goto exit;
 		}
-		RTW_INFO("sw_usb_enable_hcd: usbc_num = %d\n", usb_wifi_host);
+		RTW_DBG("sw_usb_enable_hcd: usbc_num = %d\n", usb_wifi_host);
 		sw_usb_enable_hcd(usb_wifi_host);
 	}
 #endif /* CONFIG_RTL8723A */
@@ -119,7 +119,7 @@ void platform_wifi_power_off(void)
 
 #ifdef CONFIG_PLATFORM_ARM_SUNxI
 #ifndef CONFIG_RTL8723A
-	RTW_INFO("sw_usb_disable_hcd: usbc_num = %d\n", usb_wifi_host);
+	RTW_DBG("sw_usb_disable_hcd: usbc_num = %d\n", usb_wifi_host);
 	sw_usb_disable_hcd(usb_wifi_host);
 #endif /* ifndef CONFIG_RTL8723A */
 #endif /* CONFIG_PLATFORM_ARM_SUNxI */

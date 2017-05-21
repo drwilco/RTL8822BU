@@ -45,14 +45,14 @@ int	usb_init_recv_priv(_adapter *padapter, u16 ini_in_buf_sz)
 	precvpriv->int_in_urb = usb_alloc_urb(0, GFP_KERNEL);
 	if (precvpriv->int_in_urb == NULL) {
 		res = _FAIL;
-		RTW_INFO("alloc_urb for interrupt in endpoint fail !!!!\n");
+		RTW_DBG("alloc_urb for interrupt in endpoint fail !!!!\n");
 		goto exit;
 	}
 #endif /* PLATFORM_LINUX */
 	precvpriv->int_in_buf = rtw_zmalloc(ini_in_buf_sz);
 	if (precvpriv->int_in_buf == NULL) {
 		res = _FAIL;
-		RTW_INFO("alloc_mem for interrupt in endpoint fail !!!!\n");
+		RTW_DBG("alloc_mem for interrupt in endpoint fail !!!!\n");
 		goto exit;
 	}
 #endif /* CONFIG_USB_INTERRUPT_IN_PIPE */
@@ -65,8 +65,8 @@ int	usb_init_recv_priv(_adapter *padapter, u16 ini_in_buf_sz)
 	skb_queue_head_init(&precvpriv->free_recv_skb_queue);
 #endif
 
-	RTW_INFO("NR_RECVBUFF: %d\n", NR_RECVBUFF);
-	RTW_INFO("MAX_RECVBUF_SZ: %d\n", MAX_RECVBUF_SZ);
+	RTW_DBG("NR_RECVBUFF: %d\n", NR_RECVBUFF);
+	RTW_DBG("MAX_RECVBUF_SZ: %d\n", MAX_RECVBUF_SZ);
 	precvpriv->pallocated_recv_buf = rtw_zmalloc(NR_RECVBUFF * sizeof(struct recv_buf) + 4);
 	if (precvpriv->pallocated_recv_buf == NULL) {
 		res = _FAIL;
@@ -114,9 +114,9 @@ int	usb_init_recv_priv(_adapter *padapter, u16 ini_in_buf_sz)
 		SIZE_PTR alignment = 0;
 		struct sk_buff *pskb = NULL;
 
-		RTW_INFO("NR_PREALLOC_RECV_SKB: %d\n", NR_PREALLOC_RECV_SKB);
+		RTW_DBG("NR_PREALLOC_RECV_SKB: %d\n", NR_PREALLOC_RECV_SKB);
 #ifdef CONFIG_FIX_NR_BULKIN_BUFFER
-		RTW_INFO("Enable CONFIG_FIX_NR_BULKIN_BUFFER\n");
+		RTW_DBG("Enable CONFIG_FIX_NR_BULKIN_BUFFER\n");
 #endif
 
 		for (i = 0; i < NR_PREALLOC_RECV_SKB; i++) {

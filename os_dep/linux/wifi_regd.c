@@ -412,24 +412,24 @@ static int _rtw_reg_notifier_apply(struct wiphy *wiphy,
 
 	switch (request->initiator) {
 	case NL80211_REGDOM_SET_BY_DRIVER:
-		RTW_INFO("%s: %s\n", __func__, "NL80211_REGDOM_SET_BY_DRIVER");
+		RTW_DBG("%s: %s\n", __func__, "NL80211_REGDOM_SET_BY_DRIVER");
 		_rtw_reg_apply_world_flags(wiphy, NL80211_REGDOM_SET_BY_DRIVER,
 					   reg);
 		break;
 	case NL80211_REGDOM_SET_BY_CORE:
-		RTW_INFO("%s: %s\n", __func__,
+		RTW_DBG("%s: %s\n", __func__,
 			 "NL80211_REGDOM_SET_BY_CORE to DRV");
 		_rtw_reg_apply_world_flags(wiphy, NL80211_REGDOM_SET_BY_DRIVER,
 					   reg);
 		break;
 	case NL80211_REGDOM_SET_BY_USER:
-		RTW_INFO("%s: %s\n", __func__,
+		RTW_DBG("%s: %s\n", __func__,
 			 "NL80211_REGDOM_SET_BY_USER to DRV");
 		_rtw_reg_apply_world_flags(wiphy, NL80211_REGDOM_SET_BY_DRIVER,
 					   reg);
 		break;
 	case NL80211_REGDOM_SET_BY_COUNTRY_IE:
-		RTW_INFO("%s: %s\n", __func__,
+		RTW_DBG("%s: %s\n", __func__,
 			 "NL80211_REGDOM_SET_BY_COUNTRY_IE");
 		_rtw_reg_apply_world_flags(wiphy, request->initiator, reg);
 		break;
@@ -457,7 +457,7 @@ void _rtw_reg_notifier(struct wiphy *wiphy, struct regulatory_request *request)
 {
 	struct rtw_regulatory *reg = NULL;
 
-	RTW_INFO("%s\n", __func__);
+	RTW_DBG("%s\n", __func__);
 
 	_rtw_reg_notifier_apply(wiphy, request, reg);
 }

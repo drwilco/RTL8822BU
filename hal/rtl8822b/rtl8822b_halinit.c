@@ -135,12 +135,12 @@ u8 rtl8822b_hal_init(PADAPTER adapter)
 #ifdef CONFIG_FILE_FWIMG
 	rtw_get_phy_file_path(adapter, MAC_FILE_FW_NIC);
 	if (rtw_is_file_readable(rtw_phy_para_file_path) == _TRUE) {
-		RTW_INFO("%s acquire FW from file:%s\n", __FUNCTION__, rtw_phy_para_file_path);
+		RTW_DBG("%s acquire FW from file:%s\n", __FUNCTION__, rtw_phy_para_file_path);
 		fw_bin = _TRUE;
 	} else
 #endif /* CONFIG_FILE_FWIMG */
 	{
-		RTW_INFO("%s fw source from array\n", __FUNCTION__);
+		RTW_DBG("%s fw source from array\n", __FUNCTION__);
 		fw_bin = _FALSE;
 	}
 
@@ -158,8 +158,8 @@ u8 rtl8822b_hal_init(PADAPTER adapter)
 
 	
 
-	RTW_INFO("%s Download Firmware from %s success\n", __FUNCTION__, (fw_bin) ? "file" : "array");
-	RTW_INFO("%s FW Version:%d SubVersion:%d\n", "NIC", hal->firmware_version, hal->firmware_sub_version);
+	RTW_DBG("%s Download Firmware from %s success\n", __FUNCTION__, (fw_bin) ? "file" : "array");
+	RTW_DBG("%s FW Version:%d SubVersion:%d\n", "NIC", hal->firmware_version, hal->firmware_sub_version);
 
 	/* Sync driver status with hardware setting */
 	rtl8822b_rcr_get(adapter, NULL);
@@ -179,11 +179,11 @@ u8 rtl8822b_mac_verify(PADAPTER adapter)
 
 	err = rtw_halmac_self_verify(d);
 	if (err) {
-		RTW_INFO("%s fail\n", __FUNCTION__);
+		RTW_DBG("%s fail\n", __FUNCTION__);
 		return _FALSE;
 	}
 
-	RTW_INFO("%s successful\n", __FUNCTION__);
+	RTW_DBG("%s successful\n", __FUNCTION__);
 	return _TRUE;
 }
 
@@ -208,8 +208,8 @@ void rtl8822b_init_misc(PADAPTER adapter)
 		struct dvobj_priv *dvobj = adapter_to_dvobj(adapter);
 		PADAPTER iface = NULL;
 
-		RTW_INFO("%s: under only 5G for A/B cut\n", __FUNCTION__);
-		RTW_INFO("%s: not support HT/VHT RX STBC for A/B cut\n", __FUNCTION__);
+		RTW_DBG("%s: under only 5G for A/B cut\n", __FUNCTION__);
+		RTW_DBG("%s: not support HT/VHT RX STBC for A/B cut\n", __FUNCTION__);
 
 		for (i = 0; i < dvobj->iface_nums; i++) {
 			iface = dvobj->padapters[i];

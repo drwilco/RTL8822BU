@@ -193,11 +193,11 @@ static u8 Hal_EfuseParseIDCode(PADAPTER adapter, u8 *map)
 
 	/* Check 0x8129 again for making sure autoload status!! */
 	EEPROMId = le16_to_cpu(*(u16 *)map);
-	RTW_INFO("EEPROM ID = 0x%04x\n", EEPROMId);
+	RTW_DBG("EEPROM ID = 0x%04x\n", EEPROMId);
 	if (EEPROMId == RTL_EEPROM_ID)
 		return _TRUE;
 
-	RTW_INFO("<WARN> EEPROM ID is invalid!!\n");
+	RTW_DBG("<WARN> EEPROM ID is invalid!!\n");
 	return _FALSE;
 }
 
@@ -211,7 +211,7 @@ static void Hal_EfuseParseEEPROMVer(PADAPTER adapter, u8 *map, u8 mapvalid)
 	else
 		hal->EEPROMVersion = 1;
 
-	RTW_INFO("EEPROM Version = %d\n", hal->EEPROMVersion);
+	RTW_DBG("EEPROM Version = %d\n", hal->EEPROMVersion);
 }
 
 static void Hal_EfuseParseTxPowerInfo(PADAPTER adapter, u8 *map, u8 mapvalid)
@@ -226,7 +226,7 @@ static void Hal_EfuseParseTxPowerInfo(PADAPTER adapter, u8 *map, u8 mapvalid)
 		hal->EEPROMRegulatory = map[EEPROM_RF_BOARD_OPTION_8822B] & 0x7; /* bit0~2 */
 	else
 		hal->EEPROMRegulatory = EEPROM_DEFAULT_BOARD_OPTION & 0x7; /* bit0~2 */
-	RTW_INFO("EEPROM Regulatory=0x%02x\n", hal->EEPROMRegulatory);
+	RTW_DBG("EEPROM Regulatory=0x%02x\n", hal->EEPROMRegulatory);
 }
 
 static void Hal_EfuseParseBoardType(PADAPTER adapter, u8 *map, u8 mapvalid)
@@ -239,7 +239,7 @@ static void Hal_EfuseParseBoardType(PADAPTER adapter, u8 *map, u8 mapvalid)
 	else
 		hal->InterfaceSel = (EEPROM_DEFAULT_BOARD_OPTION & 0xE0) >> 5;
 
-	RTW_INFO("EEPROM Board Type=0x%02x\n", hal->InterfaceSel);
+	RTW_DBG("EEPROM Board Type=0x%02x\n", hal->InterfaceSel);
 }
 
 static void Hal_EfuseParseBTCoexistInfo(PADAPTER adapter, u8 *map, u8 mapvalid)
@@ -281,7 +281,7 @@ static void Hal_EfuseParseBTCoexistInfo(PADAPTER adapter, u8 *map, u8 mapvalid)
 	}
 
 exit:
-	RTW_INFO("EEPROM %s BT-coex, ant_num=%d\n",
+	RTW_DBG("EEPROM %s BT-coex, ant_num=%d\n",
 		 hal->EEPROMBluetoothCoexist == _TRUE ? "Enable" : "Disable",
 		 hal->EEPROMBluetoothAntNum == Ant_x2 ? 2 : 1);
 }
@@ -298,7 +298,7 @@ static void Hal_EfuseParseChnlPlan(PADAPTER adapter, u8 *map, u8 autoloadfail)
 		autoloadfail
 	);
 
-	RTW_INFO("EEPROM ChannelPlan=0x%02x\n", adapter->mlmepriv.ChannelPlan);
+	RTW_DBG("EEPROM ChannelPlan=0x%02x\n", adapter->mlmepriv.ChannelPlan);
 }
 
 static void Hal_EfuseParseXtal(PADAPTER adapter, u8 *map, u8 mapvalid)
@@ -311,7 +311,7 @@ static void Hal_EfuseParseXtal(PADAPTER adapter, u8 *map, u8 mapvalid)
 	else
 		hal->crystal_cap = EEPROM_Default_CrystalCap;
 
-	RTW_INFO("EEPROM crystal_cap=0x%02x\n", hal->crystal_cap);
+	RTW_DBG("EEPROM crystal_cap=0x%02x\n", hal->crystal_cap);
 }
 
 static void Hal_EfuseParseThermalMeter(PADAPTER adapter, u8 *map, u8 mapvalid)
@@ -327,7 +327,7 @@ static void Hal_EfuseParseThermalMeter(PADAPTER adapter, u8 *map, u8 mapvalid)
 		hal->odmpriv.rf_calibrate_info.is_apk_thermal_meter_ignore = _TRUE;
 	}
 
-	RTW_INFO("EEPROM ThermalMeter=0x%02x\n", hal->eeprom_thermal_meter);
+	RTW_DBG("EEPROM ThermalMeter=0x%02x\n", hal->eeprom_thermal_meter);
 }
 
 static void Hal_EfuseParseAntennaDiversity(PADAPTER adapter, u8 *map, u8 mapvalid)
@@ -356,12 +356,12 @@ static void Hal_EfuseParseAntennaDiversity(PADAPTER adapter, u8 *map, u8 mapvali
 		else if (hal->TRxAntDivType == 0x11)
 			hal->TRxAntDivType = S0S1_SW_ANTDIV; /* internal switch S0S1 */
 		else
-			RTW_INFO("EEPROM efuse[0x%x]=0x%02x is unknown type\n",
+			RTW_DBG("EEPROM efuse[0x%x]=0x%02x is unknown type\n",
 				__FUNCTION__, EEPROM_RFE_OPTION_8723B, hal->TRxAntDivType);
 	} else
 		hal->TRxAntDivType = registry_par->antdiv_type;
 
-	RTW_INFO("EEPROM AntDivCfg=%d, AntDivType=%d\n",
+	RTW_DBG("EEPROM AntDivCfg=%d, AntDivType=%d\n",
 		 __FUNCTION__, hal->AntDivCfg, hal->TRxAntDivType);
 #endif /* CONFIG_ANTENNA_DIVERSITY */
 }
@@ -375,7 +375,7 @@ static void Hal_EfuseParseCustomerID(PADAPTER adapter, u8 *map, u8 mapvalid)
 		hal->EEPROMCustomerID = map[EEPROM_CustomID_8723B];
 	else
 		hal->EEPROMCustomerID = 0;
-	RTW_INFO("EEPROM Customer ID=0x%02x\n", hal->EEPROMCustomerID);
+	RTW_DBG("EEPROM Customer ID=0x%02x\n", hal->EEPROMCustomerID);
 }
 
 static void Hal_DetectWoWMode(PADAPTER adapter)
@@ -386,7 +386,7 @@ static void Hal_DetectWoWMode(PADAPTER adapter)
 	adapter_to_pwrctl(adapter)->bSupportRemoteWakeup = _FALSE;
 #endif /* !(CONFIG_WOWLAN || CONFIG_AP_WOWLAN) */
 
-	RTW_INFO("EEPROM SupportRemoteWakeup=%d\n", adapter_to_pwrctl(adapter)->bSupportRemoteWakeup);
+	RTW_DBG("EEPROM SupportRemoteWakeup=%d\n", adapter_to_pwrctl(adapter)->bSupportRemoteWakeup);
 }
 
 static void hal_ReadPAType(PADAPTER adapter, u8 *map, u8 mapvalid)
@@ -452,10 +452,10 @@ static void hal_ReadPAType(PADAPTER adapter, u8 *map, u8 mapvalid)
 		}
 	}
 
-	RTW_INFO("EEPROM PAType_2G is 0x%x, ExternalPA_2G = %d\n", hal->PAType_2G, hal->ExternalPA_2G);
-	RTW_INFO("EEPROM PAType_5G is 0x%x, external_pa_5g = %d\n", hal->PAType_5G, hal->external_pa_5g);
-	RTW_INFO("EEPROM LNAType_2G is 0x%x, ExternalLNA_2G = %d\n", hal->LNAType_2G, hal->ExternalLNA_2G);
-	RTW_INFO("EEPROM LNAType_5G is 0x%x, external_lna_5g = %d\n", hal->LNAType_5G, hal->external_lna_5g);
+	RTW_DBG("EEPROM PAType_2G is 0x%x, ExternalPA_2G = %d\n", hal->PAType_2G, hal->ExternalPA_2G);
+	RTW_DBG("EEPROM PAType_5G is 0x%x, external_pa_5g = %d\n", hal->PAType_5G, hal->external_pa_5g);
+	RTW_DBG("EEPROM LNAType_2G is 0x%x, ExternalLNA_2G = %d\n", hal->LNAType_2G, hal->ExternalLNA_2G);
+	RTW_DBG("EEPROM LNAType_5G is 0x%x, external_lna_5g = %d\n", hal->LNAType_5G, hal->external_lna_5g);
 }
 
 static void Hal_ReadAmplifierType(PADAPTER adapter, u8 *map, u8 mapvalid)
@@ -488,10 +488,10 @@ static void Hal_ReadAmplifierType(PADAPTER adapter, u8 *map, u8 mapvalid)
 	if ((hal->LNAType_5G & (BIT7 | BIT3)) == (BIT7 | BIT3))
 		hal->TypeALNA = extTypeLNA_5G_B << 2 | extTypeLNA_5G_A;
 
-	RTW_INFO("EEPROM TypeGPA = 0x%X\n", hal->TypeGPA);
-	RTW_INFO("EEPROM TypeAPA = 0x%X\n", hal->TypeAPA);
-	RTW_INFO("EEPROM TypeGLNA = 0x%X\n", hal->TypeGLNA);
-	RTW_INFO("EEPROM TypeALNA = 0x%X\n", hal->TypeALNA);
+	RTW_DBG("EEPROM TypeGPA = 0x%X\n", hal->TypeGPA);
+	RTW_DBG("EEPROM TypeAPA = 0x%X\n", hal->TypeAPA);
+	RTW_DBG("EEPROM TypeGLNA = 0x%X\n", hal->TypeGLNA);
+	RTW_DBG("EEPROM TypeALNA = 0x%X\n", hal->TypeALNA);
 }
 
 static void Hal_ReadRFEType(PADAPTER adapter, u8 *map, u8 mapvalid)
@@ -517,7 +517,7 @@ static void Hal_ReadRFEType(PADAPTER adapter, u8 *map, u8 mapvalid)
 	RTW_ERR("please pg efuse or change RFE_Type of registrypriv!!\n");
 
 exit:
-	RTW_INFO("EEPROM rfe_type=0x%x\n", hal->rfe_type);
+	RTW_DBG("EEPROM rfe_type=0x%x\n", hal->rfe_type);
 }
 
 static void Hal_EfuseParsePackageType(PADAPTER adapter, u8 *map, u8 mapvalid)
@@ -544,8 +544,8 @@ static void Hal_ReadRFGainOffset(PADAPTER adapter, u8 *map, u8 mapvalid)
 		hal->EEPROMRFGainOffset = 0;
 		hal->EEPROMRFGainVal = 0xFF;
 	}
-	RTW_INFO("EEPROM RFGainOffset=0x%02x\n", hal->EEPROMRFGainOffset);
-	RTW_INFO("EEPROM RFGainVal=0x%02x\n", hal->EEPROMRFGainVal);
+	RTW_DBG("EEPROM RFGainOffset=0x%02x\n", hal->EEPROMRFGainOffset);
+	RTW_DBG("EEPROM RFGainVal=0x%02x\n", hal->EEPROMRFGainVal);
 }
 #endif /* CONFIG_RF_POWER_TRIM */
 
@@ -560,7 +560,7 @@ static void Hal_ReadUsbModeSwitch(PADAPTER adapter, u8 *map, u8 mapvalid)
 	else
 		hal->EEPROMUsbSwitch = _FALSE;
 
-	RTW_INFO("EEPROM USB Switch=%d\n", hal->EEPROMUsbSwitch);
+	RTW_DBG("EEPROM USB Switch=%d\n", hal->EEPROMUsbSwitch);
 }
 #endif /* CONFIG_USB_HCI */
 
@@ -604,7 +604,7 @@ void rtl8822b_read_efuse(PADAPTER adapter)
 #ifdef CONFIG_EFUSE_CONFIG_FILE
 	if (check_phy_efuse_tx_power_info_valid(adapter) == _FALSE) {
 		if (Hal_readPGDataFromConfigFile(adapter) != _SUCCESS)
-			RTW_INFO("%s: <WARN> invalid phy efuse and read from file fail, will use driver default!!\n", __FUNCTION__);
+			RTW_DBG("%s: <WARN> invalid phy efuse and read from file fail, will use driver default!!\n", __FUNCTION__);
 	}
 #endif /* CONFIG_EFUSE_CONFIG_FILE */
 
@@ -657,7 +657,7 @@ static u8 check_ips_status(PADAPTER adapter)
 	u8 val8;
 
 
-	RTW_INFO(FUNC_ADPT_FMT ": Read 0x100=0x%02x 0x86=0x%02x\n",
+	RTW_DBG(FUNC_ADPT_FMT ": Read 0x100=0x%02x 0x86=0x%02x\n",
 		 FUNC_ADPT_ARG(adapter),
 		 rtw_read8(adapter, 0x100), rtw_read8(adapter, 0x86));
 
@@ -686,7 +686,7 @@ static void update_ra_mask(PADAPTER adapter, struct sta_info *psta, u32 mac_id, 
 		return;
 	}
 
-	RTW_INFO(FUNC_ADPT_FMT ": mac_id=%d rssi_level=%d\n", FUNC_ADPT_ARG(adapter), mac_id, rssi_level);
+	RTW_DBG(FUNC_ADPT_FMT ": mac_id=%d rssi_level=%d\n", FUNC_ADPT_ARG(adapter), mac_id, rssi_level);
 
 	bw = rtw_get_tx_bw_mode(adapter, psta);
 	shortGIrate = query_ra_short_GI(psta, bw);
@@ -710,7 +710,7 @@ static void update_ra_mask(PADAPTER adapter, struct sta_info *psta, u32 mac_id, 
 		mask &= ~rate_bitmap;
 	}
 #endif /* CONFIG_BT_COEXIST */
-	RTW_INFO("%s => mac_id:%d, networkType:0x%02x, mask:0x%016llx\n\t ==> rssi_level:%d, rate_bitmap:0x%016llx, shortGIrate=%d\n",
+	RTW_DBG("%s => mac_id:%d, networkType:0x%02x, mask:0x%016llx\n\t ==> rssi_level:%d, rate_bitmap:0x%016llx, shortGIrate=%d\n",
 		__FUNCTION__, mac_id, psta->wireless_mode, mask, rssi_level, rate_bitmap, shortGIrate);
 
 	arg[0] = mac_id;
@@ -890,7 +890,7 @@ static void xmit_status_check(PADAPTER p)
 
 	txdma_status = rtw_read32(p, REG_TXDMA_STATUS_8822B);
 	if (txdma_status != 0x00) {
-		RTW_INFO("%s REG_TXDMA_STATUS:0x%08x\n", __FUNCTION__, txdma_status);
+		RTW_DBG("%s REG_TXDMA_STATUS:0x%08x\n", __FUNCTION__, txdma_status);
 		rtw_hal_sreset_reset(p);
 	}
 #ifdef CONFIG_USB_HCI
@@ -909,7 +909,7 @@ static void xmit_status_check(PADAPTER p)
 
 					ability = rtw_phydm_ability_get(p);
 
-					RTW_INFO("%s tx hang %s\n", __FUNCTION__,
+					RTW_DBG("%s tx hang %s\n", __FUNCTION__,
 						(ability & ODM_BB_ADAPTIVITY) ? "ODM_BB_ADAPTIVITY" : "");
 
 					if (!(ability & ODM_BB_ADAPTIVITY))
@@ -935,7 +935,7 @@ static void linked_status_check(PADAPTER p)
 
 	rx_dma_status = rtw_read32(p, REG_RXDMA_STATUS_8822B);
 	if (rx_dma_status != 0x00)
-		RTW_INFO("%s REG_RXDMA_STATUS:0x%08x\n", __FUNCTION__, rx_dma_status);
+		RTW_DBG("%s REG_RXDMA_STATUS:0x%08x\n", __FUNCTION__, rx_dma_status);
 
 	if (psrtpriv->dbg_trigger_point == SRESET_TGP_LINK_STATUS) {
 		psrtpriv->dbg_trigger_point = SRESET_TGP_NULL;
@@ -1047,7 +1047,7 @@ static void set_opmode_port0(PADAPTER adapter, u8 mode)
 
 	Set_MSR(adapter, mode);
 
-	RTW_INFO(FUNC_ADPT_FMT ": hw_port(%d) mode=%d\n",
+	RTW_DBG(FUNC_ADPT_FMT ": hw_port(%d) mode=%d\n",
 		 FUNC_ADPT_ARG(adapter), adapter->hw_port, mode);
 
 	switch (mode) {
@@ -1196,7 +1196,7 @@ static void set_opmode_port1(PADAPTER adapter, u8 mode)
 
 	Set_MSR(adapter, mode);
 
-	RTW_INFO(FUNC_ADPT_FMT ": hw_port(%d) mode=%d\n",
+	RTW_DBG(FUNC_ADPT_FMT ": hw_port(%d) mode=%d\n",
 		 FUNC_ADPT_ARG(adapter), adapter->hw_port, mode);
 
 	switch (mode) {
@@ -1365,7 +1365,7 @@ static void hw_var_set_basic_rate(PADAPTER adapter, u8 *ratetbl)
 
 	hal->BasicRateSet = BrateCfg;
 
-	RTW_INFO("[HW_VAR_BASIC_RATE] %#x->%#x->%#x\n", input_b, masked, ioted);
+	RTW_DBG("[HW_VAR_BASIC_RATE] %#x->%#x->%#x\n", input_b, masked, ioted);
 
 	/* Set RRSR rate table. */
 	val32 = rtw_read32(adapter, REG_RRSR_8822B);
@@ -1512,7 +1512,7 @@ static void hw_var_set_check_bssid(PADAPTER adapter, u8 enable)
 	else
 		rtl8822b_rcr_clear(adapter, rcr);
 
-	RTW_INFO("%s: [HW_VAR_CHECK_BSSID] 0x%x=0x%x\n", __FUNCTION__,
+	RTW_DBG("%s: [HW_VAR_CHECK_BSSID] 0x%x=0x%x\n", __FUNCTION__,
 		 REG_RCR_8822B, rtw_read32(adapter, REG_RCR_8822B));
 }
 
@@ -1795,7 +1795,7 @@ static void hw_var_set_acm_ctrl(PADAPTER adapter, u8 ctrl)
 			hwctrl &= (~BIT_VOQ_ACM_EN_8822B);
 	}
 
-	RTW_INFO("[HW_VAR_ACM_CTRL] Write 0x%02X\n", hwctrl);
+	RTW_DBG("[HW_VAR_ACM_CTRL] Write 0x%02X\n", hwctrl);
 	rtw_write8(adapter, REG_ACMHWCTRL_8822B, hwctrl);
 }
 
@@ -1809,7 +1809,7 @@ static void hw_var_set_rcr_am(PADAPTER adapter, u8 enable)
 	else
 		rtl8822b_rcr_clear(adapter, rcr);
 
-	RTW_INFO("%s: [HW_VAR_ON_RCR_AM] RCR(0x%x)=0x%x\n",
+	RTW_DBG("%s: [HW_VAR_ON_RCR_AM] RCR(0x%x)=0x%x\n",
 		__FUNCTION__, REG_RCR_8822B, rtw_read32(adapter, REG_RCR_8822B));
 }
 
@@ -1832,7 +1832,7 @@ static void hw_var_set_bcn_interval(PADAPTER adapter, u16 bcn_interval)
 		rtw_write16(adapter, REG_MBSSID_BCN_SPACE_8822B, val16);
 	}
 
-	RTW_INFO("%s: [HW_VAR_BEACON_INTERVAL] 0x%x=0x%x\n", __FUNCTION__,
+	RTW_DBG("%s: [HW_VAR_BEACON_INTERVAL] 0x%x=0x%x\n", __FUNCTION__,
 		REG_MBSSID_BCN_SPACE_8822B, rtw_read32(adapter, REG_MBSSID_BCN_SPACE_8822B));
 }
 
@@ -1853,7 +1853,7 @@ static void hw_var_set_sec_dk_cfg(PADAPTER adapter, u8 enable)
 
 	rtw_write8(adapter, REG_SECCFG_8822B, reg_scr);
 
-	RTW_INFO("%s: [HW_VAR_SEC_DK_CFG] 0x%x=0x%08x\n", __FUNCTION__,
+	RTW_DBG("%s: [HW_VAR_SEC_DK_CFG] 0x%x=0x%08x\n", __FUNCTION__,
 		 REG_SECCFG_8822B, rtw_read32(adapter, REG_SECCFG_8822B));
 }
 
@@ -1919,7 +1919,7 @@ void hw_var_set_dl_rsvd_page(PADAPTER adapter, u8 mstatus)
 	u8 restore[2];
 
 
-	RTW_INFO(FUNC_ADPT_FMT ":+ hw_port=%d mstatus(%x)\n",
+	RTW_DBG(FUNC_ADPT_FMT ":+ hw_port=%d mstatus(%x)\n",
 		 FUNC_ADPT_ARG(adapter), get_hw_port(adapter), mstatus);
 
 	if (mstatus == RT_MEDIA_CONNECT) {
@@ -1981,13 +1981,13 @@ void hw_var_set_dl_rsvd_page(PADAPTER adapter, u8 mstatus)
 		if (RTW_CANNOT_RUN(adapter))
 			;
 		else if (!bcn_valid)
-			RTW_INFO(FUNC_ADPT_FMT ": DL RSVD page failed! DLBcnCount:%u, poll:%u\n",
+			RTW_DBG(FUNC_ADPT_FMT ": DL RSVD page failed! DLBcnCount:%u, poll:%u\n",
 				 FUNC_ADPT_ARG(adapter), DLBcnCount, poll);
 		else {
 			struct pwrctrl_priv *pwrctl = adapter_to_pwrctl(adapter);
 
 			pwrctl->fw_psmode_iface_id = adapter->iface_id;
-			RTW_INFO(ADPT_FMT ": DL RSVD page success! DLBcnCount:%u, poll:%u\n",
+			RTW_DBG(ADPT_FMT ": DL RSVD page success! DLBcnCount:%u, poll:%u\n",
 				 ADPT_ARG(adapter), DLBcnCount, poll);
 		}
 
@@ -2074,7 +2074,7 @@ static void hw_port_reconfig(_adapter * if_ap, _adapter *if_port0)
 		rtw_warn_on(1);
 	}
 
-	RTW_INFO(ADPT_FMT" - hw_port : %d,will switch to port-%d\n",
+	RTW_DBG(ADPT_FMT" - hw_port : %d,will switch to port-%d\n",
 		  ADPT_ARG(if_port0), if_port0->hw_port, port);
 
 	/*backup*/
@@ -2082,7 +2082,7 @@ static void hw_port_reconfig(_adapter * if_ap, _adapter *if_port0)
 	vbcn_ctrl = rtw_read8(if_port0, port_cfg[if_port0->hw_port].bcn_ctl);
 
 	if (is_client_associated_to_ap(if_port0)) {
-		RTW_INFO("port0-iface("ADPT_FMT") is STA mode and linked\n", ADPT_ARG(if_port0));
+		RTW_DBG("port0-iface("ADPT_FMT") is STA mode and linked\n", ADPT_ARG(if_port0));
 		bssid_offset = port_cfg[if_port0->hw_port].bssid;
 		for (i = 0; i < 6; i++)
 			bssid[i] = rtw_read8(if_port0, bssid_offset + i);
@@ -2112,11 +2112,11 @@ static void hw_var_ap_port_switch(_adapter *adapter, u8 mode)
 	_adapter *if_port0 = NULL;
 	int i;
 
-	RTW_INFO(ADPT_FMT ": hw_port(%d) will set mode to %d\n", ADPT_ARG(adapter), hw_port, mode);
+	RTW_DBG(ADPT_FMT ": hw_port(%d) will set mode to %d\n", ADPT_ARG(adapter), hw_port, mode);
 #if 0
 	#ifdef CONFIG_P2P
 	if (!rtw_p2p_chk_state(&adapter->wdinfo, P2P_STATE_NONE)) {
-		RTW_INFO("%s, role=%d, p2p_state=%d, pre_p2p_state=%d\n", __func__,
+		RTW_DBG("%s, role=%d, p2p_state=%d, pre_p2p_state=%d\n", __func__,
 			rtw_p2p_role(&adapter->wdinfo), rtw_p2p_state(&adapter->wdinfo), rtw_p2p_pre_state(&adapter->wdinfo));
 	}
 	#endif
@@ -2151,7 +2151,7 @@ static void hw_var_ap_port_switch(_adapter *adapter, u8 mode)
 	}
 	/* if_port0 switch to hw_port */
 	hw_port_reconfig(adapter, if_port0);
-	RTW_INFO(ADPT_FMT ": Cfg SoftAP mode to hw_port(%d) done\n", ADPT_ARG(adapter), adapter->hw_port);
+	RTW_DBG(ADPT_FMT ": Cfg SoftAP mode to hw_port(%d) done\n", ADPT_ARG(adapter), adapter->hw_port);
 
 }
 #endif
@@ -2398,10 +2398,10 @@ void rtl8822b_sethwreg(PADAPTER adapter, u8 variable, u8 *val)
 				if (val32)
 					break;
 
-				RTW_INFO("[HW_VAR_FIFO_CLEARN_UP] val=%x times:%d\n", val32, trycnt);
+				RTW_DBG("[HW_VAR_FIFO_CLEARN_UP] val=%x times:%d\n", val32, trycnt);
 			} while (--trycnt);
 			if (trycnt == 0)
-				RTW_INFO("[HW_VAR_FIFO_CLEARN_UP] Stop RX DMA failed!\n");
+				RTW_DBG("[HW_VAR_FIFO_CLEARN_UP] Stop RX DMA failed!\n");
 #if 0
 			/* RQPN Load 0 */
 			rtw_write16(adapter, REG_RQPN_NPQ, 0);
@@ -2490,9 +2490,9 @@ void rtl8822b_sethwreg(PADAPTER adapter, u8 variable, u8 *val)
 
 		passtime = rtw_get_passing_time_ms(start);
 		if (_TRUE == empty)
-			RTW_INFO("[HW_VAR_CHECK_TXBUF] Empty in %d ms\n", passtime);
+			RTW_DBG("[HW_VAR_CHECK_TXBUF] Empty in %d ms\n", passtime);
 		else if (RTW_CANNOT_RUN(adapter))
-			RTW_INFO("[HW_VAR_CHECK_TXBUF] bDriverStopped or bSurpriseRemoved\n");
+			RTW_DBG("[HW_VAR_CHECK_TXBUF] bDriverStopped or bSurpriseRemoved\n");
 		else {
 			RTW_ERR("[HW_VAR_CHECK_TXBUF] NOT empty in %d ms\n", passtime);
 			RTW_ERR("[HW_VAR_CHECK_TXBUF] 0x230=0x%08x 0x234=0x%08x 0x238=0x%08x 0x23c=0x%08x 0x240=0x%08x\n",
@@ -2530,7 +2530,7 @@ void rtl8822b_sethwreg(PADAPTER adapter, u8 variable, u8 *val)
 		else if (enable == _FALSE)
 			rtw_write8(adapter, addr, value | BIT(1));
 
-		RTW_INFO("[HW_SET_GPIO_WL_CTRL] 0x%02X=0x%02X\n", addr, rtw_read8(adapter, addr));
+		RTW_DBG("[HW_SET_GPIO_WL_CTRL] 0x%02X=0x%02X\n", addr, rtw_read8(adapter, addr));
 	}
 	break;
 #endif
@@ -2543,7 +2543,7 @@ void rtl8822b_sethwreg(PADAPTER adapter, u8 variable, u8 *val)
 		u32 usNavUpper = *(u32 *)val;
 
 		if (usNavUpper > HAL_NAV_UPPER_UNIT * 0xFF) {
-			RTW_INFO(FUNC_ADPT_FMT ": [HW_VAR_NAV_UPPER] value(0x%08X us) is larger than (%d * 0xFF)!!!\n",
+			RTW_DBG(FUNC_ADPT_FMT ": [HW_VAR_NAV_UPPER] value(0x%08X us) is larger than (%d * 0xFF)!!!\n",
 				FUNC_ADPT_ARG(adapter), usNavUpper, HAL_NAV_UPPER_UNIT);
 			break;
 		}
@@ -2669,7 +2669,7 @@ void rtl8822b_sethwreg(PADAPTER adapter, u8 variable, u8 *val)
 		}
 
 		val32 = rtw_read32(adapter, reg_macid_sleep);
-		RTW_INFO(FUNC_ADPT_FMT ": [HW_VAR_MACID_SLEEP] macid=%d, org reg_0x%03x=0x%08X\n",
+		RTW_DBG(FUNC_ADPT_FMT ": [HW_VAR_MACID_SLEEP] macid=%d, org reg_0x%03x=0x%08X\n",
 			FUNC_ADPT_ARG(adapter), id, reg_macid_sleep, val32);
 
 		if (val32 & BIT(bit_shift))
@@ -2703,7 +2703,7 @@ void rtl8822b_sethwreg(PADAPTER adapter, u8 variable, u8 *val)
 		}
 
 		val32 = rtw_read32(adapter, reg_macid_sleep);
-		RTW_INFO(FUNC_ADPT_FMT ": [HW_VAR_MACID_WAKEUP] macid=%d, org reg_0x%03x=0x%08X\n",
+		RTW_DBG(FUNC_ADPT_FMT ": [HW_VAR_MACID_WAKEUP] macid=%d, org reg_0x%03x=0x%08X\n",
 			FUNC_ADPT_ARG(adapter), id, reg_macid_sleep, val32);
 
 		if (!(val32 & BIT(bit_shift)))
@@ -3186,7 +3186,7 @@ u8 rtl8822b_gethaldefvar(PADAPTER adapter, HAL_DEF_VARIABLE variable, void *pval
 		u32 rate_mask1, rate_mask2;
 		u8 curr_tx_rate, curr_tx_sgi, hight_rate, lowest_rate;
 
-		RTW_INFO("============ RA status check  Mac_id:%d ===================\n", mac_id);
+		RTW_DBG("============ RA status check  Mac_id:%d ===================\n", mac_id);
 
 		cmd = 0x40000100 | mac_id;
 		rtw_write32(adapter, REG_HMEBOX_DBG_2_8723B, cmd);
@@ -3194,7 +3194,7 @@ u8 rtl8822b_gethaldefvar(PADAPTER adapter, HAL_DEF_VARIABLE variable, void *pval
 		ra_info1 = rtw_read32(adapter, 0x2F0);
 		curr_tx_rate = ra_info1 & 0x7F;
 		curr_tx_sgi = (ra_info1 >> 7) & 0x01;
-		RTW_INFO("[ ra_info1:0x%08x ] =>cur_tx_rate=%s, cur_sgi:%d, PWRSTS=0x%02x\n",
+		RTW_DBG("[ ra_info1:0x%08x ] =>cur_tx_rate=%s, cur_sgi:%d, PWRSTS=0x%02x\n",
 			 ra_info1,
 			 HDATA_RATE(curr_tx_rate),
 			 curr_tx_sgi,
@@ -3210,21 +3210,21 @@ u8 rtl8822b_gethaldefvar(PADAPTER adapter, HAL_DEF_VARIABLE variable, void *pval
 		hight_rate = ra_info2 & 0xFF;
 		lowest_rate = (ra_info2 >> 8)  & 0xFF;
 
-		RTW_INFO("[ ra_info1:0x%08x ] =>RSSI=%d, BW_setting=0x%02x, DISRA=0x%02x, VHT_EN=0x%02x\n",
+		RTW_DBG("[ ra_info1:0x%08x ] =>RSSI=%d, BW_setting=0x%02x, DISRA=0x%02x, VHT_EN=0x%02x\n",
 			 ra_info1,
 			 ra_info1 & 0xFF,
 			 (ra_info1 >> 8)  & 0xFF,
 			 (ra_info1 >> 16) & 0xFF,
 			 (ra_info1 >> 24) & 0xFF);
 
-		RTW_INFO("[ ra_info2:0x%08x ] =>hight_rate=%s, lowest_rate=%s, SGI=0x%02x, RateID=%d\n",
+		RTW_DBG("[ ra_info2:0x%08x ] =>hight_rate=%s, lowest_rate=%s, SGI=0x%02x, RateID=%d\n",
 			 ra_info2,
 			 HDATA_RATE(hight_rate),
 			 HDATA_RATE(lowest_rate),
 			 (ra_info2 >> 16) & 0xFF,
 			 (ra_info2 >> 24) & 0xFF);
 
-		RTW_INFO("rate_mask2=0x%08x, rate_mask1=0x%08x\n", rate_mask2, rate_mask1);
+		RTW_DBG("rate_mask2=0x%08x, rate_mask1=0x%08x\n", rate_mask2, rate_mask1);
 #endif
 	}
 	break;
@@ -3366,7 +3366,7 @@ u8 rtl8822b_sc_mapping(PADAPTER adapter, struct pkt_attrib *pattrib)
 			else if (hal->nCur80MhzPrimeSC == HAL_PRIME_CHNL_OFFSET_UPPER)
 				SCSettingOfDesc = VHT_DATA_SC_40_UPPER_OF_80MHZ;
 			else
-				RTW_INFO("SCMapping: DONOT CARE Mode Setting\n");
+				RTW_DBG("SCMapping: DONOT CARE Mode Setting\n");
 		} else {
 			if ((hal->nCur40MhzPrimeSC == HAL_PRIME_CHNL_OFFSET_LOWER) && (hal->nCur80MhzPrimeSC == HAL_PRIME_CHNL_OFFSET_LOWER))
 				SCSettingOfDesc = VHT_DATA_SC_20_LOWEST_OF_80MHZ;
@@ -3377,7 +3377,7 @@ u8 rtl8822b_sc_mapping(PADAPTER adapter, struct pkt_attrib *pattrib)
 			else if ((hal->nCur40MhzPrimeSC == HAL_PRIME_CHNL_OFFSET_UPPER) && (hal->nCur80MhzPrimeSC == HAL_PRIME_CHNL_OFFSET_UPPER))
 				SCSettingOfDesc = VHT_DATA_SC_20_UPPERST_OF_80MHZ;
 			else
-				RTW_INFO("SCMapping: DONOT CARE Mode Setting\n");
+				RTW_DBG("SCMapping: DONOT CARE Mode Setting\n");
 		}
 	} else if (hal->current_channel_bw == CHANNEL_WIDTH_40) {
 		if (pattrib->bwmode == CHANNEL_WIDTH_40)
@@ -3564,7 +3564,7 @@ void rtl8822b_prepare_mp_txdesc(PADAPTER adapter, struct mp_priv *pmp_priv)
 	if (pmp_priv->bandwidth <= CHANNEL_WIDTH_160)
 		SET_TX_DESC_DATA_BW_8822B(desc, pmp_priv->bandwidth);
 	else {
-		RTW_INFO("%s: <ERROR> unknown bandwidth %d, use 20M\n",
+		RTW_ERR("%s: <ERROR> unknown bandwidth %d, use 20M\n",
 			 __FUNCTION__, pmp_priv->bandwidth);
 		SET_TX_DESC_DATA_BW_8822B(desc, CHANNEL_WIDTH_20);
 	}
@@ -3686,7 +3686,7 @@ static void fill_default_txdesc(struct xmit_frame *pxmitframe, u8 *pbuf)
 				SET_TX_DESC_DATA_SHORT_8822B(pbuf, 1);
 			SET_TX_DESC_DATARATE_8822B(pbuf, MRateToHwRate(pmlmeext->tx_rate));
 
-			RTW_INFO(FUNC_ADPT_FMT ": SP Packet(0x%04X) rate=0x%x\n",
+			RTW_DBG(FUNC_ADPT_FMT ": SP Packet(0x%04X) rate=0x%x\n",
 				FUNC_ADPT_ARG(adapter), pattrib->ether_type, MRateToHwRate(pmlmeext->tx_rate));
 		}
 
@@ -3699,7 +3699,7 @@ static void fill_default_txdesc(struct xmit_frame *pxmitframe, u8 *pbuf)
 		/* CCX-TXRPT ack for xmit mgmt frames. */
 		if (pxmitframe->ack_report) {
 #ifdef DBG_CCX
-			RTW_INFO("%s set spe_rpt\n", __func__);
+			RTW_DBG("%s set spe_rpt\n", __func__);
 #endif
 			SET_TX_DESC_SPE_RPT_8822B(pbuf, 1);
 			SET_TX_DESC_SW_DEFINE_8822B(pbuf, (u8)(GET_PRIMARY_ADAPTER(adapter)->xmitpriv.seq_no));
@@ -3718,7 +3718,7 @@ static void fill_default_txdesc(struct xmit_frame *pxmitframe, u8 *pbuf)
 #ifdef CONFIG_INTEL_PROXIM
 		if ((adapter->proximity.proxim_on == _TRUE)
 		    && (pattrib->intel_proxim == _TRUE)) {
-			RTW_INFO("%s: pattrib->rate=%d\n", __FUNCTION__, pattrib->rate);
+			RTW_DBG("%s: pattrib->rate=%d\n", __FUNCTION__, pattrib->rate);
 			SET_TX_DESC_DATARATE_8822B(pbuf, pattrib->rate);
 		} else
 #endif
@@ -3732,22 +3732,22 @@ static void fill_default_txdesc(struct xmit_frame *pxmitframe, u8 *pbuf)
 		/* CCX-TXRPT ack for xmit mgmt frames. */
 		if (pxmitframe->ack_report) {
 #ifdef DBG_CCX
-			RTW_INFO("%s set spe_rpt\n", __FUNCTION__);
+			RTW_DBG("%s set spe_rpt\n", __FUNCTION__);
 #endif
 			SET_TX_DESC_SPE_RPT_8822B(pbuf, 1);
 			SET_TX_DESC_SW_DEFINE_8822B(pbuf, (u8)(GET_PRIMARY_ADAPTER(adapter)->xmitpriv.seq_no));
 		}
 #endif /* CONFIG_XMIT_ACK */
 	} else if (pxmitframe->frame_tag == TXAGG_FRAMETAG)
-		RTW_INFO("%s: TXAGG_FRAMETAG\n", __FUNCTION__);
+		RTW_DBG("%s: TXAGG_FRAMETAG\n", __FUNCTION__);
 #ifdef CONFIG_MP_INCLUDED
 	else if (pxmitframe->frame_tag == MP_FRAMETAG) {
-		RTW_INFO("%s: MP_FRAMETAG\n", __FUNCTION__);
+		RTW_DBG("%s: MP_FRAMETAG\n", __FUNCTION__);
 		fill_txdesc_for_mp(adapter, pbuf);
 	}
 #endif
 	else {
-		RTW_INFO("%s: frame_tag=0x%x\n", __FUNCTION__, pxmitframe->frame_tag);
+		RTW_DBG("%s: frame_tag=0x%x\n", __FUNCTION__, pxmitframe->frame_tag);
 
 		SET_TX_DESC_MACID_8822B(pbuf, pattrib->mac_id);
 		SET_TX_DESC_RATE_ID_8822B(pbuf, pattrib->raid);
@@ -3908,31 +3908,31 @@ void rtl8822b_dbg_dump_tx_desc(PADAPTER adapter, int frame_tag, u8 *ptxdesc)
 
 	/* 1 for data frame, 2 for mgnt frame */
 	if (bDumpTxPkt == 1) {
-		RTW_INFO("dump tx_desc for data frame\n");
+		RTW_DBG("dump tx_desc for data frame\n");
 		if ((frame_tag & 0x0f) == DATA_FRAMETAG)
 			bDumpTxDesc = _TRUE;
 	} else if (bDumpTxPkt == 2) {
-		RTW_INFO("dump tx_desc for mgnt frame\n");
+		RTW_DBG("dump tx_desc for mgnt frame\n");
 		if ((frame_tag & 0x0f) == MGNT_FRAMETAG)
 			bDumpTxDesc = _TRUE;
 	}
 
 	/* 8822B TX SIZE = 48(HALMAC_TX_DESC_SIZE_8822B) */
 	if (_TRUE == bDumpTxDesc) {
-		RTW_INFO("=====================================\n");
-		RTW_INFO("Offset00(0x%08x)\n", *((u32 *)(ptxdesc)));
-		RTW_INFO("Offset04(0x%08x)\n", *((u32 *)(ptxdesc + 4)));
-		RTW_INFO("Offset08(0x%08x)\n", *((u32 *)(ptxdesc + 8)));
-		RTW_INFO("Offset12(0x%08x)\n", *((u32 *)(ptxdesc + 12)));
-		RTW_INFO("Offset16(0x%08x)\n", *((u32 *)(ptxdesc + 16)));
-		RTW_INFO("Offset20(0x%08x)\n", *((u32 *)(ptxdesc + 20)));
-		RTW_INFO("Offset24(0x%08x)\n", *((u32 *)(ptxdesc + 24)));
-		RTW_INFO("Offset28(0x%08x)\n", *((u32 *)(ptxdesc + 28)));
-		RTW_INFO("Offset32(0x%08x)\n", *((u32 *)(ptxdesc + 32)));
-		RTW_INFO("Offset36(0x%08x)\n", *((u32 *)(ptxdesc + 36)));
-		RTW_INFO("Offset40(0x%08x)\n", *((u32 *)(ptxdesc + 40)));
-		RTW_INFO("Offset44(0x%08x)\n", *((u32 *)(ptxdesc + 44)));
-		RTW_INFO("=====================================\n");
+		RTW_DBG("=====================================\n");
+		RTW_DBG("Offset00(0x%08x)\n", *((u32 *)(ptxdesc)));
+		RTW_DBG("Offset04(0x%08x)\n", *((u32 *)(ptxdesc + 4)));
+		RTW_DBG("Offset08(0x%08x)\n", *((u32 *)(ptxdesc + 8)));
+		RTW_DBG("Offset12(0x%08x)\n", *((u32 *)(ptxdesc + 12)));
+		RTW_DBG("Offset16(0x%08x)\n", *((u32 *)(ptxdesc + 16)));
+		RTW_DBG("Offset20(0x%08x)\n", *((u32 *)(ptxdesc + 20)));
+		RTW_DBG("Offset24(0x%08x)\n", *((u32 *)(ptxdesc + 24)));
+		RTW_DBG("Offset28(0x%08x)\n", *((u32 *)(ptxdesc + 28)));
+		RTW_DBG("Offset32(0x%08x)\n", *((u32 *)(ptxdesc + 32)));
+		RTW_DBG("Offset36(0x%08x)\n", *((u32 *)(ptxdesc + 36)));
+		RTW_DBG("Offset40(0x%08x)\n", *((u32 *)(ptxdesc + 40)));
+		RTW_DBG("Offset44(0x%08x)\n", *((u32 *)(ptxdesc + 44)));
+		RTW_DBG("=====================================\n");
 	}
 }
 

@@ -219,7 +219,7 @@ void hal_mpt_CCKTxPowerAdjust(PADAPTER Adapter, BOOLEAN bInCH14)
 			write_bbreg(Adapter, 0xaa1, bMaskByte0, cck_swing_table_ch1_ch13_88f[CCKSwingIndex][13]);
 			write_bbreg(Adapter, 0xaa2, bMaskByte0, cck_swing_table_ch1_ch13_88f[CCKSwingIndex][14]);
 			write_bbreg(Adapter, 0xaa3, bMaskByte0, cck_swing_table_ch1_ch13_88f[CCKSwingIndex][15]);
-			RTW_INFO("%s , cck_swing_table_ch1_ch13_88f[%d]\n", __func__, CCKSwingIndex);
+			RTW_DBG("%s , cck_swing_table_ch1_ch13_88f[%d]\n", __func__, CCKSwingIndex);
 		}  else {
 			for (i = 0; i < CCK_TABLE_SIZE_88F; i++) {
 				if (((CurrCCKSwingVal & 0xff) == (u32)cck_swing_table_ch14_88f[i][0]) &&
@@ -244,7 +244,7 @@ void hal_mpt_CCKTxPowerAdjust(PADAPTER Adapter, BOOLEAN bInCH14)
 			write_bbreg(Adapter, 0xaa1, bMaskByte0, cck_swing_table_ch14_88f[CCKSwingIndex][13]);
 			write_bbreg(Adapter, 0xaa2, bMaskByte0, cck_swing_table_ch14_88f[CCKSwingIndex][14]);
 			write_bbreg(Adapter, 0xaa3, bMaskByte0, cck_swing_table_ch14_88f[CCKSwingIndex][15]);
-			RTW_INFO("%s , cck_swing_table_ch14_88f[%d]\n", __func__, CCKSwingIndex);
+			RTW_DBG("%s , cck_swing_table_ch14_88f[%d]\n", __func__, CCKSwingIndex);
 		}
 	} else {
 
@@ -378,7 +378,7 @@ void mpt_SetTxPower_Old(PADAPTER pAdapter, MPT_TXPWR_DEF Rate, u8 *pTxPower)
 		pwr = pTxPower[0];
 		if (pwr < 0x3f) {
 			TxAGC |= ((pwr << 24) | (pwr << 16) | (pwr << 8) | pwr);
-			RTW_INFO("HT Tx-rf(A) Power = 0x%x\n", TxAGC);
+			RTW_DBG("HT Tx-rf(A) Power = 0x%x\n", TxAGC);
 			phy_set_bb_reg(pAdapter, rTxAGC_A_Rate18_06, bMaskDWord, TxAGC);
 			phy_set_bb_reg(pAdapter, rTxAGC_A_Rate54_24, bMaskDWord, TxAGC);
 			phy_set_bb_reg(pAdapter, rTxAGC_A_Mcs03_Mcs00, bMaskDWord, TxAGC);
@@ -390,7 +390,7 @@ void mpt_SetTxPower_Old(PADAPTER pAdapter, MPT_TXPWR_DEF Rate, u8 *pTxPower)
 		pwr = pTxPower[1];
 		if (pwr < 0x3f) {
 			TxAGC |= ((pwr << 24) | (pwr << 16) | (pwr << 8) | pwr);
-			RTW_INFO("HT Tx-rf(B) Power = 0x%x\n", TxAGC);
+			RTW_DBG("HT Tx-rf(B) Power = 0x%x\n", TxAGC);
 			phy_set_bb_reg(pAdapter, rTxAGC_B_Rate18_06, bMaskDWord, TxAGC);
 			phy_set_bb_reg(pAdapter, rTxAGC_B_Rate54_24, bMaskDWord, TxAGC);
 			phy_set_bb_reg(pAdapter, rTxAGC_B_Mcs03_Mcs00, bMaskDWord, TxAGC);
@@ -404,7 +404,7 @@ void mpt_SetTxPower_Old(PADAPTER pAdapter, MPT_TXPWR_DEF Rate, u8 *pTxPower)
 	default:
 		break;
 	}
-	RTW_INFO("<===mpt_SetTxPower_Old()\n");
+	RTW_DBG("<===mpt_SetTxPower_Old()\n");
 }
 
 void
@@ -497,7 +497,7 @@ mpt_SetTxPower(
 	}
 	break;
 	default:
-		RTW_INFO("<===mpt_SetTxPower: Illegal channel!!\n");
+		RTW_DBG("<===mpt_SetTxPower: Illegal channel!!\n");
 		break;
 	}
 }
@@ -516,13 +516,13 @@ void hal_mpt_SetTxPower(PADAPTER pAdapter)
 		    IS_HARDWARE_TYPE_8188F(pAdapter)) {
 			u8 path = (pHalData->antenna_tx_path == ANTENNA_A) ? (ODM_RF_PATH_A) : (ODM_RF_PATH_B);
 
-			RTW_INFO("===> MPT_ProSetTxPower: Old\n");
+			RTW_DBG("===> MPT_ProSetTxPower: Old\n");
 
 			mpt_SetTxPower_Old(pAdapter, MPT_CCK, pMptCtx->TxPwrLevel);
 			mpt_SetTxPower_Old(pAdapter, MPT_OFDM_AND_HT, pMptCtx->TxPwrLevel);
 
 		} else {
-			RTW_INFO("===> MPT_ProSetTxPower: Jaguar/Jaguar2\n");
+			RTW_DBG("===> MPT_ProSetTxPower: Jaguar/Jaguar2\n");
 			mpt_SetTxPower(pAdapter, MPT_CCK, pMptCtx->TxPwrLevel);
 			mpt_SetTxPower(pAdapter, MPT_OFDM, pMptCtx->TxPwrLevel);
 			mpt_SetTxPower(pAdapter, MPT_HT, pMptCtx->TxPwrLevel);
@@ -530,7 +530,7 @@ void hal_mpt_SetTxPower(PADAPTER pAdapter)
 
 		}
 	} else
-		RTW_INFO("RFChipID < RF_TYPE_MAX, the RF chip is not supported - %d\n", pHalData->rf_chip);
+		RTW_DBG("RFChipID < RF_TYPE_MAX, the RF chip is not supported - %d\n", pHalData->rf_chip);
 
 	odm_clear_txpowertracking_state(pDM_Odm);
 }
@@ -618,7 +618,7 @@ VOID mpt_SetRFPath_8814A(PADAPTER	pAdapter)
 	u8	NssforRate = MgntQuery_NssTxRate(ForcedDataRate);
 
 	if ((NssforRate == RF_2TX) || ((NssforRate == RF_1TX) && IS_HT_RATE(ForcedDataRate)) || ((NssforRate == RF_1TX) && IS_VHT_RATE(ForcedDataRate))) {
-		RTW_INFO("===> SetAntenna 2T ForcedDataRate %d NssforRate %d AntennaTx %d\n", ForcedDataRate, NssforRate, ulAntennaTx);
+		RTW_DBG("===> SetAntenna 2T ForcedDataRate %d NssforRate %d AntennaTx %d\n", ForcedDataRate, NssforRate, ulAntennaTx);
 
 		switch (ulAntennaTx) {
 		case ANTENNA_BC:
@@ -641,7 +641,7 @@ VOID mpt_SetRFPath_8814A(PADAPTER	pAdapter)
 		}
 
 	} else if (NssforRate == RF_3TX) {
-		RTW_INFO("===> SetAntenna 3T ForcedDataRate %d NssforRate %d AntennaTx %d\n", ForcedDataRate, NssforRate, ulAntennaTx);
+		RTW_DBG("===> SetAntenna 3T ForcedDataRate %d NssforRate %d AntennaTx %d\n", ForcedDataRate, NssforRate, ulAntennaTx);
 
 		switch (ulAntennaTx) {
 		case ANTENNA_BCD:
@@ -659,7 +659,7 @@ VOID mpt_SetRFPath_8814A(PADAPTER	pAdapter)
 		}
 
 	} else { /*/if(NssforRate == RF_1TX)*/
-		RTW_INFO("===> SetAntenna 1T ForcedDataRate %d NssforRate %d AntennaTx %d\n", ForcedDataRate, NssforRate, ulAntennaTx);
+		RTW_DBG("===> SetAntenna 1T ForcedDataRate %d NssforRate %d AntennaTx %d\n", ForcedDataRate, NssforRate, ulAntennaTx);
 		switch (ulAntennaTx) {
 		case ANTENNA_BCD:
 			pMptCtx->mpt_rf_path = ODM_RF_PATH_BCD;
@@ -983,7 +983,7 @@ void mpt_SetRFPath_8812A(PADAPTER pAdapter)
 		break;
 	default:
 		pMptCtx->mpt_rf_path = ODM_RF_PATH_AB;
-		RTW_INFO("Unknown Tx antenna.\n");
+		RTW_DBG("Unknown Tx antenna.\n");
 		break;
 	}
 
@@ -1049,7 +1049,7 @@ void mpt_SetRFPath_8812A(PADAPTER pAdapter)
 		phy_set_bb_reg(pAdapter, rPwed_TH_Jaguar, BIT1 | BIT2 | BIT3, 0x04);
 		break;
 	default:
-		RTW_INFO("Unknown Rx antenna.\n");
+		RTW_DBG("Unknown Rx antenna.\n");
 		break;
 	}
 }
@@ -1068,7 +1068,7 @@ void mpt_SetRFPath_8723B(PADAPTER pAdapter)
 	ulAntennaRx = pHalData->AntennaRxPath;
 
 	if (pHalData->rf_chip >= RF_TYPE_MAX) {
-		RTW_INFO("This RF chip ID is not supported\n");
+		RTW_DBG("This RF chip ID is not supported\n");
 		return;
 	}
 
@@ -1091,7 +1091,7 @@ void mpt_SetRFPath_8723B(PADAPTER pAdapter)
 
 			if (offset != 0) {
 				phy_set_bb_reg(pAdapter, offset, bMaskDWord, data);
-				RTW_INFO("Switch to S1 TxIQC(offset, data) = (0x%X, 0x%X)\n", offset, data);
+				RTW_DBG("Switch to S1 TxIQC(offset, data) = (0x%X, 0x%X)\n", offset, data);
 			}
 		}
 		for (i = 0; i < 2; ++i) {
@@ -1100,7 +1100,7 @@ void mpt_SetRFPath_8723B(PADAPTER pAdapter)
 
 			if (offset != 0) {
 				phy_set_bb_reg(pAdapter, offset, bMaskDWord, data);
-				RTW_INFO("Switch to S1 RxIQC (offset, data) = (0x%X, 0x%X)\n", offset, data);
+				RTW_DBG("Switch to S1 RxIQC (offset, data) = (0x%X, 0x%X)\n", offset, data);
 			}
 		}
 	}
@@ -1124,7 +1124,7 @@ void mpt_SetRFPath_8723B(PADAPTER pAdapter)
 			data = pRFCalibrateInfo->tx_iqc_8723b[ODM_RF_PATH_B][i][1];
 			if (pRFCalibrateInfo->tx_iqc_8723b[ODM_RF_PATH_B][i][0] != 0) {
 				phy_set_bb_reg(pAdapter, offset, bMaskDWord, data);
-				RTW_INFO("Switch to S0 TxIQC (offset, data) = (0x%X, 0x%X)\n", offset, data);
+				RTW_DBG("Switch to S0 TxIQC (offset, data) = (0x%X, 0x%X)\n", offset, data);
 			}
 		}
 		/*/ <20130603, Kordan> Because BB suppors only 1T1R, we restore IQC to S1 instead of S0.*/
@@ -1133,7 +1133,7 @@ void mpt_SetRFPath_8723B(PADAPTER pAdapter)
 			data = pRFCalibrateInfo->rx_iqc_8723b[ODM_RF_PATH_B][i][1];
 			if (pRFCalibrateInfo->rx_iqc_8723b[ODM_RF_PATH_B][i][0] != 0) {
 				phy_set_bb_reg(pAdapter, offset, bMaskDWord, data);
-				RTW_INFO("Switch to S0 RxIQC (offset, data) = (0x%X, 0x%X)\n", offset, data);
+				RTW_DBG("Switch to S0 RxIQC (offset, data) = (0x%X, 0x%X)\n", offset, data);
 			}
 		}
 	}
@@ -1158,7 +1158,7 @@ void mpt_SetRFPath_8703B(PADAPTER pAdapter)
 	ulAntennaRx = pHalData->AntennaRxPath;
 
 	if (pHalData->rf_chip >= RF_TYPE_MAX) {
-		RTW_INFO("This RF chip ID is not supported\n");
+		RTW_DBG("This RF chip ID is not supported\n");
 		return;
 	}
 
@@ -1176,7 +1176,7 @@ void mpt_SetRFPath_8703B(PADAPTER pAdapter)
 
 			if (offset != 0) {
 				phy_set_bb_reg(pAdapter, offset, bMaskDWord, data);
-				RTW_INFO("Switch to S1 TxIQC(offset, data) = (0x%X, 0x%X)\n", offset, data);
+				RTW_DBG("Switch to S1 TxIQC(offset, data) = (0x%X, 0x%X)\n", offset, data);
 			}
 
 		}
@@ -1186,7 +1186,7 @@ void mpt_SetRFPath_8703B(PADAPTER pAdapter)
 
 			if (offset != 0) {
 				phy_set_bb_reg(pAdapter, offset, bMaskDWord, data);
-				RTW_INFO("Switch to S1 RxIQC (offset, data) = (0x%X, 0x%X)\n", offset, data);
+				RTW_DBG("Switch to S1 RxIQC (offset, data) = (0x%X, 0x%X)\n", offset, data);
 			}
 		}
 	}
@@ -1202,7 +1202,7 @@ void mpt_SetRFPath_8703B(PADAPTER pAdapter)
 
 			if (pRFCalibrateInfo->tx_iqc_8703b[i][0] != 0) {
 				phy_set_bb_reg(pAdapter, offset, bMaskDWord, data);
-				RTW_INFO("Switch to S0 TxIQC (offset, data) = (0x%X, 0x%X)\n", offset, data);
+				RTW_DBG("Switch to S0 TxIQC (offset, data) = (0x%X, 0x%X)\n", offset, data);
 			}
 		}
 		for (i = 0; i < 2; ++i) {
@@ -1211,7 +1211,7 @@ void mpt_SetRFPath_8703B(PADAPTER pAdapter)
 
 			if (pRFCalibrateInfo->rx_iqc_8703b[i][0] != 0) {
 				phy_set_bb_reg(pAdapter, offset, bMaskDWord, data);
-				RTW_INFO("Switch to S0 RxIQC (offset, data) = (0x%X, 0x%X)\n", offset, data);
+				RTW_DBG("Switch to S0 RxIQC (offset, data) = (0x%X, 0x%X)\n", offset, data);
 			}
 		}
 	}
@@ -1238,7 +1238,7 @@ void mpt_SetRFPath_8723D(PADAPTER pAdapter)
 	ulAntennaRx = pHalData->AntennaRxPath;
 
 	if (pHalData->rf_chip >= RF_TYPE_MAX) {
-		RTW_INFO("This RF chip ID is not supported\n");
+		RTW_DBG("This RF chip ID is not supported\n");
 		return;
 	}
 
@@ -1416,7 +1416,7 @@ VOID mpt_SetRFPath_819X(PADAPTER	pAdapter)
 			break;
 
 		default:
-			RTW_INFO("Unsupported RFChipID for switching antenna.\n");
+			RTW_DBG("Unsupported RFChipID for switching antenna.\n");
 			break;
 		}
 	}
@@ -1426,7 +1426,7 @@ VOID mpt_SetRFPath_819X(PADAPTER	pAdapter)
 void hal_mpt_SetAntenna(PADAPTER	pAdapter)
 
 {
-	RTW_INFO("Do %s\n", __func__);
+	RTW_DBG("Do %s\n", __func__);
 #ifdef CONFIG_RTL8814A
 	if (IS_HARDWARE_TYPE_8814A(pAdapter)) {
 		mpt_SetRFPath_8814A(pAdapter);
@@ -1478,7 +1478,7 @@ void hal_mpt_SetAntenna(PADAPTER	pAdapter)
 			mpt_SetRFPath_8822B(Context);
 	*/
 	mpt_SetRFPath_819X(pAdapter);
-	RTW_INFO("mpt_SetRFPath_819X Do %s\n", __func__);
+	RTW_DBG("mpt_SetRFPath_819X Do %s\n", __func__);
 }
 
 s32 hal_mpt_SetThermalMeter(PADAPTER pAdapter, u8 target_ther)
@@ -1820,7 +1820,7 @@ void hal_mpt_SetCarrierSuppressionTx(PADAPTER pAdapter, u8 bStart)
 		write_bbreg(pAdapter, rFPGA0_XA_HSSIParameter1, bMaskDWord, 0x01000100);
 		write_bbreg(pAdapter, rFPGA0_XB_HSSIParameter1, bMaskDWord, 0x01000100);
 	}
-	RTW_INFO("\n MPT_ProSetCarrierSupp() is finished.\n");
+	RTW_DBG("\n MPT_ProSetCarrierSupp() is finished.\n");
 }
 
 u32 hal_mpt_query_phytxok(PADAPTER	pAdapter)

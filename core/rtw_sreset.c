@@ -62,15 +62,15 @@ u8 sreset_get_wifi_status(_adapter *padapter)
 	if (val32 == 0xeaeaeaea)
 		psrtpriv->Wifi_Error_Status = WIFI_IF_NOT_EXIST;
 	else if (val32 != 0) {
-		RTW_INFO("txdmastatu(%x)\n", val32);
+		RTW_DBG("txdmastatu(%x)\n", val32);
 		psrtpriv->Wifi_Error_Status = WIFI_MAC_TXDMA_ERROR;
 	}
 
 	if (WIFI_STATUS_SUCCESS != psrtpriv->Wifi_Error_Status) {
-		RTW_INFO("==>%s error_status(0x%x)\n", __FUNCTION__, psrtpriv->Wifi_Error_Status);
+		RTW_ERR("==>%s error_status(0x%x)\n", __FUNCTION__, psrtpriv->Wifi_Error_Status);
 		status = (psrtpriv->Wifi_Error_Status & (~(USB_READ_PORT_FAIL | USB_WRITE_PORT_FAIL)));
 	}
-	RTW_INFO("==> %s wifi_status(0x%x)\n", __FUNCTION__, status);
+	RTW_DBG("==> %s wifi_status(0x%x)\n", __FUNCTION__, status);
 
 	/* status restore */
 	psrtpriv->Wifi_Error_Status = WIFI_STATUS_SUCCESS;
@@ -238,15 +238,15 @@ void sreset_restore_network_status(_adapter *padapter)
 	struct mlme_ext_info	*pmlmeinfo = &(pmlmeext->mlmext_info);
 
 	if (check_fwstate(mlmepriv, WIFI_STATION_STATE)) {
-		RTW_INFO(FUNC_ADPT_FMT" fwstate:0x%08x - WIFI_STATION_STATE\n", FUNC_ADPT_ARG(padapter), get_fwstate(mlmepriv));
+		RTW_DBG(FUNC_ADPT_FMT" fwstate:0x%08x - WIFI_STATION_STATE\n", FUNC_ADPT_ARG(padapter), get_fwstate(mlmepriv));
 		sreset_restore_network_station(padapter);
 	} else if (check_fwstate(mlmepriv, WIFI_AP_STATE)) {
-		RTW_INFO(FUNC_ADPT_FMT" fwstate:0x%08x - WIFI_AP_STATE\n", FUNC_ADPT_ARG(padapter), get_fwstate(mlmepriv));
+		RTW_DBG(FUNC_ADPT_FMT" fwstate:0x%08x - WIFI_AP_STATE\n", FUNC_ADPT_ARG(padapter), get_fwstate(mlmepriv));
 		rtw_ap_restore_network(padapter);
 	} else if (check_fwstate(mlmepriv, WIFI_ADHOC_STATE))
-		RTW_INFO(FUNC_ADPT_FMT" fwstate:0x%08x - WIFI_ADHOC_STATE\n", FUNC_ADPT_ARG(padapter), get_fwstate(mlmepriv));
+		RTW_DBG(FUNC_ADPT_FMT" fwstate:0x%08x - WIFI_ADHOC_STATE\n", FUNC_ADPT_ARG(padapter), get_fwstate(mlmepriv));
 	else
-		RTW_INFO(FUNC_ADPT_FMT" fwstate:0x%08x - ???\n", FUNC_ADPT_ARG(padapter), get_fwstate(mlmepriv));
+		RTW_DBG(FUNC_ADPT_FMT" fwstate:0x%08x - ???\n", FUNC_ADPT_ARG(padapter), get_fwstate(mlmepriv));
 }
 
 void sreset_stop_adapter(_adapter *padapter)
@@ -257,7 +257,7 @@ void sreset_stop_adapter(_adapter *padapter)
 	if (padapter == NULL)
 		return;
 
-	RTW_INFO(FUNC_ADPT_FMT"\n", FUNC_ADPT_ARG(padapter));
+	RTW_DBG(FUNC_ADPT_FMT"\n", FUNC_ADPT_ARG(padapter));
 
 	rtw_netif_stop_queue(padapter->pnetdev);
 
@@ -286,7 +286,7 @@ void sreset_start_adapter(_adapter *padapter)
 	if (padapter == NULL)
 		return;
 
-	RTW_INFO(FUNC_ADPT_FMT"\n", FUNC_ADPT_ARG(padapter));
+	RTW_DBG(FUNC_ADPT_FMT"\n", FUNC_ADPT_ARG(padapter));
 
 	if (check_fwstate(pmlmepriv, _FW_LINKED))
 		sreset_restore_network_status(padapter);
@@ -315,7 +315,7 @@ void sreset_reset(_adapter *padapter)
 	struct dvobj_priv *psdpriv = padapter->dvobj;
 	struct debug_priv *pdbgpriv = &psdpriv->drv_dbg;
 
-	RTW_INFO("%s\n", __FUNCTION__);
+	RTW_DBG("%s\n", __FUNCTION__);
 
 	psrtpriv->Wifi_Error_Status = WIFI_STATUS_SUCCESS;
 
@@ -340,7 +340,7 @@ void sreset_reset(_adapter *padapter)
 
 	_exit_pwrlock(&pwrpriv->lock);
 
-	RTW_INFO("%s done in %d ms\n", __FUNCTION__, rtw_get_passing_time_ms(start));
+	RTW_DBG("%s done in %d ms\n", __FUNCTION__, rtw_get_passing_time_ms(start));
 	pdbgpriv->dbg_sreset_cnt++;
 #endif
 }

@@ -83,7 +83,7 @@ static void rtl8822b_set_FwRsvdPage_cmd(PADAPTER adapter, PRSVDPAGE_LOC rsvdpage
 	u8 h2c[RTW_HALMAC_H2C_MAX_SIZE] = {0};
 
 
-	RTW_INFO(FUNC_ADPT_FMT ": ProbeRsp=%d PsPoll=%d Null=%d QoSNull=%d BTNull=%d\n",
+	RTW_DBG(FUNC_ADPT_FMT ": ProbeRsp=%d PsPoll=%d Null=%d QoSNull=%d BTNull=%d\n",
 		 FUNC_ADPT_ARG(adapter),
 		 rsvdpageloc->LocProbeRsp, rsvdpageloc->LocPsPoll,
 		 rsvdpageloc->LocNullData, rsvdpageloc->LocQosNull,
@@ -110,7 +110,7 @@ static void rtl8822b_set_FwAoacRsvdPage_cmd(PADAPTER adapter, PRSVDPAGE_LOC rsvd
 	u8 h2c[RTW_HALMAC_H2C_MAX_SIZE] = {0};
 
 
-	RTW_INFO(FUNC_ADPT_FMT ": RWC=%d ArpRsp=%d NbrAdv=%d GtkRsp=%d GtkInfo=%d ProbeReq=%d NetworkList=%d\n",
+	RTW_DBG(FUNC_ADPT_FMT ": RWC=%d ArpRsp=%d NbrAdv=%d GtkRsp=%d GtkInfo=%d ProbeReq=%d NetworkList=%d\n",
 		 FUNC_ADPT_ARG(adapter),
 		 rsvdpageloc->LocRemoteCtrlInfo, rsvdpageloc->LocArpRsp,
 		 rsvdpageloc->LocNbrAdv, rsvdpageloc->LocGTKRsp,
@@ -132,7 +132,7 @@ static void rtl8822b_set_FwAoacRsvdPage_cmd(PADAPTER adapter, PRSVDPAGE_LOC rsvd
 	} else {
 #ifdef CONFIG_PNO_SUPPORT
 		if (!pwrpriv->wowlan_in_resume) {
-			RTW_INFO("%s: NLO_INFO=%d\n", __FUNCTION__, rsvdpageloc->LocPNOInfo);
+			RTW_DBG("%s: NLO_INFO=%d\n", __FUNCTION__, rsvdpageloc->LocPNOInfo);
 			AOAC_RSVD_PAGE3_SET_CMD_ID(h2c, CMD_ID_AOAC_RSVD_PAGE3);
 			AOAC_RSVD_PAGE3_SET_CLASS(h2c, CLASS_AOAC_RSVD_PAGE3);
 			AOAC_RSVD_PAGE3_SET_LOC_NLO_INFO(h2c, rsvdpageloc->LocPNOInfo);
@@ -150,7 +150,7 @@ void rtl8822b_set_FwMediaStatusRpt_cmd(PADAPTER	adapter, u8 mstatus, u8 macid)
 	u8 h2c[RTW_HALMAC_H2C_MAX_SIZE] = {0};
 	u8 macid_end = 0;
 
-	RTW_INFO(FUNC_ADPT_FMT ": mstatus=%d macid=%d\n",
+	RTW_DBG(FUNC_ADPT_FMT ": mstatus=%d macid=%d\n",
 		 FUNC_ADPT_ARG(adapter), mstatus, macid);
 
 	MEDIA_STATUS_RPT_SET_CMD_ID(h2c, CMD_ID_MEDIA_STATUS_RPT);
@@ -175,7 +175,7 @@ static void rtl8822b_set_FwKeepAlive_cmd(PADAPTER adapter, u8 benable, u8 pkt_ty
 #endif
 
 
-	RTW_INFO(FUNC_ADPT_FMT ": benable=%d\n", FUNC_ADPT_ARG(adapter), benable);
+	RTW_DBG(FUNC_ADPT_FMT ": benable=%d\n", FUNC_ADPT_ARG(adapter), benable);
 
 	KEEP_ALIVE_SET_CMD_ID(h2c, CMD_ID_KEEP_ALIVE);
 	KEEP_ALIVE_SET_CLASS(h2c, CLASS_KEEP_ALIVE);
@@ -194,7 +194,7 @@ static void rtl8822b_set_FwDisconDecision_cmd(PADAPTER adapter, u8 benable)
 	u8 adopt = 1, check_period = 10, trypkt_num = 0;
 
 
-	RTW_INFO(FUNC_ADPT_FMT ": benable=%d\n",
+	RTW_DBG(FUNC_ADPT_FMT ": benable=%d\n",
 		 FUNC_ADPT_ARG(adapter), benable);
 
 	DISCONNECT_DECISION_SET_CMD_ID(h2c, CMD_ID_DISCONNECT_DECISION);
@@ -268,7 +268,7 @@ void rtl8822b_set_FwMacIdConfig_cmd(PADAPTER adapter, u64 mask, u8 *arg, u8 bw)
 
 
 	if (hal->fw_ractrl == _FALSE) {
-		RTW_INFO(FUNC_ADPT_FMT" fw ractrl = _FALSE\n",
+		RTW_DBG(FUNC_ADPT_FMT" fw ractrl = _FALSE\n",
 			 FUNC_ADPT_ARG(adapter));
 		return;
 	}
@@ -282,12 +282,12 @@ void rtl8822b_set_FwMacIdConfig_cmd(PADAPTER adapter, u64 mask, u8 *arg, u8 bw)
 		psta = macid_ctl->sta[mac_id];
 
 	if (!psta) {
-		RTW_INFO(FUNC_ADPT_FMT" macid:%u, sta is NULL\n",
+		RTW_DBG(FUNC_ADPT_FMT" macid:%u, sta is NULL\n",
 			 FUNC_ADPT_ARG(adapter), mac_id);
 		return;
 	}
 
-	RTW_INFO(FUNC_ADPT_FMT ": mac_id=%d raid=0x%x bw=%d mask=0x%016llx\n",
+	RTW_DBG(FUNC_ADPT_FMT ": mac_id=%d raid=0x%x bw=%d mask=0x%016llx\n",
 		 FUNC_ADPT_ARG(adapter), mac_id, raid, bw, mask);
 
 
@@ -306,13 +306,13 @@ void rtl8822b_set_FwMacIdConfig_cmd(PADAPTER adapter, u64 mask, u8 *arg, u8 bw)
 	/* DisableTXPowerTraining */
 	if (hal->bDisableTXPowerTraining) {
 		MACID_CFG_SET_DISPT(h2c, 1);
-		RTW_INFO("%s: Disable PWT by driver\n", __FUNCTION__);
+		RTW_DBG("%s: Disable PWT by driver\n", __FUNCTION__);
 	} else {
 		struct PHY_DM_STRUCT *p_dm_out_src = &hal->odmpriv;
 
 		if (p_dm_out_src->is_disable_power_training) {
 			MACID_CFG_SET_DISPT(h2c, 1);
-			RTW_INFO("%s: Disable PWT by DM\n", __FUNCTION__);
+			RTW_DBG("%s: Disable PWT by DM\n", __FUNCTION__);
 		}
 	}
 
@@ -321,7 +321,7 @@ void rtl8822b_set_FwMacIdConfig_cmd(PADAPTER adapter, u64 mask, u8 *arg, u8 bw)
 	MACID_CFG_SET_RATE_MASK23_16(h2c, (u8)((mask & 0x00ff0000) >> 16));
 	MACID_CFG_SET_RATE_MASK31_24(h2c, (u8)((mask & 0xff000000) >> 24));
 
-	RTW_INFO("%s, mask=0x%016llx, mac_id=0x%x, raid=0x%x, shortGIrate=%x, power training=%02x\n"
+	RTW_DBG("%s, mask=0x%016llx, mac_id=0x%x, raid=0x%x, shortGIrate=%x, power training=%02x\n"
 		 , __FUNCTION__, mask, mac_id, raid, sgi, h2c[2] & BIT(6));
 
 	RTW_DBG_DUMP("H2C-MACIDConfig Parm:", h2c, RTW_HALMAC_H2C_MAX_SIZE);
@@ -342,7 +342,7 @@ void rtl8822b_set_FwRssiSetting_cmd(PADAPTER adapter, u8 *param)
 	u8 ra_info = 0;
 
 
-	RTW_INFO(FUNC_ADPT_FMT ": mac_id=%d rssi=%d param=%.2x-%.2x-%.2x\n",
+	RTW_DBG(FUNC_ADPT_FMT ": mac_id=%d rssi=%d param=%.2x-%.2x-%.2x\n",
 		 FUNC_ADPT_ARG(adapter),
 		 mac_id, rssi, *param, *(param + 1), *(param + 2));
 
@@ -362,7 +362,7 @@ void rtl8822b_set_FwAPReqRPT_cmd(PADAPTER adapter, u32 need_ack)
 	u8 macid1 = 1, macid2 = 0;
 
 
-	RTW_INFO(FUNC_ADPT_FMT ": need_ack = %d\n",
+	RTW_DBG(FUNC_ADPT_FMT ": need_ack = %d\n",
 		 FUNC_ADPT_ARG(adapter), need_ack);
 
 	AP_REQ_TXRPT_SET_CMD_ID(h2c, CMD_ID_AP_REQ_TXRPT);
@@ -388,11 +388,11 @@ void rtl8822b_set_FwPwrMode_cmd(PADAPTER adapter, u8 psmode)
 
 
 	if (pwrpriv->dtim > 0)
-		RTW_INFO(FUNC_ADPT_FMT ": FW LPS mode = %d, SmartPS=%d, dtim=%d, HW port id=%d\n",
+		RTW_DBG(FUNC_ADPT_FMT ": FW LPS mode = %d, SmartPS=%d, dtim=%d, HW port id=%d\n",
 			FUNC_ADPT_ARG(adapter), psmode, pwrpriv->smart_ps, pwrpriv->dtim,
 			psmode == PS_MODE_ACTIVE ? pwrpriv->current_lps_hw_port_id:get_hw_port(adapter));
 	else
-		RTW_INFO(FUNC_ADPT_FMT ": FW LPS mode = %d, SmartPS=%d, HW port id=%d\n",
+		RTW_DBG(FUNC_ADPT_FMT ": FW LPS mode = %d, SmartPS=%d, HW port id=%d\n",
 			 FUNC_ADPT_ARG(adapter), psmode, pwrpriv->smart_ps,
 			 psmode == PS_MODE_ACTIVE ? pwrpriv->current_lps_hw_port_id:get_hw_port(adapter));
 
@@ -637,7 +637,7 @@ static void ConstructBeacon(PADAPTER adapter, u8 *pframe, u32 *pLength)
 _ConstructBeacon:
 
 	if ((pktlen + TXDESC_SIZE) > 512) {
-		RTW_INFO("beacon frame too large\n");
+		RTW_DBG("beacon frame too large\n");
 		return;
 	}
 
@@ -773,8 +773,8 @@ static void ConstructProbeRsp(PADAPTER adapter, u8 *pframe, u32 *pLength, u8 *St
 	_rtw_memcpy(pwlanhdr->addr2, mac, ETH_ALEN);
 	_rtw_memcpy(pwlanhdr->addr3, bssid, ETH_ALEN);
 
-	RTW_INFO("%s FW Mac Addr:" MAC_FMT "\n", __FUNCTION__, MAC_ARG(mac));
-	RTW_INFO("%s FW IP Addr" IP_FMT "\n", __FUNCTION__, IP_ARG(StaAddr));
+	RTW_DBG("%s FW Mac Addr:" MAC_FMT "\n", __FUNCTION__, MAC_ARG(mac));
+	RTW_DBG("%s FW IP Addr" IP_FMT "\n", __FUNCTION__, IP_ARG(StaAddr));
 
 	SetSeqNum(pwlanhdr, 0);
 	set_frame_sub_type(fctrl, WIFI_PROBERSP);
@@ -914,7 +914,7 @@ static void ConstructBtNullFunctionData(
 	u8 bssid[ETH_ALEN];
 
 
-	RTW_INFO("+" FUNC_ADPT_FMT ": qos=%d eosp=%d ps=%d\n",
+	RTW_DBG("+" FUNC_ADPT_FMT ": qos=%d eosp=%d ps=%d\n",
 		 FUNC_ADPT_ARG(adapter), bQoS, bEosp, bForcePowerSave);
 
 	pwlanhdr = (struct rtw_ieee80211_hdr *)pframe;
@@ -989,7 +989,7 @@ static void SetFwRsvdPagePkt_BTCoex(PADAPTER adapter)
 
 	pcmdframe = rtw_alloc_cmdxmitframe(pxmitpriv);
 	if (pcmdframe == NULL) {
-		RTW_INFO("%s: alloc ReservedPagePacket fail!\n", __FUNCTION__);
+		RTW_DBG("%s: alloc ReservedPagePacket fail!\n", __FUNCTION__);
 		return;
 	}
 
@@ -1037,7 +1037,7 @@ static void SetFwRsvdPagePkt_BTCoex(PADAPTER adapter)
 
 	TotalPacketLen = BufIndex + BTQosNullLength;
 	if (TotalPacketLen > MaxRsvdPageBufSize) {
-		RTW_INFO(FUNC_ADPT_FMT ": ERROR: The rsvd page size is not enough!!TotalPacketLen %d, MaxRsvdPageBufSize %d\n",
+		RTW_ERR(FUNC_ADPT_FMT ": ERROR: The rsvd page size is not enough!!TotalPacketLen %d, MaxRsvdPageBufSize %d\n",
 			FUNC_ADPT_ARG(adapter), TotalPacketLen, MaxRsvdPageBufSize);
 		goto error;
 	}
@@ -1075,7 +1075,7 @@ void rtl8822b_download_BTCoex_AP_mode_rsvd_page(PADAPTER adapter)
 	u8 restore[2];
 
 
-	RTW_INFO("+" FUNC_ADPT_FMT ": hw_port=%d fw_state=0x%08X\n",
+	RTW_DBG("+" FUNC_ADPT_FMT ": hw_port=%d fw_state=0x%08X\n",
 		FUNC_ADPT_ARG(adapter), get_hw_port(adapter), get_fwstate(&adapter->mlmepriv));
 
 	if (check_fwstate(&adapter->mlmepriv, WIFI_AP_STATE) == _FALSE) {
@@ -1136,14 +1136,14 @@ void rtl8822b_download_BTCoex_AP_mode_rsvd_page(PADAPTER adapter)
 		struct pwrctrl_priv *pwrctl = adapter_to_pwrctl(adapter);
 
 		pwrctl->fw_psmode_iface_id = adapter->iface_id;
-		RTW_INFO(ADPT_FMT": DL RSVD page success! DLBcnCount:%d, poll:%d\n",
+		RTW_DBG(ADPT_FMT": DL RSVD page success! DLBcnCount:%d, poll:%d\n",
 			 ADPT_ARG(adapter), DLBcnCount, poll);
 	} else {
-		RTW_INFO(ADPT_FMT": DL RSVD page fail! DLBcnCount:%d, poll:%d\n",
+		RTW_DBG(ADPT_FMT": DL RSVD page fail! DLBcnCount:%d, poll:%d\n",
 			 ADPT_ARG(adapter), DLBcnCount, poll);
-		RTW_INFO(ADPT_FMT": DL RSVD page fail! bSurpriseRemoved=%s\n",
+		RTW_DBG(ADPT_FMT": DL RSVD page fail! bSurpriseRemoved=%s\n",
 			ADPT_ARG(adapter), rtw_is_surprise_removed(adapter) ? "True" : "False");
-		RTW_INFO(ADPT_FMT": DL RSVD page fail! bDriverStopped=%s\n",
+		RTW_DBG(ADPT_FMT": DL RSVD page fail! bDriverStopped=%s\n",
 			ADPT_ARG(adapter), rtw_is_drv_stopped(adapter) ? "True" : "False");
 	}
 
@@ -1187,12 +1187,12 @@ void rtl8822b_set_p2p_ps_offload_cmd(PADAPTER adapter, u8 p2p_ps_state)
 
 	switch (p2p_ps_state) {
 	case P2P_PS_DISABLE:
-		RTW_INFO("P2P_PS_DISABLE\n");
+		RTW_DBG("P2P_PS_DISABLE\n");
 		_rtw_memset(&h2c[1], 0, sizeof(hal->p2p_ps_offload));
 		break;
 
 	case P2P_PS_ENABLE:
-		RTW_INFO("P2P_PS_ENABLE\n");
+		RTW_DBG("P2P_PS_ENABLE\n");
 		/* update CTWindow value. */
 		if (pwdinfo->ctwindow > 0) {
 			P2P_PS_OFFLOAD_SET_CTWINDOW_EN(h2c, 1);
@@ -1236,12 +1236,12 @@ void rtl8822b_set_p2p_ps_offload_cmd(PADAPTER adapter, u8 p2p_ps_state)
 		break;
 
 	case P2P_PS_SCAN:
-		RTW_INFO("P2P_PS_SCAN\n");
+		RTW_DBG("P2P_PS_SCAN\n");
 		((struct P2P_PS_Offload_t *)&h2c[1])->discovery = 1;
 		break;
 
 	case P2P_PS_SCAN_DONE:
-		RTW_INFO("P2P_PS_SCAN_DONE\n");
+		RTW_DBG("P2P_PS_SCAN_DONE\n");
 		((struct P2P_PS_Offload_t *)&h2c[1])->discovery = 0;
 		pwdinfo->p2p_ps_state = P2P_PS_ENABLE;
 		break;
@@ -1322,12 +1322,12 @@ static void process_c2h_event(PADAPTER adapter, u8 *c2h, u32 size)
 
 
 	if (!c2h) {
-		RTW_INFO("%s: c2h buffer is NULL!!\n", __FUNCTION__);
+		RTW_DBG("%s: c2h buffer is NULL!!\n", __FUNCTION__);
 		return;
 	}
 
 	if (size < HALMAC_RX_DESC_SIZE_8822B) {
-		RTW_INFO("%s: c2h length(%d) is smaller than RXDESC_SIZE(%d)!!\n",
+		RTW_DBG("%s: c2h length(%d) is smaller than RXDESC_SIZE(%d)!!\n",
 			 __FUNCTION__, size, HALMAC_RX_DESC_SIZE_8822B);
 		return;
 	}
@@ -1351,7 +1351,7 @@ static void process_c2h_event(PADAPTER adapter, u8 *c2h, u32 size)
 	switch (id) {
 #ifdef CONFIG_BEAMFORMING
 	case CMD_ID_C2H_SND_TXBF:
-		RTW_INFO("%s: [CMD_ID_C2H_SND_TXBF] len=%d\n", __FUNCTION__, c2h_payload_len);
+		RTW_DBG("%s: [CMD_ID_C2H_SND_TXBF] len=%d\n", __FUNCTION__, c2h_payload_len);
 		rtw_bf_c2h_handler(adapter, id, pc2h_data, c2h_len);
 		break;
 #endif /* CONFIG_BEAMFORMING */
@@ -1376,7 +1376,7 @@ void rtl8822b_c2h_handler(PADAPTER adapter, u8 *pbuf, u16 length)
 	struct pwrctrl_priv *pwrpriv = adapter_to_pwrctl(adapter);
 
 	if (pwrpriv->wowlan_mode == _TRUE) {
-		RTW_INFO("%s: return because wowolan_mode==TRUE! CMDID=%d\n",
+		RTW_DBG("%s: return because wowolan_mode==TRUE! CMDID=%d\n",
 			 __FUNCTION__, C2H_GET_CMD_ID(pbuf + RXDESC_SIZE));
 		return;
 	}
@@ -1403,7 +1403,7 @@ void rtl8822b_c2h_handler_no_io(PADAPTER adapter, u8 *pbuf, u16 length)
 	id = C2H_GET_CMD_ID(pc2h_content);
 	seq = C2H_GET_SEQ(pc2h_content);
 
-	RTW_INFO("%s: C2H, ID=%d seq=%d len=%d\n",
+	RTW_DBG("%s: C2H, ID=%d seq=%d len=%d\n",
 		 __FUNCTION__, id, seq, length);
 
 	if (id == 0xff) {

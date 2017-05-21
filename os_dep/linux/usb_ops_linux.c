@@ -47,7 +47,7 @@ int usbctrl_vendorreq(struct intf_hdl *pintfhdl, u8 request, u16 value, u16 inde
 	u8 tmp_buf[MAX_USB_IO_CTL_SIZE];
 #endif
 
-	/* RTW_INFO("%s %s:%d\n",__FUNCTION__, current->comm, current->pid); */
+	/* RTW_DBG("%s %s:%d\n",__FUNCTION__, current->comm, current->pid); */
 
 	if (RTW_CANNOT_IO(padapter)) {
 		status = -EPERM;
@@ -55,7 +55,7 @@ int usbctrl_vendorreq(struct intf_hdl *pintfhdl, u8 request, u16 value, u16 inde
 	}
 
 	if (len > MAX_VENDOR_REQ_CMD_SIZE) {
-		RTW_INFO("[%s] Buffer len error ,vendor request failed\n", __FUNCTION__);
+		RTW_ERR("[%s] Buffer len error ,vendor request failed\n", __FUNCTION__);
 		status = -EINVAL;
 		goto exit;
 	}
@@ -83,7 +83,7 @@ int usbctrl_vendorreq(struct intf_hdl *pintfhdl, u8 request, u16 value, u16 inde
 #endif
 
 	if (pIo_buf == NULL) {
-		RTW_INFO("[%s] pIo_buf == NULL\n", __FUNCTION__);
+		RTW_DBG("[%s] pIo_buf == NULL\n", __FUNCTION__);
 		status = -ENOMEM;
 		goto release_mutex;
 	}
@@ -109,7 +109,7 @@ int usbctrl_vendorreq(struct intf_hdl *pintfhdl, u8 request, u16 value, u16 inde
 				_rtw_memcpy(pdata, pIo_buf,  len);
 			}
 		} else { /* error cases */
-			RTW_INFO("reg 0x%x, usb %s %u fail, status:%d value=0x%x, vendorreq_times:%d\n"
+			RTW_DBG("reg 0x%x, usb %s %u fail, status:%d value=0x%x, vendorreq_times:%d\n"
 				, value, (requesttype == 0x01) ? "read" : "write" , len, status, *(u32 *)pdata, vendorreq_times);
 
 			if (status < 0) {
@@ -262,7 +262,7 @@ static void usb_bulkout_zero_complete(struct urb *purb, struct pt_regs *regs)
 {
 	struct zero_bulkout_context *pcontext = (struct zero_bulkout_context *)purb->context;
 
-	/* RTW_INFO("+usb_bulkout_zero_complete\n"); */
+	/* RTW_DBG("+usb_bulkout_zero_complete\n"); */
 
 	if (pcontext) {
 		if (pcontext->pbuf)
@@ -290,7 +290,7 @@ static u32 usb_bulkout_zero(struct intf_hdl *pintfhdl, u32 addr)
 	struct pwrctrl_priv *pwrctl = dvobj_to_pwrctl(pdvobj);
 	struct usb_device *pusbd = pdvobj->pusbdev;
 
-	/* RTW_INFO("%s\n", __func__); */
+	/* RTW_DBG("%s\n", __func__); */
 
 
 	if (RTW_CANNOT_TX(padapter))
@@ -353,12 +353,12 @@ void usb_read_port_cancel(struct intf_hdl *pintfhdl)
 	_adapter	*padapter = pintfhdl->padapter;
 	precvbuf = (struct recv_buf *)padapter->recvpriv.precv_buf;
 
-	RTW_INFO("%s\n", __func__);
+	RTW_DBG("%s\n", __func__);
 
 	for (i = 0; i < NR_RECVBUFF ; i++) {
 
 		if (precvbuf->purb)	 {
-			/* RTW_INFO("usb_read_port_cancel : usb_kill_urb\n"); */
+			/* RTW_DBG("usb_read_port_cancel : usb_kill_urb\n"); */
 			usb_kill_urb(precvbuf->purb);
 		}
 		precvbuf++;
@@ -441,7 +441,7 @@ static void usb_write_port_complete(struct urb *purb, struct pt_regs *regs)
 	/* rtw_free_xmitframe(pxmitpriv, pxmitframe); */
 
 	if (RTW_CANNOT_TX(padapter)) {
-		RTW_INFO("%s(): TX Warning! bDriverStopped(%s) OR bSurpriseRemoved(%s) pxmitbuf->buf_tag(%x)\n"
+		RTW_DBG("%s(): TX Warning! bDriverStopped(%s) OR bSurpriseRemoved(%s) pxmitbuf->buf_tag(%x)\n"
 			 , __func__
 			 , rtw_is_drv_stopped(padapter) ? "True" : "False"
 			 , rtw_is_surprise_removed(padapter) ? "True" : "False"
@@ -454,7 +454,7 @@ static void usb_write_port_complete(struct urb *purb, struct pt_regs *regs)
 	if (purb->status == 0) {
 
 	} else {
-		RTW_INFO("###=> urb_write_port_complete status(%d)\n", purb->status);
+		RTW_DBG("###=> urb_write_port_complete status(%d)\n", purb->status);
 		if ((purb->status == -EPIPE) || (purb->status == -EPROTO)) {
 			/* usb_clear_halt(pusbdev, purb->pipe);	 */
 			/* msleep(10); */
@@ -463,11 +463,11 @@ static void usb_write_port_complete(struct urb *purb, struct pt_regs *regs)
 			goto check_completion;
 
 		} else if (purb->status == -ENOENT) {
-			RTW_INFO("%s: -ENOENT\n", __func__);
+			RTW_DBG("%s: -ENOENT\n", __func__);
 			goto check_completion;
 
 		} else if (purb->status == -ECONNRESET) {
-			RTW_INFO("%s: -ECONNRESET\n", __func__);
+			RTW_DBG("%s: -ECONNRESET\n", __func__);
 			goto check_completion;
 
 		} else if (purb->status == -ESHUTDOWN) {
@@ -476,7 +476,7 @@ static void usb_write_port_complete(struct urb *purb, struct pt_regs *regs)
 			goto check_completion;
 		} else {
 			rtw_set_surprise_removed(padapter);
-			RTW_INFO("bSurpriseRemoved=TRUE\n");
+			RTW_DBG("bSurpriseRemoved=TRUE\n");
 
 			goto check_completion;
 		}
@@ -525,7 +525,7 @@ u32 usb_write_port(struct intf_hdl *pintfhdl, u32 addr, u32 cnt, u8 *wmem)
 
 	if (RTW_CANNOT_TX(padapter)) {
 #ifdef DBG_TX
-		RTW_INFO(" DBG_TX %s:%d bDriverStopped%s, bSurpriseRemoved:%s\n", __func__, __LINE__
+		RTW_DBG(" DBG_TX %s:%d bDriverStopped%s, bSurpriseRemoved:%s\n", __func__, __LINE__
 			 , rtw_is_drv_stopped(padapter) ? "True" : "False"
 			, rtw_is_surprise_removed(padapter) ? "True" : "False");
 #endif
@@ -577,7 +577,7 @@ u32 usb_write_port(struct intf_hdl *pintfhdl, u32 addr, u32 cnt, u8 *wmem)
 		purb->transfer_flags  &= (~URB_NO_INTERRUPT);
 	else {
 		purb->transfer_flags  |=  URB_NO_INTERRUPT;
-		/* RTW_INFO("URB_NO_INTERRUPT "); */
+		/* RTW_DBG("URB_NO_INTERRUPT "); */
 	}
 #endif
 
@@ -615,7 +615,7 @@ u32 usb_write_port(struct intf_hdl *pintfhdl, u32 addr, u32 cnt, u8 *wmem)
 		#endif
 	} else {
 		rtw_sctx_done_err(&pxmitbuf->sctx, RTW_SCTX_DONE_WRITE_PORT_ERR);
-		RTW_INFO("usb_write_port, status=%d\n", status);
+		RTW_DBG("usb_write_port, status=%d\n", status);
 
 		switch (status) {
 		case -ENODEV:
@@ -652,7 +652,7 @@ void usb_write_port_cancel(struct intf_hdl *pintfhdl)
 	_adapter	*padapter = pintfhdl->padapter;
 	struct xmit_buf *pxmitbuf = (struct xmit_buf *)padapter->xmitpriv.pxmitbuf;
 
-	RTW_INFO("%s\n", __func__);
+	RTW_DBG("%s\n", __func__);
 
 	for (i = 0; i < NR_XMITBUFF; i++) {
 		for (j = 0; j < 8; j++) {
@@ -699,7 +699,7 @@ void usb_recv_tasklet(void *priv)
 
 	while (NULL != (precvbuf = rtw_dequeue_recvbuf(&precvpriv->recv_buf_pending_queue))) {
 		if (RTW_CANNOT_RUN(padapter)) {
-			RTW_INFO("recv_tasklet => bDriverStopped(%s) OR bSurpriseRemoved(%s)\n"
+			RTW_DBG("recv_tasklet => bDriverStopped(%s) OR bSurpriseRemoved(%s)\n"
 				, rtw_is_drv_stopped(padapter)? "True" : "False"
 				, rtw_is_surprise_removed(padapter)? "True" : "False");
 			break;
@@ -720,7 +720,7 @@ void usb_read_port_complete(struct urb *purb, struct pt_regs *regs)
 	ATOMIC_DEC(&(precvpriv->rx_pending_cnt));
 
 	if (RTW_CANNOT_RX(padapter)) {
-		RTW_INFO("%s() RX Warning! bDriverStopped(%s) OR bSurpriseRemoved(%s)\n"
+		RTW_DBG("%s() RX Warning! bDriverStopped(%s) OR bSurpriseRemoved(%s)\n"
 			 , __func__
 			 , rtw_is_drv_stopped(padapter) ? "True" : "False"
 			, rtw_is_surprise_removed(padapter) ? "True" : "False");
@@ -730,7 +730,7 @@ void usb_read_port_complete(struct urb *purb, struct pt_regs *regs)
 	if (purb->status == 0) {
 
 		if ((purb->actual_length > MAX_RECVBUF_SZ) || (purb->actual_length < RXDESC_SIZE)) {
-			RTW_INFO("%s()-%d: urb->actual_length:%u, MAX_RECVBUF_SZ:%u, RXDESC_SIZE:%u\n"
+			RTW_DBG("%s()-%d: urb->actual_length:%u, MAX_RECVBUF_SZ:%u, RXDESC_SIZE:%u\n"
 				, __FUNCTION__, __LINE__, purb->actual_length, MAX_RECVBUF_SZ, RXDESC_SIZE);
 			rtw_read_port(padapter, precvpriv->ff_hwaddr, 0, (unsigned char *)precvbuf);
 		} else {
@@ -744,7 +744,7 @@ void usb_read_port_complete(struct urb *purb, struct pt_regs *regs)
 		}
 	} else {
 
-		RTW_INFO("###=> usb_read_port_complete => urb.status(%d)\n", purb->status);
+		RTW_DBG("###=> usb_read_port_complete => urb.status(%d)\n", purb->status);
 
 		if (rtw_inc_and_chk_continual_io_error(adapter_to_dvobj(padapter)) == _TRUE)
 			rtw_set_surprise_removed(padapter);
@@ -771,7 +771,7 @@ void usb_read_port_complete(struct urb *purb, struct pt_regs *regs)
 			rtw_read_port(padapter, precvpriv->ff_hwaddr, 0, (unsigned char *)precvbuf);
 			break;
 		case -EINPROGRESS:
-			RTW_INFO("ERROR: URB IS IN PROGRESS!/n");
+			RTW_ERR("ERROR: URB IS IN PROGRESS!/n");
 			break;
 		default:
 			break;
@@ -820,7 +820,7 @@ u32 usb_read_port(struct intf_hdl *pintfhdl, u32 addr, u32 cnt, u8 *rmem)
 
 		err = usb_submit_urb(purb, GFP_ATOMIC);
 		if ((err) && (err != (-EPERM))) {
-			RTW_INFO("cannot submit rx in-token(err = 0x%08x),urb_status = %d\n", err, purb->status);
+			RTW_DBG("cannot submit rx in-token(err = 0x%08x),urb_status = %d\n", err, purb->status);
 			ret = _FAIL;
 		}
 
@@ -841,7 +841,7 @@ void usb_recv_tasklet(void *priv)
 	while (NULL != (pskb = skb_dequeue(&precvpriv->rx_skb_queue))) {
 
 		if (RTW_CANNOT_RUN(padapter)) {
-			RTW_INFO("recv_tasklet => bDriverStopped(%s) OR bSurpriseRemoved(%s)\n"
+			RTW_DBG("recv_tasklet => bDriverStopped(%s) OR bSurpriseRemoved(%s)\n"
 				, rtw_is_drv_stopped(padapter) ? "True" : "False"
 				, rtw_is_surprise_removed(padapter) ? "True" : "False");
 			#ifdef CONFIG_PREALLOC_RX_SKB_BUFFER
@@ -875,7 +875,7 @@ void usb_read_port_complete(struct urb *purb, struct pt_regs *regs)
 	ATOMIC_DEC(&(precvpriv->rx_pending_cnt));
 
 	if (RTW_CANNOT_RX(padapter)) {
-		RTW_INFO("%s() RX Warning! bDriverStopped(%s) OR bSurpriseRemoved(%s)\n"
+		RTW_DBG("%s() RX Warning! bDriverStopped(%s) OR bSurpriseRemoved(%s)\n"
 			, __func__
 			, rtw_is_drv_stopped(padapter) ? "True" : "False"
 			, rtw_is_surprise_removed(padapter) ? "True" : "False");
@@ -885,7 +885,7 @@ void usb_read_port_complete(struct urb *purb, struct pt_regs *regs)
 	if (purb->status == 0) {
 
 		if ((purb->actual_length > MAX_RECVBUF_SZ) || (purb->actual_length < RXDESC_SIZE)) {
-			RTW_INFO("%s()-%d: urb->actual_length:%u, MAX_RECVBUF_SZ:%u, RXDESC_SIZE:%u\n"
+			RTW_DBG("%s()-%d: urb->actual_length:%u, MAX_RECVBUF_SZ:%u, RXDESC_SIZE:%u\n"
 				, __FUNCTION__, __LINE__, purb->actual_length, MAX_RECVBUF_SZ, RXDESC_SIZE);
 			rtw_read_port(padapter, precvpriv->ff_hwaddr, 0, (unsigned char *)precvbuf);
 		} else {
@@ -905,7 +905,7 @@ void usb_read_port_complete(struct urb *purb, struct pt_regs *regs)
 		}
 	} else {
 
-		RTW_INFO("###=> usb_read_port_complete => urb.status(%d)\n", purb->status);
+		RTW_DBG("###=> usb_read_port_complete => urb.status(%d)\n", purb->status);
 
 		if (rtw_inc_and_chk_continual_io_error(adapter_to_dvobj(padapter)) == _TRUE)
 			rtw_set_surprise_removed(padapter);
@@ -932,7 +932,7 @@ void usb_read_port_complete(struct urb *purb, struct pt_regs *regs)
 			rtw_read_port(padapter, precvpriv->ff_hwaddr, 0, (unsigned char *)precvbuf);
 			break;
 		case -EINPROGRESS:
-			RTW_INFO("ERROR: URB IS IN PROGRESS!/n");
+			RTW_ERR("ERROR: URB IS IN PROGRESS!/n");
 			break;
 		default:
 			break;
@@ -977,7 +977,7 @@ u32 usb_read_port(struct intf_hdl *pintfhdl, u32 addr, u32 cnt, u8 *rmem)
 
 		if (precvbuf->pskb == NULL) {
 			if (0)
-				RTW_INFO("usb_read_port() enqueue precvbuf=%p\n", precvbuf);
+				RTW_DBG("usb_read_port() enqueue precvbuf=%p\n", precvbuf);
 			/* enqueue precvbuf and wait for free skb */
 			rtw_enqueue_recvbuf(precvbuf, &precvpriv->recv_buf_pending_queue);
 			goto exit;
@@ -1008,7 +1008,7 @@ recv_buf_hook:
 
 	err = usb_submit_urb(purb, GFP_ATOMIC);
 	if (err && err != (-EPERM)) {
-		RTW_INFO("cannot submit rx in-token(err = 0x%08x),urb_status = %d\n"
+		RTW_DBG("cannot submit rx in-token(err = 0x%08x),urb_status = %d\n"
 			, err, purb->status);
 		goto exit;
 	}
@@ -1030,7 +1030,7 @@ void usb_read_interrupt_complete(struct urb *purb, struct pt_regs *regs)
 	_adapter	*padapter = (_adapter *)purb->context;
 
 	if (RTW_CANNOT_RX(padapter)) {
-		RTW_INFO("%s() RX Warning! bDriverStopped(%s) OR bSurpriseRemoved(%s)\n"
+		RTW_DBG("%s() RX Warning! bDriverStopped(%s) OR bSurpriseRemoved(%s)\n"
 			, __func__
 			, rtw_is_drv_stopped(padapter) ? "True" : "False"
 			, rtw_is_surprise_removed(padapter) ? "True" : "False");
@@ -1040,15 +1040,15 @@ void usb_read_interrupt_complete(struct urb *purb, struct pt_regs *regs)
 
 	if (purb->status == 0) {/*SUCCESS*/
 		if (purb->actual_length > INTERRUPT_MSG_FORMAT_LEN)
-			RTW_INFO("usb_read_interrupt_complete: purb->actual_length > INTERRUPT_MSG_FORMAT_LEN(%d)\n", INTERRUPT_MSG_FORMAT_LEN);
+			RTW_DBG("usb_read_interrupt_complete: purb->actual_length > INTERRUPT_MSG_FORMAT_LEN(%d)\n", INTERRUPT_MSG_FORMAT_LEN);
 
 		rtw_hal_interrupt_handler(padapter, purb->actual_length, purb->transfer_buffer);
 
 		err = usb_submit_urb(purb, GFP_ATOMIC);
 		if ((err) && (err != (-EPERM)))
-			RTW_INFO("cannot submit interrupt in-token(err = 0x%08x),urb_status = %d\n", err, purb->status);
+			RTW_DBG("cannot submit interrupt in-token(err = 0x%08x),urb_status = %d\n", err, purb->status);
 	} else {
-		RTW_INFO("###=> usb_read_interrupt_complete => urb status(%d)\n", purb->status);
+		RTW_DBG("###=> usb_read_interrupt_complete => urb status(%d)\n", purb->status);
 
 		switch (purb->status) {
 		case -EINVAL:
@@ -1061,7 +1061,7 @@ void usb_read_interrupt_complete(struct urb *purb, struct pt_regs *regs)
 		case -EPROTO:
 			break;
 		case -EINPROGRESS:
-			RTW_INFO("ERROR: URB IS IN PROGRESS!/n");
+			RTW_ERR("ERROR: URB IS IN PROGRESS!/n");
 			break;
 		default:
 			break;
@@ -1096,7 +1096,7 @@ u32 usb_read_interrupt(struct intf_hdl *pintfhdl, u32 addr)
 
 	err = usb_submit_urb(precvpriv->int_in_urb, GFP_ATOMIC);
 	if ((err) && (err != (-EPERM))) {
-		RTW_INFO("cannot submit interrupt in-token(err = 0x%08x), urb_status = %d\n", err, precvpriv->int_in_urb->status);
+		RTW_DBG("cannot submit interrupt in-token(err = 0x%08x), urb_status = %d\n", err, precvpriv->int_in_urb->status);
 		ret = _FAIL;
 	}
 

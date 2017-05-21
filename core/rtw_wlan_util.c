@@ -144,7 +144,7 @@ s8 rtw_get_tx_nss(_adapter *adapter, struct sta_info *psta)
 			vht_mcs[0] |= 0xc0;
 			break;
 		default:
-			RTW_INFO("%s,%d, unknown rf type\n", __func__, __LINE__);
+			RTW_DBG("%s,%d, unknown rf type\n", __func__, __LINE__);
 			break;
 		}
 		nss = rtw_vht_mcsmap_to_nss(vht_mcs);
@@ -171,13 +171,13 @@ s8 rtw_get_tx_nss(_adapter *adapter, struct sta_info *psta)
 				supp_mcs_set[3] = 0;
 				break;
 			default:
-				RTW_INFO("%s,%d, unknown rf type\n", __func__, __LINE__);
+				RTW_DBG("%s,%d, unknown rf type\n", __func__, __LINE__);
 				break;
 			}
 			nss = rtw_ht_mcsset_to_nss(supp_mcs_set);
 		}
 
-	RTW_INFO("%s: %d SS, rf_type=%d\n", __func__, nss, rf_type);
+	RTW_DBG("%s: %d SS, rf_type=%d\n", __func__, nss, rf_type);
 	return nss;
 }
 
@@ -245,7 +245,7 @@ u8 networktype_to_raid_ex(_adapter *adapter, struct sta_info *psta)
 		else if (tx_nss == 3)
 			raid = RATEID_IDX_BGN_3SS;
 		else
-			RTW_INFO("tx_nss error!(tx_nss=%d)\n", tx_nss);
+			RTW_ERR("tx_nss error!(tx_nss=%d)\n", tx_nss);
 		break;
 	case WIRELESS_11B_24N:
 	case WIRELESS_11BG_24N:
@@ -257,7 +257,7 @@ u8 networktype_to_raid_ex(_adapter *adapter, struct sta_info *psta)
 			else if (tx_nss == 3)
 				raid = RATEID_IDX_BGN_3SS;
 			else
-				RTW_INFO("tx_nss error!(tx_nss=%d)\n", tx_nss);
+				RTW_ERR("tx_nss error!(tx_nss=%d)\n", tx_nss);
 		} else {
 			if (tx_nss == 1)
 				raid = RATEID_IDX_BGN_40M_1SS;
@@ -266,7 +266,7 @@ u8 networktype_to_raid_ex(_adapter *adapter, struct sta_info *psta)
 			else if (tx_nss == 3)
 				raid = RATEID_IDX_BGN_3SS;
 			else
-				RTW_INFO("tx_nss error!(tx_nss=%d)\n", tx_nss);
+				RTW_ERR("tx_nss error!(tx_nss=%d)\n", tx_nss);
 		}
 		break;
 #ifdef CONFIG_80211AC_VHT
@@ -278,7 +278,7 @@ u8 networktype_to_raid_ex(_adapter *adapter, struct sta_info *psta)
 		else if (tx_nss == 3)
 			raid = RATEID_IDX_VHT_3SS;
 		else
-			RTW_INFO("tx_nss error!(tx_nss=%d)\n", tx_nss);
+			RTW_ERR("tx_nss error!(tx_nss=%d)\n", tx_nss);
 		break;
 	case WIRELESS_11_24AC:
 		if (psta->bw_mode >= CHANNEL_WIDTH_80) {
@@ -289,7 +289,7 @@ u8 networktype_to_raid_ex(_adapter *adapter, struct sta_info *psta)
 			else if (tx_nss == 3)
 				raid = RATEID_IDX_VHT_3SS;
 			else
-				RTW_INFO("tx_nss error!(tx_nss=%d)\n", tx_nss);
+				RTW_ERR("tx_nss error!(tx_nss=%d)\n", tx_nss);
 		} else {
 			if (tx_nss == 1)
 				raid = RATEID_IDX_MIX1;
@@ -298,17 +298,17 @@ u8 networktype_to_raid_ex(_adapter *adapter, struct sta_info *psta)
 			else if (tx_nss == 3)
 				raid = RATEID_IDX_VHT_3SS;
 			else
-				RTW_INFO("tx_nss error!(tx_nss=%d)\n", tx_nss);
+				RTW_ERR("tx_nss error!(tx_nss=%d)\n", tx_nss);
 		}
 		break;
 #endif
 	default:
-		RTW_INFO("unexpected wireless mode!(psta->wireless_mode=%x)\n", psta->wireless_mode);
+		RTW_DBG("unexpected wireless mode!(psta->wireless_mode=%x)\n", psta->wireless_mode);
 		break;
 
 	}
 
-	/* RTW_INFO("psta->wireless_mode=%x,  tx_nss=%d\n", psta->wireless_mode, tx_nss); */
+	/* RTW_DBG("psta->wireless_mode=%x,  tx_nss=%d\n", psta->wireless_mode, tx_nss); */
 
 	return raid;
 
@@ -563,7 +563,7 @@ inline void rtw_set_oper_ch(_adapter *adapter, u8 ch)
 			cnt += snprintf(msg + cnt, len - cnt, "]");
 		}
 
-		RTW_INFO(FUNC_ADPT_FMT" %s\n", FUNC_ADPT_ARG(adapter), msg);
+		RTW_DBG(FUNC_ADPT_FMT" %s\n", FUNC_ADPT_ARG(adapter), msg);
 #endif /* DBG_CH_SWITCH */
 	}
 
@@ -765,7 +765,7 @@ void set_channel_bwmode(_adapter *padapter, unsigned char channel, unsigned char
 #endif
 
 	if (padapter->bNotifyChannelChange)
-		RTW_INFO("[%s] ch = %d, offset = %d, bwmode = %d\n", __FUNCTION__, channel, channel_offset, bwmode);
+		RTW_DBG("[%s] ch = %d, offset = %d, bwmode = %d\n", __FUNCTION__, channel, channel_offset, bwmode);
 
 	center_ch = rtw_get_center_ch(channel, bwmode, channel_offset);
 
@@ -783,7 +783,7 @@ void set_channel_bwmode(_adapter *padapter, unsigned char channel, unsigned char
 	if (MCC_EN(padapter)) {
 		/* driver doesn't set channel setting reg under MCC */
 		if (rtw_hal_check_mcc_status(padapter, MCC_STATUS_DOING_MCC)) {
-			RTW_INFO("Warning: Do not set channel setting reg MCC mode\n");
+			RTW_DBG("Warning: Do not set channel setting reg MCC mode\n");
 			rtw_warn_on(1);
 		}
 	}
@@ -1320,10 +1320,10 @@ s16 _rtw_camid_search(_adapter *adapter, u8 *addr, s16 kid, s8 gk)
 
 	if (0) {
 		if (addr)
-			RTW_INFO(FUNC_ADPT_FMT" addr:"MAC_FMT" kid:%d, gk:%d, return cam_id:%d\n"
+			RTW_DBG(FUNC_ADPT_FMT" addr:"MAC_FMT" kid:%d, gk:%d, return cam_id:%d\n"
 				, FUNC_ADPT_ARG(adapter), MAC_ARG(addr), kid, gk, cam_id);
 		else
-			RTW_INFO(FUNC_ADPT_FMT" addr:%p kid:%d, gk:%d, return cam_id:%d\n"
+			RTW_DBG(FUNC_ADPT_FMT" addr:%p kid:%d, gk:%d, return cam_id:%d\n"
 				, FUNC_ADPT_ARG(adapter), addr, kid, gk, cam_id);
 	}
 
@@ -1496,7 +1496,7 @@ inline void rtw_sec_cam_swap(_adapter *adapter, u8 cam_id_a, u8 cam_id_b)
 	bool cam_a_used, cam_b_used;
 
 	if (1)
-		RTW_INFO(ADPT_FMT" - sec_cam %d,%d swap\n", ADPT_ARG(adapter), cam_id_a, cam_id_b);
+		RTW_DBG(ADPT_FMT" - sec_cam %d,%d swap\n", ADPT_ARG(adapter), cam_id_a, cam_id_b);
 
 	if (cam_id_a == cam_id_b)
 		return;
@@ -1649,11 +1649,11 @@ void rtw_process_wfd_ie(_adapter *adapter, u8 *wfd_ie, u8 wfd_ielen, const char 
 	if (!hal_chk_wl_func(adapter, WL_FUNC_MIRACAST))
 		return;
 
-	RTW_INFO("[%s] Found WFD IE\n", tag);
+	RTW_DBG("[%s] Found WFD IE\n", tag);
 	attr_content = rtw_get_wfd_attr_content(wfd_ie, wfd_ielen, WFD_ATTR_DEVICE_INFO, NULL, &attr_contentlen);
 	if (attr_content && attr_contentlen) {
 		wdinfo->wfd_info->peer_rtsp_ctrlport = RTW_GET_BE16(attr_content + 2);
-		RTW_INFO("[%s] Peer PORT NUM = %d\n", tag, wdinfo->wfd_info->peer_rtsp_ctrlport);
+		RTW_DBG("[%s] Peer PORT NUM = %d\n", tag, wdinfo->wfd_info->peer_rtsp_ctrlport);
 	}
 }
 
@@ -1799,7 +1799,7 @@ void WMMOnAssocRsp(_adapter *padapter)
 				break;
 			}
 
-			RTW_INFO("WMM(%x): %x, %x\n", ACI, ACM, acParm);
+			RTW_DBG("WMM(%x): %x, %x\n", ACI, ACM, acParm);
 		}
 
 		if (padapter->registrypriv.acm_method == 1)
@@ -1844,7 +1844,7 @@ void WMMOnAssocRsp(_adapter *padapter)
 
 		for (i = 0; i < 4; i++) {
 			pxmitpriv->wmm_para_seq[i] = inx[i];
-			RTW_INFO("wmm_para_seq(%d): %d\n", i, pxmitpriv->wmm_para_seq[i]);
+			RTW_DBG("wmm_para_seq(%d): %d\n", i, pxmitpriv->wmm_para_seq[i]);
 		}
 #ifdef CONFIG_WMMPS
 		if (pmlmeinfo->WMM_param.QoS_info & BIT(7))
@@ -2035,14 +2035,14 @@ void HT_caps_handler(_adapter *padapter, PNDIS_802_11_VARIABLE_IEs pIE)
 		set_mcs_rate_by_mask(pmlmeinfo->HT_caps.u.HT_cap_element.MCS_rate, MCS_RATE_3R);
 		break;
 	default:
-		RTW_INFO("[warning] rf_type %d is not expected\n", rf_type);
+		RTW_DBG("[warning] rf_type %d is not expected\n", rf_type);
 	}
 
 	if (check_fwstate(pmlmepriv, WIFI_AP_STATE)) {
 		/* Config STBC setting */
 		if (TEST_FLAG(phtpriv->stbc_cap, STBC_HT_ENABLE_TX) && GET_HT_CAP_ELE_RX_STBC(pIE->data)) {
 			SET_FLAG(cur_stbc_cap, STBC_HT_ENABLE_TX);
-			RTW_INFO("Enable HT Tx STBC !\n");
+			RTW_DBG("Enable HT Tx STBC !\n");
 		}
 		phtpriv->stbc_cap = cur_stbc_cap;
 
@@ -2063,21 +2063,21 @@ void HT_caps_handler(_adapter *padapter, PNDIS_802_11_VARIABLE_IEs pIE)
 		}
 		phtpriv->beamform_cap = cur_beamform_cap;
 		if (cur_beamform_cap)
-			RTW_INFO("AP HT Beamforming Cap = 0x%02X\n", cur_beamform_cap);
+			RTW_DBG("AP HT Beamforming Cap = 0x%02X\n", cur_beamform_cap);
 #endif /*CONFIG_BEAMFORMING*/
 	} else {
 		/*WIFI_STATION_STATEorI_ADHOC_STATE or WIFI_ADHOC_MASTER_STATE*/
 		/* Config LDPC Coding Capability */
 		if (TEST_FLAG(phtpriv->ldpc_cap, LDPC_HT_ENABLE_TX) && GET_HT_CAP_ELE_LDPC_CAP(pIE->data)) {
 			SET_FLAG(cur_ldpc_cap, (LDPC_HT_ENABLE_TX | LDPC_HT_CAP_TX));
-			RTW_INFO("Enable HT Tx LDPC!\n");
+			RTW_DBG("Enable HT Tx LDPC!\n");
 		}
 		phtpriv->ldpc_cap = cur_ldpc_cap;
 
 		/* Config STBC setting */
 		if (TEST_FLAG(phtpriv->stbc_cap, STBC_HT_ENABLE_TX) && GET_HT_CAP_ELE_RX_STBC(pIE->data)) {
 			SET_FLAG(cur_stbc_cap, (STBC_HT_ENABLE_TX | STBC_HT_CAP_TX));
-			RTW_INFO("Enable HT Tx STBC!\n");
+			RTW_DBG("Enable HT Tx STBC!\n");
 		}
 		phtpriv->stbc_cap = cur_stbc_cap;
 
@@ -2115,7 +2115,7 @@ void HT_caps_handler(_adapter *padapter, PNDIS_802_11_VARIABLE_IEs pIE)
 #endif /* !RTW_BEAMFORMING_VERSION_2 */
 		phtpriv->beamform_cap = cur_beamform_cap;
 		if (cur_beamform_cap)
-			RTW_INFO("Client HT Beamforming Cap = 0x%02X\n", cur_beamform_cap);
+			RTW_DBG("Client HT Beamforming Cap = 0x%02X\n", cur_beamform_cap);
 #endif /*CONFIG_BEAMFORMING*/
 	}
 
@@ -2154,7 +2154,7 @@ void HTOnAssocRsp(_adapter *padapter)
 	struct mlme_ext_priv	*pmlmeext = &padapter->mlmeextpriv;
 	struct mlme_ext_info	*pmlmeinfo = &(pmlmeext->mlmext_info);
 
-	RTW_INFO("%s\n", __FUNCTION__);
+	RTW_DBG("%s\n", __FUNCTION__);
 
 	if ((pmlmeinfo->HT_info_enable) && (pmlmeinfo->HT_caps_enable))
 		pmlmeinfo->HT_enable = 1;
@@ -2213,7 +2213,7 @@ void HTOnAssocRsp(_adapter *padapter)
 		for (i = 0; i < 16; i++)
 			pmlmeinfo->HT_caps.HT_cap_element.MCS_rate[i] &= MCS_rate_1R[i];
 #endif
-		RTW_INFO("%s(): WLAN_HT_CAP_SM_PS_STATIC\n", __FUNCTION__);
+		RTW_DBG("%s(): WLAN_HT_CAP_SM_PS_STATIC\n", __FUNCTION__);
 	}
 
 	/*  */
@@ -2363,7 +2363,7 @@ int rtw_get_bcn_keys(ADAPTER *Adapter, u8 *pframe, u32 packet_len,
 		recv_beacon->bcn_channel = pht_info->primary_channel;
 	else {
 		/* we don't find channel IE, so don't check it */
-		/* RTW_INFO("Oops: %s we don't find channel IE, so don't check it\n", __func__); */
+		/* RTW_DBG("Oops: %s we don't find channel IE, so don't check it\n", __func__); */
 		recv_beacon->bcn_channel = Adapter->mlmeextpriv.cur_channel;
 	}
 
@@ -2405,11 +2405,11 @@ void rtw_dump_bcn_keys(struct beacon_keys *recv_beacon)
 	_rtw_memcpy(ssid, recv_beacon->ssid, recv_beacon->ssid_len);
 	ssid[recv_beacon->ssid_len] = '\0';
 
-	RTW_INFO("%s: ssid = %s\n", __func__, ssid);
-	RTW_INFO("%s: channel = %x\n", __func__, recv_beacon->bcn_channel);
-	RTW_INFO("%s: ht_cap = %x\n", __func__,	recv_beacon->ht_cap_info);
-	RTW_INFO("%s: ht_info_infos_0_sco = %x\n", __func__, recv_beacon->ht_info_infos_0_sco);
-	RTW_INFO("%s: sec=%d, group = %x, pair = %x, 8021X = %x\n", __func__,
+	RTW_DBG("%s: ssid = %s\n", __func__, ssid);
+	RTW_DBG("%s: channel = %x\n", __func__, recv_beacon->bcn_channel);
+	RTW_DBG("%s: ht_cap = %x\n", __func__,	recv_beacon->ht_cap_info);
+	RTW_DBG("%s: ht_info_infos_0_sco = %x\n", __func__, recv_beacon->ht_info_infos_0_sco);
+	RTW_DBG("%s: sec=%d, group = %x, pair = %x, 8021X = %x\n", __func__,
 		 recv_beacon->encryp_protocol, recv_beacon->group_cipher,
 		 recv_beacon->pairwise_cipher, recv_beacon->is_8021x);
 }
@@ -2502,8 +2502,8 @@ int rtw_check_bcn_info(ADAPTER *Adapter, u8 *pframe, u32 packet_len)
 			return _FAIL;
 		}
 
-		RTW_INFO("%s bw mode change\n", __func__);
-		RTW_INFO("%s bcn now: ht_cap_info:%x ht_info_infos_0:%x\n", __func__,
+		RTW_DBG("%s bw mode change\n", __func__);
+		RTW_DBG("%s bcn now: ht_cap_info:%x ht_info_infos_0:%x\n", __func__,
 			 cur_network->BcnInfo.ht_cap_info,
 			 cur_network->BcnInfo.ht_info_infos_0);
 
@@ -2512,7 +2512,7 @@ int rtw_check_bcn_info(ADAPTER *Adapter, u8 *pframe, u32 packet_len)
 			(cur_network->BcnInfo.ht_info_infos_0 & (~0x03)) |
 			recv_beacon.ht_info_infos_0_sco;
 
-		RTW_INFO("%s bcn link: ht_cap_info:%x ht_info_infos_0:%x\n", __func__,
+		RTW_DBG("%s bcn link: ht_cap_info:%x ht_info_infos_0:%x\n", __func__,
 			 cur_network->BcnInfo.ht_cap_info,
 			 cur_network->BcnInfo.ht_info_infos_0);
 
@@ -2525,7 +2525,7 @@ int rtw_check_bcn_info(ADAPTER *Adapter, u8 *pframe, u32 packet_len)
 #if 0
 	bssid = (WLAN_BSSID_EX *)rtw_zmalloc(sizeof(WLAN_BSSID_EX));
 	if (bssid == NULL) {
-		RTW_INFO("%s rtw_zmalloc fail !!!\n", __func__);
+		RTW_DBG("%s rtw_zmalloc fail !!!\n", __func__);
 		return _TRUE;
 	}
 
@@ -2562,11 +2562,11 @@ int rtw_check_bcn_info(ADAPTER *Adapter, u8 *pframe, u32 packet_len)
 		ht_info_infos_0 = 0;
 	if (ht_cap_info != cur_network->BcnInfo.ht_cap_info ||
 	    ((ht_info_infos_0 & 0x03) != (cur_network->BcnInfo.ht_info_infos_0 & 0x03))) {
-		RTW_INFO("%s bcn now: ht_cap_info:%x ht_info_infos_0:%x\n", __func__,
+		RTW_DBG("%s bcn now: ht_cap_info:%x ht_info_infos_0:%x\n", __func__,
 			 ht_cap_info, ht_info_infos_0);
-		RTW_INFO("%s bcn link: ht_cap_info:%x ht_info_infos_0:%x\n", __func__,
+		RTW_DBG("%s bcn link: ht_cap_info:%x ht_info_infos_0:%x\n", __func__,
 			cur_network->BcnInfo.ht_cap_info, cur_network->BcnInfo.ht_info_infos_0);
-		RTW_INFO("%s bw mode change\n", __func__);
+		RTW_DBG("%s bw mode change\n", __func__);
 		{
 			/* bcn_info_update */
 			cur_network->BcnInfo.ht_cap_info = ht_cap_info;
@@ -2585,12 +2585,12 @@ int rtw_check_bcn_info(ADAPTER *Adapter, u8 *pframe, u32 packet_len)
 		if (pht_info)
 			bcn_channel = pht_info->primary_channel;
 		else { /* we don't find channel IE, so don't check it */
-			/* RTW_INFO("Oops: %s we don't find channel IE, so don't check it\n", __func__); */
+			/* RTW_DBG("Oops: %s we don't find channel IE, so don't check it\n", __func__); */
 			bcn_channel = Adapter->mlmeextpriv.cur_channel;
 		}
 	}
 	if (bcn_channel != Adapter->mlmeextpriv.cur_channel) {
-		RTW_INFO("%s beacon channel:%d cur channel:%d disconnect\n", __func__,
+		RTW_DBG("%s beacon channel:%d cur channel:%d disconnect\n", __func__,
 			 bcn_channel, Adapter->mlmeextpriv.cur_channel);
 		goto _mismatch;
 	}
@@ -2598,7 +2598,7 @@ int rtw_check_bcn_info(ADAPTER *Adapter, u8 *pframe, u32 packet_len)
 	/* checking SSID */
 	p = rtw_get_ie(bssid->IEs + _FIXED_IE_LENGTH_, _SSID_IE_, &len, bssid->IELength - _FIXED_IE_LENGTH_);
 	if (p == NULL) {
-		RTW_INFO("%s marc: cannot find SSID for survey event\n", __func__);
+		RTW_DBG("%s marc: cannot find SSID for survey event\n", __func__);
 		hidden_ssid = _TRUE;
 	} else
 		hidden_ssid = _FALSE;
@@ -2615,7 +2615,7 @@ int rtw_check_bcn_info(ADAPTER *Adapter, u8 *pframe, u32 packet_len)
 	if (_rtw_memcmp(bssid->Ssid.Ssid, cur_network->network.Ssid.Ssid, 32) == _FALSE ||
 	    bssid->Ssid.SsidLength != cur_network->network.Ssid.SsidLength) {
 		if (bssid->Ssid.Ssid[0] != '\0' && bssid->Ssid.SsidLength != 0) { /* not hidden ssid */
-			RTW_INFO("%s(), SSID is not match\n", __func__);
+			RTW_DBG("%s(), SSID is not match\n", __func__);
 			goto _mismatch;
 		}
 	}
@@ -2629,7 +2629,7 @@ int rtw_check_bcn_info(ADAPTER *Adapter, u8 *pframe, u32 packet_len)
 		bssid->Privacy = 0;
 
 	if (cur_network->network.Privacy != bssid->Privacy) {
-		RTW_INFO("%s(), privacy is not match\n", __func__);
+		RTW_DBG("%s(), privacy is not match\n", __func__);
 		goto _mismatch;
 	}
 
@@ -2645,7 +2645,7 @@ int rtw_check_bcn_info(ADAPTER *Adapter, u8 *pframe, u32 packet_len)
 	}
 
 	if (cur_network->BcnInfo.encryp_protocol != encryp_protocol) {
-		RTW_INFO("%s(): enctyp is not match\n", __func__);
+		RTW_DBG("%s(): enctyp is not match\n", __func__);
 		goto _mismatch;
 	}
 
@@ -2662,14 +2662,14 @@ int rtw_check_bcn_info(ADAPTER *Adapter, u8 *pframe, u32 packet_len)
 		}
 
 		if (pairwise_cipher != cur_network->BcnInfo.pairwise_cipher || group_cipher != cur_network->BcnInfo.group_cipher) {
-			RTW_INFO("%s pairwise_cipher(%x:%x) or group_cipher(%x:%x) is not match\n", __func__,
+			RTW_DBG("%s pairwise_cipher(%x:%x) or group_cipher(%x:%x) is not match\n", __func__,
 				pairwise_cipher, cur_network->BcnInfo.pairwise_cipher,
 				group_cipher, cur_network->BcnInfo.group_cipher);
 			goto _mismatch;
 		}
 
 		if (is_8021x != cur_network->BcnInfo.is_8021x) {
-			RTW_INFO("%s authentication is not match\n", __func__);
+			RTW_DBG("%s authentication is not match\n", __func__);
 			goto _mismatch;
 		}
 	}
@@ -2684,11 +2684,11 @@ _mismatch:
 		pmlmepriv->timeBcnInfoChkStart = rtw_get_current_time();
 
 	pmlmepriv->NumOfBcnInfoChkFail++;
-	RTW_INFO("%s by "ADPT_FMT" - NumOfChkFail = %d (SeqNum of this Beacon frame = %d).\n", __func__, ADPT_ARG(Adapter), pmlmepriv->NumOfBcnInfoChkFail, GetSequence(pframe));
+	RTW_DBG("%s by "ADPT_FMT" - NumOfChkFail = %d (SeqNum of this Beacon frame = %d).\n", __func__, ADPT_ARG(Adapter), pmlmepriv->NumOfBcnInfoChkFail, GetSequence(pframe));
 
 	if ((pmlmepriv->timeBcnInfoChkStart != 0) && (rtw_get_passing_time_ms(pmlmepriv->timeBcnInfoChkStart) <= DISCONNECT_BY_CHK_BCN_FAIL_OBSERV_PERIOD_IN_MS)
 	    && (pmlmepriv->NumOfBcnInfoChkFail >= DISCONNECT_BY_CHK_BCN_FAIL_THRESHOLD)) {
-		RTW_INFO("%s by "ADPT_FMT" - NumOfChkFail = %d >= threshold : %d (in %d ms), return FAIL.\n", __func__, ADPT_ARG(Adapter), pmlmepriv->NumOfBcnInfoChkFail,
+		RTW_DBG("%s by "ADPT_FMT" - NumOfChkFail = %d >= threshold : %d (in %d ms), return FAIL.\n", __func__, ADPT_ARG(Adapter), pmlmepriv->NumOfBcnInfoChkFail,
 			DISCONNECT_BY_CHK_BCN_FAIL_THRESHOLD, rtw_get_passing_time_ms(pmlmepriv->timeBcnInfoChkStart));
 		pmlmepriv->timeBcnInfoChkStart = 0;
 		pmlmepriv->NumOfBcnInfoChkFail = 0;
@@ -3094,21 +3094,21 @@ unsigned char check_assoc_AP(u8 *pframe, uint len)
 		switch (pIE->ElementID) {
 		case _VENDOR_SPECIFIC_IE_:
 			if ((_rtw_memcmp(pIE->data, ARTHEROS_OUI1, 3)) || (_rtw_memcmp(pIE->data, ARTHEROS_OUI2, 3))) {
-				RTW_INFO("link to Artheros AP\n");
+				RTW_DBG("link to Artheros AP\n");
 				return HT_IOT_PEER_ATHEROS;
 			} else if ((_rtw_memcmp(pIE->data, BROADCOM_OUI1, 3))
 				   || (_rtw_memcmp(pIE->data, BROADCOM_OUI2, 3))
 				|| (_rtw_memcmp(pIE->data, BROADCOM_OUI3, 3))) {
-				RTW_INFO("link to Broadcom AP\n");
+				RTW_DBG("link to Broadcom AP\n");
 				return HT_IOT_PEER_BROADCOM;
 			} else if (_rtw_memcmp(pIE->data, MARVELL_OUI, 3)) {
-				RTW_INFO("link to Marvell AP\n");
+				RTW_DBG("link to Marvell AP\n");
 				return HT_IOT_PEER_MARVELL;
 			} else if (_rtw_memcmp(pIE->data, RALINK_OUI, 3)) {
-				RTW_INFO("link to Ralink AP\n");
+				RTW_DBG("link to Ralink AP\n");
 				return HT_IOT_PEER_RALINK;
 			} else if (_rtw_memcmp(pIE->data, CISCO_OUI, 3)) {
-				RTW_INFO("link to Cisco AP\n");
+				RTW_DBG("link to Cisco AP\n");
 				return HT_IOT_PEER_CISCO;
 			} else if (_rtw_memcmp(pIE->data, REALTEK_OUI, 3)) {
 				u32	Vender = HT_IOT_PEER_REALTEK;
@@ -3130,19 +3130,19 @@ unsigned char check_assoc_AP(u8 *pframe, uint len)
 					if (pIE->data[4] == 2) {
 						if (pIE->data[6] & RT_HT_CAP_USE_JAGUAR_BCUT) {
 							Vender = HT_IOT_PEER_REALTEK_JAGUAR_BCUTAP;
-							RTW_INFO("link to Realtek JAGUAR_BCUTAP\n");
+							RTW_DBG("link to Realtek JAGUAR_BCUTAP\n");
 						}
 						if (pIE->data[6] & RT_HT_CAP_USE_JAGUAR_CCUT) {
 							Vender = HT_IOT_PEER_REALTEK_JAGUAR_CCUTAP;
-							RTW_INFO("link to Realtek JAGUAR_CCUTAP\n");
+							RTW_DBG("link to Realtek JAGUAR_CCUTAP\n");
 						}
 					}
 				}
 
-				RTW_INFO("link to Realtek AP\n");
+				RTW_DBG("link to Realtek AP\n");
 				return Vender;
 			} else if (_rtw_memcmp(pIE->data, AIRGOCAP_OUI, 3)) {
-				RTW_INFO("link to Airgo Cap\n");
+				RTW_DBG("link to Airgo Cap\n");
 				return HT_IOT_PEER_AIRGO;
 			} else
 				break;
@@ -3154,7 +3154,7 @@ unsigned char check_assoc_AP(u8 *pframe, uint len)
 		i += (pIE->Length + 2);
 	}
 
-	RTW_INFO("link to new AP\n");
+	RTW_DBG("link to new AP\n");
 	return HT_IOT_PEER_UNKNOWN;
 }
 
@@ -3256,7 +3256,7 @@ void update_wireless_mode(_adapter *padapter)
 	}
 
 	pmlmeext->cur_wireless_mode = network_type & padapter->registrypriv.wireless_mode;
-	/* RTW_INFO("network_type=%02x, padapter->registrypriv.wireless_mode=%02x\n", network_type, padapter->registrypriv.wireless_mode); */
+	/* RTW_DBG("network_type=%02x, padapter->registrypriv.wireless_mode=%02x\n", network_type, padapter->registrypriv.wireless_mode); */
 #if 0
 	if ((pmlmeext->cur_wireless_mode == WIRELESS_11G) ||
 	    (pmlmeext->cur_wireless_mode == WIRELESS_11BG)) /* WIRELESS_MODE_G) */
@@ -3352,7 +3352,7 @@ ext_rate:
 		int i;
 
 		for (i = 0; i < *rate_num; i++)
-			RTW_INFO("rate:0x%02x\n", *(rate_set + i));
+			RTW_DBG("rate:0x%02x\n", *(rate_set + i));
 	}
 
 	return _SUCCESS;
@@ -3429,7 +3429,7 @@ void adaptive_early_32k(struct mlme_ext_priv *pmlmeext, u8 *pframe, uint len)
 	tsf = tsf << 32;
 	tsf |= le32_to_cpu(*pbuf);
 
-	/* RTW_INFO("%s(): tsf_upper= 0x%08x, tsf_lower=0x%08x\n", __func__, (u32)(tsf>>32), (u32)tsf); */
+	/* RTW_DBG("%s(): tsf_upper= 0x%08x, tsf_lower=0x%08x\n", __func__, (u32)(tsf>>32), (u32)tsf); */
 
 	/* delay = (timestamp mod 1024*100)/1000 (unit: ms) */
 	/* delay_ms = do_div(tsf, (pmlmeinfo->bcn_interval*1024))/1000; */
@@ -3445,12 +3445,12 @@ void adaptive_early_32k(struct mlme_ext_priv *pmlmeext, u8 *pframe, uint len)
 	}
 
 	/*
-		RTW_INFO("%s(): (a)bcn_cnt = %d\n", __func__, pmlmeext->bcn_cnt);
+		RTW_DBG("%s(): (a)bcn_cnt = %d\n", __func__, pmlmeext->bcn_cnt);
 
 
 		for(i=0; i<9; i++)
 		{
-			RTW_INFO("%s():bcn_delay_cnt[%d]=%d,  bcn_delay_ratio[%d]=%d\n", __func__, i,
+			RTW_DBG("%s():bcn_delay_cnt[%d]=%d,  bcn_delay_ratio[%d]=%d\n", __func__, i,
 				pmlmeext->bcn_delay_cnt[i] , i, pmlmeext->bcn_delay_ratio[i]);
 		}
 	*/
@@ -3465,13 +3465,13 @@ void adaptive_early_32k(struct mlme_ext_priv *pmlmeext, u8 *pframe, uint len)
 		DrvBcnEarly = 0xff;
 		DrvBcnTimeOut = 0xff;
 
-		RTW_INFO("%s(): bcn_cnt = %d\n", __func__, pmlmeext->bcn_cnt);
+		RTW_DBG("%s(): bcn_cnt = %d\n", __func__, pmlmeext->bcn_cnt);
 
 		for (i = 0; i < 9; i++) {
 			pmlmeext->bcn_delay_ratio[i] = (pmlmeext->bcn_delay_cnt[i] * 100) / pmlmeext->bcn_cnt;
 
 
-			/* RTW_INFO("%s():bcn_delay_cnt[%d]=%d,  bcn_delay_ratio[%d]=%d\n", __func__, i,  */
+			/* RTW_DBG("%s():bcn_delay_cnt[%d]=%d,  bcn_delay_ratio[%d]=%d\n", __func__, i,  */
 			/*	pmlmeext->bcn_delay_cnt[i] , i, pmlmeext->bcn_delay_ratio[i]); */
 
 			ratio_20_delay += pmlmeext->bcn_delay_ratio[i];
@@ -3479,12 +3479,12 @@ void adaptive_early_32k(struct mlme_ext_priv *pmlmeext, u8 *pframe, uint len)
 
 			if (ratio_20_delay > 20 && DrvBcnEarly == 0xff) {
 				DrvBcnEarly = i;
-				/* RTW_INFO("%s(): DrvBcnEarly = %d\n", __func__, DrvBcnEarly); */
+				/* RTW_DBG("%s(): DrvBcnEarly = %d\n", __func__, DrvBcnEarly); */
 			}
 
 			if (ratio_80_delay > 80 && DrvBcnTimeOut == 0xff) {
 				DrvBcnTimeOut = i;
-				/* RTW_INFO("%s(): DrvBcnTimeOut = %d\n", __func__, DrvBcnTimeOut); */
+				/* RTW_DBG("%s(): DrvBcnTimeOut = %d\n", __func__, DrvBcnTimeOut); */
 			}
 
 			/* reset adaptive_early_32k cnt */
@@ -3757,7 +3757,7 @@ void rtw_alloc_macid(_adapter *padapter, struct sta_info *psta)
 
 assigned:
 	psta->mac_id = i;
-	RTW_INFO(FUNC_ADPT_FMT" if%u, hwaddr:"MAC_FMT" macid:%u\n"
+	RTW_DBG(FUNC_ADPT_FMT" if%u, hwaddr:"MAC_FMT" macid:%u\n"
 		, FUNC_ADPT_ARG(padapter), padapter->iface_id + 1, MAC_ARG(psta->hwaddr), psta->mac_id);
 
 exit:
@@ -3862,7 +3862,7 @@ inline void rtw_macid_ctl_set_h2c_msr(struct macid_ctl_t *macid_ctl, u8 id, u8 h
 
 	macid_ctl->h2c_msr[id] = h2c_msr;
 	if (0)
-		RTW_INFO("macid:%u, h2c_msr:"H2C_MSR_FMT"\n", id, H2C_MSR_ARG(&macid_ctl->h2c_msr[id]));
+		RTW_DBG("macid:%u, h2c_msr:"H2C_MSR_FMT"\n", id, H2C_MSR_ARG(&macid_ctl->h2c_msr[id]));
 }
 
 inline void rtw_macid_ctl_set_bw(struct macid_ctl_t *macid_ctl, u8 id, u8 bw)
@@ -3874,7 +3874,7 @@ inline void rtw_macid_ctl_set_bw(struct macid_ctl_t *macid_ctl, u8 id, u8 bw)
 
 	macid_ctl->bw[id] = bw;
 	if (0)
-		RTW_INFO("macid:%u, bw:%s\n", id, ch_width_str(macid_ctl->bw[id]));
+		RTW_DBG("macid:%u, bw:%s\n", id, ch_width_str(macid_ctl->bw[id]));
 }
 
 inline void rtw_macid_ctl_set_vht_en(struct macid_ctl_t *macid_ctl, u8 id, u8 en)
@@ -3886,7 +3886,7 @@ inline void rtw_macid_ctl_set_vht_en(struct macid_ctl_t *macid_ctl, u8 id, u8 en
 
 	macid_ctl->vht_en[id] = en;
 	if (0)
-		RTW_INFO("macid:%u, vht_en:%u\n", id, macid_ctl->vht_en[id]);
+		RTW_DBG("macid:%u, vht_en:%u\n", id, macid_ctl->vht_en[id]);
 }
 
 inline void rtw_macid_ctl_set_rate_bmp0(struct macid_ctl_t *macid_ctl, u8 id, u32 bmp)
@@ -3898,7 +3898,7 @@ inline void rtw_macid_ctl_set_rate_bmp0(struct macid_ctl_t *macid_ctl, u8 id, u3
 
 	macid_ctl->rate_bmp0[id] = bmp;
 	if (0)
-		RTW_INFO("macid:%u, rate_bmp0:0x%08X\n", id, macid_ctl->rate_bmp0[id]);
+		RTW_DBG("macid:%u, rate_bmp0:0x%08X\n", id, macid_ctl->rate_bmp0[id]);
 }
 
 inline void rtw_macid_ctl_set_rate_bmp1(struct macid_ctl_t *macid_ctl, u8 id, u32 bmp)
@@ -3910,7 +3910,7 @@ inline void rtw_macid_ctl_set_rate_bmp1(struct macid_ctl_t *macid_ctl, u8 id, u3
 
 	macid_ctl->rate_bmp1[id] = bmp;
 	if (0)
-		RTW_INFO("macid:%u, rate_bmp1:0x%08X\n", id, macid_ctl->rate_bmp1[id]);
+		RTW_DBG("macid:%u, rate_bmp1:0x%08X\n", id, macid_ctl->rate_bmp1[id]);
 }
 
 inline void rtw_macid_ctl_init(struct macid_ctl_t *macid_ctl)
@@ -3994,7 +3994,7 @@ unsigned int setup_beacon_frame(_adapter *padapter, unsigned char *beacon_frame)
 		pframe = rtw_set_ie(pframe, _EXT_SUPPORTEDRATES_IE_, (rate_len - 8), (cur_network->SupportedRates + 8), &len);
 
 	if ((len + TXDESC_SIZE) > 256) {
-		/* RTW_INFO("marc: beacon frame too large\n"); */
+		/* RTW_DBG("marc: beacon frame too large\n"); */
 		return 0;
 	}
 
@@ -4056,7 +4056,7 @@ void rtw_get_current_ip_address(PADAPTER padapter, u8 *pcurrentip)
 				ipaddress[1] = (my_ifa_list->ifa_address >> 8) & 0xFF;
 				ipaddress[2] = (my_ifa_list->ifa_address >> 16) & 0xFF;
 				ipaddress[3] = my_ifa_list->ifa_address >> 24;
-				RTW_INFO("%s: %d.%d.%d.%d ==========\n", __func__,
+				RTW_DBG("%s: %d.%d.%d.%d ==========\n", __func__,
 					ipaddress[0], ipaddress[1], ipaddress[2], ipaddress[3]);
 				_rtw_memcpy(pcurrentip, ipaddress, 4);
 			}
@@ -4099,7 +4099,7 @@ bool rtw_wowlan_parser_pattern_cmd(u8 *input, char *pattern,
 
 			strncpy(member, input, len);
 			if (!rtw_check_pattern_valid(member, sizeof(member))) {
-				RTW_INFO("%s:[ERROR] pattern is invalid!!\n",
+				RTW_ERR("%s:[ERROR] pattern is invalid!!\n",
 					 __func__);
 				goto error;
 			}
@@ -4244,9 +4244,9 @@ void rtw_dump_priv_pattern(_adapter *adapter, u8 idx)
 	u8 val8 = 0;
 	int i = 0, j = 0, len = 0, max_len = 0;
 
-	RTW_INFO("=========[%d]========\n", idx);
+	RTW_DBG("=========[%d]========\n", idx);
 
-	RTW_INFO(">>>priv_pattern_content:\n");
+	RTW_DBG(">>>priv_pattern_content:\n");
 	p_str = str_1;
 	max_len = sizeof(str_1);
 	for (i = 0 ; i < MAX_WKFM_PATTERN_SIZE / 8 ; i++) {
@@ -4257,10 +4257,10 @@ void rtw_dump_priv_pattern(_adapter *adapter, u8 idx)
 			len += snprintf(p_str + len, max_len - len,
 					"%02x ", val8);
 		}
-		RTW_INFO("%s\n", p_str);
+		RTW_DBG("%s\n", p_str);
 	}
 
-	RTW_INFO(">>>priv_pattern_mask:\n");
+	RTW_DBG(">>>priv_pattern_mask:\n");
 	for (i = 0 ; i < MAX_WKFM_SIZE / 8 ; i++) {
 		_rtw_memset(p_str, 0, max_len);
 		len = 0;
@@ -4269,18 +4269,18 @@ void rtw_dump_priv_pattern(_adapter *adapter, u8 idx)
 			len += snprintf(p_str + len, max_len - len,
 					"%02x ", val8);
 		}
-		RTW_INFO("%s\n", p_str);
+		RTW_DBG("%s\n", p_str);
 	}
 
-	RTW_INFO(">>>priv_pattern_len:\n");
-	RTW_INFO("%s: len: %d\n", __func__, pwrctl->patterns[idx].len);
+	RTW_DBG(">>>priv_pattern_len:\n");
+	RTW_DBG("%s: len: %d\n", __func__, pwrctl->patterns[idx].len);
 }
 
 void rtw_wow_pattern_sw_dump(_adapter *adapter)
 {
 	int i;
 
-	RTW_INFO("********[RTK priv-patterns]*********\n");
+	RTW_DBG("********[RTK priv-patterns]*********\n");
 	for (i = 0 ; i < MAX_WKFM_CAM_NUM; i++)
 		rtw_dump_priv_pattern(adapter, i);
 }
@@ -4294,7 +4294,7 @@ void rtw_get_sec_iv(PADAPTER padapter, u8 *pcur_dot11txpn, u8 *StaAddr)
 	if (NULL == StaAddr)
 		return;
 	psta = rtw_get_stainfo(&padapter->stapriv, StaAddr);
-	RTW_INFO("%s(): StaAddr: %02x %02x %02x %02x %02x %02x\n",
+	RTW_DBG("%s(): StaAddr: %02x %02x %02x %02x %02x %02x\n",
 		 __func__, StaAddr[0], StaAddr[1], StaAddr[2],
 		 StaAddr[3], StaAddr[4], StaAddr[5]);
 
@@ -4304,7 +4304,7 @@ void rtw_get_sec_iv(PADAPTER padapter, u8 *pcur_dot11txpn, u8 *StaAddr)
 		else if (psecpriv->dot11PrivacyAlgrthm == _TKIP_)
 			TKIP_IV(pcur_dot11txpn, psta->dot11txpn, 0);
 
-		RTW_INFO("%s(): CurrentIV: %02x %02x %02x %02x %02x %02x %02x %02x\n"
+		RTW_DBG("%s(): CurrentIV: %02x %02x %02x %02x %02x %02x %02x %02x\n"
 			 , __func__, pcur_dot11txpn[0], pcur_dot11txpn[1],
 			pcur_dot11txpn[2], pcur_dot11txpn[3], pcur_dot11txpn[4],
 			pcur_dot11txpn[5], pcur_dot11txpn[6], pcur_dot11txpn[7]);
@@ -4329,7 +4329,7 @@ int rtw_parse_ssid_list_tlv(char **list_str, pno_ssid_t *ssid,
 	int idx = 0;
 
 	if ((list_str == NULL) || (*list_str == NULL) || (*bytes_left < 0)) {
-		RTW_INFO("%s error paramters\n", __func__);
+		RTW_ERR("%s error paramters\n", __func__);
 		return -1;
 	}
 
@@ -4338,7 +4338,7 @@ int rtw_parse_ssid_list_tlv(char **list_str, pno_ssid_t *ssid,
 
 		if (str[0] != CSCAN_TLV_TYPE_SSID_IE) {
 			*list_str = str;
-			RTW_INFO("nssid=%d left_parse=%d %d\n", idx, *bytes_left, str[0]);
+			RTW_DBG("nssid=%d left_parse=%d %d\n", idx, *bytes_left, str[0]);
 			return idx;
 		}
 
@@ -4353,7 +4353,7 @@ int rtw_parse_ssid_list_tlv(char **list_str, pno_ssid_t *ssid,
 			*bytes_left -= 1;
 			str += 1;
 
-			RTW_INFO("BROADCAST SCAN  left=%d\n", *bytes_left);
+			RTW_DBG("BROADCAST SCAN  left=%d\n", *bytes_left);
 		} else if (str[0] <= WLAN_SSID_MAXLEN) {
 			/* Get proper SSID size */
 			ssid[idx].SSID_len = str[0];
@@ -4362,7 +4362,7 @@ int rtw_parse_ssid_list_tlv(char **list_str, pno_ssid_t *ssid,
 
 			/* Get SSID */
 			if (ssid[idx].SSID_len > *bytes_left) {
-				RTW_INFO("%s out of memory range len=%d but left=%d\n",
+				RTW_DBG("%s out of memory range len=%d but left=%d\n",
 					__func__, ssid[idx].SSID_len, *bytes_left);
 				return -1;
 			}
@@ -4372,15 +4372,15 @@ int rtw_parse_ssid_list_tlv(char **list_str, pno_ssid_t *ssid,
 			*bytes_left -= ssid[idx].SSID_len;
 			str += ssid[idx].SSID_len;
 
-			RTW_INFO("%s :size=%d left=%d\n",
+			RTW_DBG("%s :size=%d left=%d\n",
 				(char *)ssid[idx].SSID, ssid[idx].SSID_len, *bytes_left);
 		} else {
-			RTW_INFO("### SSID size more that %d\n", str[0]);
+			RTW_DBG("### SSID size more that %d\n", str[0]);
 			return -1;
 		}
 
 		if (idx++ >  max) {
-			RTW_INFO("%s number of SSIDs more that %d\n", __func__, idx);
+			RTW_DBG("%s number of SSIDs more that %d\n", __func__, idx);
 			return -1;
 		}
 	}
@@ -4398,7 +4398,7 @@ int rtw_parse_cipher_list(struct pno_nlo_info *nlo_info, char *list_str)
 	pch = list_str;
 
 	if (nlo_info == NULL || list_str == NULL) {
-		RTW_INFO("%s error paramters\n", __func__);
+		RTW_ERR("%s error paramters\n", __func__);
 		return -1;
 	}
 
@@ -4435,7 +4435,7 @@ int rtw_dev_nlo_info_set(struct pno_nlo_info *nlo_info, pno_ssid_t *ssid,
 	u8 *source = NULL;
 	long len = 0;
 
-	RTW_INFO("+%s+\n", __func__);
+	RTW_DBG("+%s+\n", __func__);
 
 	nlo_info->fast_scan_period = pno_time;
 	nlo_info->ssid_num = num & BIT_LEN_MASK_32(8);
@@ -4455,15 +4455,15 @@ int rtw_dev_nlo_info_set(struct pno_nlo_info *nlo_info, pno_ssid_t *ssid,
 	/* cipher array */
 	fp = filp_open("/data/misc/wifi/wpa_supplicant.conf", O_RDONLY,  0644);
 	if (IS_ERR(fp)) {
-		RTW_INFO("Error, wpa_supplicant.conf doesn't exist.\n");
-		RTW_INFO("Error, cipher array using default value.\n");
+		RTW_ERR("Error, wpa_supplicant.conf doesn't exist.\n");
+		RTW_ERR("Error, cipher array using default value.\n");
 		return 0;
 	}
 
 	len = i_size_read(fp->f_path.dentry->d_inode);
 	if (len < 0 || len > 2048) {
-		RTW_INFO("Error, file size is bigger than 2048.\n");
-		RTW_INFO("Error, cipher array using default value.\n");
+		RTW_ERR("Error, file size is bigger than 2048.\n");
+		RTW_ERR("Error, cipher array using default value.\n");
 		return 0;
 	}
 
@@ -4481,7 +4481,7 @@ int rtw_dev_nlo_info_set(struct pno_nlo_info *nlo_info, pno_ssid_t *ssid,
 	set_fs(fs);
 	filp_close(fp, NULL);
 
-	RTW_INFO("-%s-\n", __func__);
+	RTW_DBG("-%s-\n", __func__);
 	return 0;
 }
 
@@ -4528,7 +4528,7 @@ int rtw_dev_scan_info_set(_adapter *padapter, pno_ssid_t *ssid,
 		scan_info->ssid_channel_info[i].channel = i + 1;
 	}
 
-	RTW_INFO("%s, channel_num: %d, orig_ch: %d, orig_bw: %d orig_40_offset: %d\n",
+	RTW_DBG("%s, channel_num: %d, orig_ch: %d, orig_bw: %d orig_40_offset: %d\n",
 		 __func__, scan_info->channel_num, scan_info->orig_ch,
 		 scan_info->orig_bw, scan_info->orig_40_offset);
 	return 0;
@@ -4545,12 +4545,12 @@ int rtw_dev_pno_set(struct net_device *net, pno_ssid_t *ssid, int num,
 	int ret = -1;
 
 	if (num == 0) {
-		RTW_INFO("%s, nssid is zero, no need to setup pno ssid list\n", __func__);
+		RTW_DBG("%s, nssid is zero, no need to setup pno ssid list\n", __func__);
 		return 0;
 	}
 
 	if (pwrctl == NULL) {
-		RTW_INFO("%s, ERROR: pwrctl is NULL\n", __func__);
+		RTW_ERR("%s, ERROR: pwrctl is NULL\n", __func__);
 		return -1;
 	} else {
 		pwrctl->pnlo_info =
@@ -4564,7 +4564,7 @@ int rtw_dev_pno_set(struct net_device *net, pno_ssid_t *ssid, int num,
 	if (pwrctl->pnlo_info == NULL ||
 	    pwrctl->pscan_info == NULL ||
 	    pwrctl->pno_ssid_list == NULL) {
-		RTW_INFO("%s, ERROR: alloc nlo_info, ssid_list, scan_info fail\n", __func__);
+		RTW_ERR("%s, ERROR: alloc nlo_info, ssid_list, scan_info fail\n", __func__);
 		goto failing;
 	}
 
@@ -4582,7 +4582,7 @@ int rtw_dev_pno_set(struct net_device *net, pno_ssid_t *ssid, int num,
 	ret = rtw_dev_scan_info_set(padapter, ssid, pmlmeext->cur_channel,
 			    pmlmeext->cur_ch_offset, pmlmeext->cur_bwmode);
 
-	RTW_INFO("+%s num: %d, pno_time: %d, pno_repeat:%d, pno_freq_expo_max:%d+\n",
+	RTW_DBG("+%s num: %d, pno_time: %d, pno_repeat:%d, pno_freq_expo_max:%d+\n",
 		 __func__, num, pno_time, pno_repeat, pno_freq_expo_max);
 
 	return 0;
@@ -4611,34 +4611,34 @@ void rtw_dev_pno_debug(struct net_device *net)
 	struct pwrctrl_priv *pwrctl = adapter_to_pwrctl(padapter);
 	int i = 0, j = 0;
 
-	RTW_INFO("*******NLO_INFO********\n");
-	RTW_INFO("ssid_num: %d\n", pwrctl->pnlo_info->ssid_num);
-	RTW_INFO("fast_scan_iterations: %d\n",
+	RTW_DBG("*******NLO_INFO********\n");
+	RTW_DBG("ssid_num: %d\n", pwrctl->pnlo_info->ssid_num);
+	RTW_DBG("fast_scan_iterations: %d\n",
 		 pwrctl->pnlo_info->fast_scan_iterations);
-	RTW_INFO("fast_scan_period: %d\n", pwrctl->pnlo_info->fast_scan_period);
-	RTW_INFO("slow_scan_period: %d\n", pwrctl->pnlo_info->slow_scan_period);
+	RTW_DBG("fast_scan_period: %d\n", pwrctl->pnlo_info->fast_scan_period);
+	RTW_DBG("slow_scan_period: %d\n", pwrctl->pnlo_info->slow_scan_period);
 
 
 
 	for (i = 0 ; i < MAX_PNO_LIST_COUNT ; i++) {
-		RTW_INFO("%d SSID (%s) length (%d) cipher(%x) channel(%d)\n",
+		RTW_DBG("%d SSID (%s) length (%d) cipher(%x) channel(%d)\n",
 			i, pwrctl->pno_ssid_list->node[i].SSID, pwrctl->pnlo_info->ssid_length[i],
 			pwrctl->pnlo_info->ssid_cipher_info[i], pwrctl->pnlo_info->ssid_channel_info[i]);
 	}
 
-	RTW_INFO("******SCAN_INFO******\n");
-	RTW_INFO("ch_num: %d\n", pwrctl->pscan_info->channel_num);
-	RTW_INFO("orig_ch: %d\n", pwrctl->pscan_info->orig_ch);
-	RTW_INFO("orig bw: %d\n", pwrctl->pscan_info->orig_bw);
-	RTW_INFO("orig 40 offset: %d\n", pwrctl->pscan_info->orig_40_offset);
+	RTW_DBG("******SCAN_INFO******\n");
+	RTW_DBG("ch_num: %d\n", pwrctl->pscan_info->channel_num);
+	RTW_DBG("orig_ch: %d\n", pwrctl->pscan_info->orig_ch);
+	RTW_DBG("orig bw: %d\n", pwrctl->pscan_info->orig_bw);
+	RTW_DBG("orig 40 offset: %d\n", pwrctl->pscan_info->orig_40_offset);
 	for (i = 0 ; i < MAX_SCAN_LIST_COUNT ; i++) {
-		RTW_INFO("[%02d] avtive:%d, timeout:%d, tx_power:%d, ch:%02d\n",
+		RTW_DBG("[%02d] avtive:%d, timeout:%d, tx_power:%d, ch:%02d\n",
 			 i, pwrctl->pscan_info->ssid_channel_info[i].active,
 			 pwrctl->pscan_info->ssid_channel_info[i].timeout,
 			 pwrctl->pscan_info->ssid_channel_info[i].tx_power,
 			 pwrctl->pscan_info->ssid_channel_info[i].channel);
 	}
-	RTW_INFO("*****************\n");
+	RTW_DBG("*****************\n");
 }
 #endif /* CONFIG_PNO_SET_DEBUG */
 #endif /* CONFIG_PNO_SUPPORT */

@@ -115,7 +115,7 @@ int recvbuf2recvframe(PADAPTER padapter, void *ptr)
 	do {
 		precvframe = rtw_alloc_recvframe(pfree_recv_queue);
 		if (precvframe == NULL) {
-			RTW_INFO("%s()-%d: rtw_alloc_recvframe() failed! RX Drop!\n", __func__, __LINE__);
+			RTW_DBG("%s()-%d: rtw_alloc_recvframe() failed! RX Drop!\n", __func__, __LINE__);
 			goto _exit_recvbuf2recvframe;
 		}
 
@@ -128,7 +128,7 @@ int recvbuf2recvframe(PADAPTER padapter, void *ptr)
 		pattrib = &precvframe->u.hdr.attrib;
 
 		if ((padapter->registrypriv.mp_mode == 0) && ((pattrib->crc_err) || (pattrib->icv_err))) {
-			RTW_INFO("%s: RX Warning! crc_err=%d icv_err=%d, skip!\n", __func__, pattrib->crc_err, pattrib->icv_err);
+			RTW_DBG("%s: RX Warning! crc_err=%d icv_err=%d, skip!\n", __func__, pattrib->crc_err, pattrib->icv_err);
 
 			rtw_free_recvframe(precvframe, pfree_recv_queue);
 			goto _exit_recvbuf2recvframe;
@@ -137,10 +137,10 @@ int recvbuf2recvframe(PADAPTER padapter, void *ptr)
 		pkt_offset = RXDESC_SIZE + pattrib->drvinfo_sz + pattrib->shift_sz + pattrib->pkt_len;
 
 		if ((pattrib->pkt_len <= 0) || (pkt_offset > transfer_len)) {
-			RTW_INFO("%s()-%d: RX Warning!,pkt_len<=0(%d) or pkt_offset(%d)> transfer_len(%d)\n"
+			RTW_DBG("%s()-%d: RX Warning!,pkt_len<=0(%d) or pkt_offset(%d)> transfer_len(%d)\n"
 				, __func__, __LINE__, pattrib->pkt_len, pkt_offset, transfer_len);
 			if (pkt_offset > transfer_len)
-				RTW_INFO("%s()-%d: RX Warning!,RXDESC_SIZE(%d), drvinfo_sz(%d), shift_sz(%d),pkt_len(%d)\n"
+				RTW_DBG("%s()-%d: RX Warning!,RXDESC_SIZE(%d), drvinfo_sz(%d), shift_sz(%d),pkt_len(%d)\n"
 					, __func__, __LINE__, RXDESC_SIZE, pattrib->drvinfo_sz, pattrib->shift_sz, pattrib->pkt_len);
 
 			rtw_free_recvframe(precvframe, pfree_recv_queue);
@@ -157,7 +157,7 @@ int recvbuf2recvframe(PADAPTER padapter, void *ptr)
 		case TX_REPORT1:
 		case TX_REPORT2:
 		case HIS_REPORT:
-			RTW_INFO("%s: [WARNNING] RX type(%d) not be handled!\n", __func__, pattrib->pkt_rpt_type);
+			RTW_DBG("%s: [WARNNING] RX type(%d) not be handled!\n", __func__, pattrib->pkt_rpt_type);
 			rtw_free_recvframe(precvframe, pfree_recv_queue);
 			break;
 		case NORMAL_RX:

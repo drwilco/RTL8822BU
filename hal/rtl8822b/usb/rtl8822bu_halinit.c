@@ -40,7 +40,7 @@ static void _dbg_dump_macreg(PADAPTER padapter)
 	for (index = 0; index < 64; index++) {
 		offset = index * 4;
 		val32 = rtw_read32(padapter, offset);
-		RTW_INFO("offset : 0x%02x ,val:0x%08x\n", offset, val32);
+		RTW_DBG("offset : 0x%02x ,val:0x%08x\n", offset, val32);
 	}
 }
 
@@ -52,7 +52,7 @@ u32 rtl8822bu_init(PADAPTER padapter)
 	rtl8822b_init(padapter);
 
 exit:
-	RTW_INFO("%s in %dms\n", __func__, rtw_get_passing_time_ms(init_start_time));
+	RTW_DBG("%s in %dms\n", __func__, rtw_get_passing_time_ms(init_start_time));
 
 	return status;
 }
@@ -69,17 +69,17 @@ u32 rtl8822bu_deinit(PADAPTER padapter)
 	struct dvobj_priv *pobj_priv = adapter_to_dvobj(padapter);
 	u8 status = _TRUE;
 
-	RTW_INFO("==> %s\n", __func__);
+	RTW_DBG("==> %s\n", __func__);
 
 
 	hal_deinit_misc(padapter);
 	status = rtl8822b_deinit(padapter);
 	if (status == _FALSE) {
-		RTW_INFO("%s: rtl8822b_hal_deinit fail\n", __func__);
+		RTW_DBG("%s: rtl8822b_hal_deinit fail\n", __func__);
 		return _FAIL;
 	}
 
-	RTW_INFO("%s <==\n", __func__);
+	RTW_DBG("%s <==\n", __func__);
 	return _SUCCESS;
 }
 
@@ -120,7 +120,7 @@ u32 rtl8822bu_inirp_init(PADAPTER padapter)
 #ifdef CONFIG_USB_INTERRUPT_IN_PIPE
 	if (pdev->RtInPipe[REALTEK_USB_IN_INT_EP_IDX] != 0x05) {
 		status = _FAIL;
-		RTW_INFO("%s =>Warning !! Have not USB Int-IN pipe, RtIntInPipe(%d)!!!\n", __func__, pdev->RtInPipe[REALTEK_USB_IN_INT_EP_IDX]);
+		RTW_DBG("%s =>Warning !! Have not USB Int-IN pipe, RtIntInPipe(%d)!!!\n", __func__, pdev->RtInPipe[REALTEK_USB_IN_INT_EP_IDX]);
 		goto exit;
 	}
 	_read_interrupt = pintfhdl->io_ops._read_interrupt;
@@ -200,7 +200,7 @@ static void config_chip_out_EP(PADAPTER padapter, u8 NumOutPipe)
 		break;
 	}
 
-	RTW_INFO("%s OutEpQueueSel(0x%02x), OutEpNumber(%d)\n", __func__, pHalData->OutEpQueueSel, pHalData->OutEpNumber);
+	RTW_DBG("%s OutEpQueueSel(0x%02x), OutEpNumber(%d)\n", __func__, pHalData->OutEpQueueSel, pHalData->OutEpNumber);
 
 }
 

@@ -28,21 +28,21 @@ int rtw_os_recvframe_duplicate_skb(_adapter *padapter, union recv_frame *pclonef
 	struct rx_pkt_attrib *pattrib = &pcloneframe->u.hdr.attrib;
 
 	if (pskb == NULL) {
-		RTW_INFO("%s [WARN] skb == NULL, drop frag frame\n", __func__);
+		RTW_DBG("%s [WARN] skb == NULL, drop frag frame\n", __func__);
 		return _FAIL;
 	}
 #if 1
 	pkt_copy = rtw_skb_copy(pskb);
 
 	if (pkt_copy == NULL) {
-		RTW_INFO("%s [WARN] rtw_skb_copy fail , drop frag frame\n", __func__);
+		RTW_DBG("%s [WARN] rtw_skb_copy fail , drop frag frame\n", __func__);
 		return _FAIL;
 	}
 #else
 	pkt_copy = rtw_skb_clone(pskb);
 
 	if (pkt_copy == NULL) {
-		RTW_INFO("%s [WARN] rtw_skb_clone fail , drop frag frame\n", __func__);
+		RTW_DBG("%s [WARN] rtw_skb_clone fail , drop frag frame\n", __func__);
 		return _FAIL;
 	}
 #endif
@@ -122,7 +122,7 @@ int rtw_os_alloc_recvframe(_adapter *padapter, union recv_frame *precvframe, u8 
 #endif
 
 #ifdef CONFIG_USE_USB_BUFFER_ALLOC_RX
-		RTW_INFO("%s:can not allocate memory for skb copy\n", __func__);
+		RTW_DBG("%s:can not allocate memory for skb copy\n", __func__);
 
 		precvframe->u.hdr.pkt = NULL;
 
@@ -132,7 +132,7 @@ int rtw_os_alloc_recvframe(_adapter *padapter, union recv_frame *precvframe, u8 
 		res = _FAIL;
 #else
 		if ((pattrib->mfrag == 1) && (pattrib->frag_num == 0)) {
-			RTW_INFO("%s: alloc_skb fail , drop frag frame\n", __FUNCTION__);
+			RTW_DBG("%s: alloc_skb fail , drop frag frame\n", __FUNCTION__);
 			/* rtw_free_recvframe(precvframe, pfree_recv_queue); */
 			res = _FAIL;
 			goto exit_rtw_os_recv_resource_alloc;
@@ -149,7 +149,7 @@ int rtw_os_alloc_recvframe(_adapter *padapter, union recv_frame *precvframe, u8 
 			precvframe->u.hdr.rx_head = precvframe->u.hdr.rx_data = precvframe->u.hdr.rx_tail = pdata;
 			precvframe->u.hdr.rx_end =  pdata + alloc_sz;
 		} else {
-			RTW_INFO("%s: rtw_skb_clone fail\n", __FUNCTION__);
+			RTW_DBG("%s: rtw_skb_clone fail\n", __FUNCTION__);
 			/* rtw_free_recvframe(precvframe, pfree_recv_queue); */
 			/*exit_rtw_os_recv_resource_alloc;*/
 			res = _FAIL;
@@ -314,7 +314,7 @@ _pkt *rtw_os_alloc_msdu_pkt(union recv_frame *prframe, u16 nSubframe_Length, u8 
 			sub_skb->len = nSubframe_Length;
 			skb_set_tail_pointer(sub_skb, nSubframe_Length);
 		} else {
-			RTW_INFO("%s(): rtw_skb_clone() Fail!!!\n", __FUNCTION__);
+			RTW_DBG("%s(): rtw_skb_clone() Fail!!!\n", __FUNCTION__);
 			return NULL;
 		}
 	}
@@ -422,10 +422,10 @@ void rtw_os_recv_indicate_pkt(_adapter *padapter, _pkt *pkt, struct rx_pkt_attri
 			struct sta_priv *pstapriv = &padapter->stapriv;
 			int bmcast = IS_MCAST(pattrib->dst);
 
-			/* RTW_INFO("bmcast=%d\n", bmcast); */
+			/* RTW_DBG("bmcast=%d\n", bmcast); */
 
 			if (_rtw_memcmp(pattrib->dst, adapter_mac_addr(padapter), ETH_ALEN) == _FALSE) {
-				/* RTW_INFO("not ap psta=%p, addr=%pM\n", psta, pattrib->dst); */
+				/* RTW_DBG("not ap psta=%p, addr=%pM\n", psta, pattrib->dst); */
 
 				if (bmcast) {
 					psta = rtw_get_bcmc_stainfo(padapter);
@@ -436,7 +436,7 @@ void rtw_os_recv_indicate_pkt(_adapter *padapter, _pkt *pkt, struct rx_pkt_attri
 				if (psta) {
 					struct net_device *pnetdev = (struct net_device *)padapter->pnetdev;
 
-					/* RTW_INFO("directly forwarding to the rtw_xmit_entry\n"); */
+					/* RTW_DBG("directly forwarding to the rtw_xmit_entry\n"); */
 
 					/* skb->ip_summed = CHECKSUM_NONE; */
 					pkt->dev = pnetdev;
@@ -455,7 +455,7 @@ void rtw_os_recv_indicate_pkt(_adapter *padapter, _pkt *pkt, struct rx_pkt_attri
 					}
 				}
 			} else { /* to APself */
-				/* RTW_INFO("to APSelf\n"); */
+				/* RTW_DBG("to APSelf\n"); */
 				DBG_COUNTER(padapter->rx_logs.os_indicate_ap_self);
 			}
 		}
@@ -496,12 +496,12 @@ void rtw_os_recv_indicate_pkt(_adapter *padapter, _pkt *pkt, struct rx_pkt_attri
 		if (*((unsigned short *)(pkt->data + ETH_ALEN * 2)) == htons(ETH_P_ARP)) {
 			/* ARP Payload length will be 42bytes or 42+18(tailer)=60bytes*/
 			if (pkt->len != 42 && pkt->len != 60)
-				RTW_INFO("Error !!%s,ARP Payload length %u not correct\n" , __func__ , pkt->len);
+				RTW_ERR("Error !!%s,ARP Payload length %u not correct\n" , __func__ , pkt->len);
 		} else if (*((unsigned short *)(pkt->data + ETH_ALEN * 2)) == htons(ETH_P_IP)) {
 			if (be16_to_cpu(*((u16 *)(pkt->data + PAYLOAD_LEN_LOC_OF_IP_HDR))) != (pkt->len) - ETH_HLEN) {
-				RTW_INFO("Error !!%s,Payload length not correct\n" , __func__);
-				RTW_INFO("%s, IP header describe Total length=%u\n" , __func__ , be16_to_cpu(*((u16 *)(pkt->data + PAYLOAD_LEN_LOC_OF_IP_HDR))));
-				RTW_INFO("%s, Pkt real length=%u\n" , __func__ , (pkt->len) - ETH_HLEN);
+				RTW_ERR("Error !!%s,Payload length not correct\n" , __func__);
+				RTW_DBG("%s, IP header describe Total length=%u\n" , __func__ , be16_to_cpu(*((u16 *)(pkt->data + PAYLOAD_LEN_LOC_OF_IP_HDR))));
+				RTW_DBG("%s, Pkt real length=%u\n" , __func__ , (pkt->len) - ETH_HLEN);
 			}
 		}
 #endif
@@ -612,7 +612,7 @@ void rtw_hostapd_mlme_rx(_adapter *padapter, union recv_frame *precv_frame)
 	/* skb->protocol = __constant_htons(0x0019); ETH_P_80211_RAW */
 	skb->protocol = __constant_htons(0x0003); /*ETH_P_80211_RAW*/
 
-	/* RTW_INFO("(1)data=0x%x, head=0x%x, tail=0x%x, mac_header=0x%x, len=%d\n", skb->data, skb->head, skb->tail, skb->mac_header, skb->len); */
+	/* RTW_DBG("(1)data=0x%x, head=0x%x, tail=0x%x, mac_header=0x%x, len=%d\n", skb->data, skb->head, skb->tail, skb->mac_header, skb->len); */
 
 	/* skb->mac.raw = skb->data; */
 	skb_reset_mac_header(skb);
@@ -633,14 +633,14 @@ static void rtw_os_ksocket_send(_adapter *padapter, union recv_frame *precv_fram
 	struct rx_pkt_attrib *pattrib = &precv_frame->u.hdr.attrib;
 	struct sta_info *psta = precv_frame->u.hdr.psta;
 
-	RTW_INFO("eth rx: got eth_type=0x%x\n", pattrib->eth_type);
+	RTW_DBG("eth rx: got eth_type=0x%x\n", pattrib->eth_type);
 
 	if (psta && psta->isrc && psta->pid > 0) {
 		u16 rx_pid;
 
 		rx_pid = *(u16 *)(skb->data + ETH_HLEN);
 
-		RTW_INFO("eth rx(pid=0x%x): sta("MAC_FMT") pid=0x%x\n",
+		RTW_DBG("eth rx(pid=0x%x): sta("MAC_FMT") pid=0x%x\n",
 			 rx_pid, MAC_ARG(psta->hwaddr), psta->pid);
 
 		if (rx_pid == psta->pid) {
@@ -648,20 +648,20 @@ static void rtw_os_ksocket_send(_adapter *padapter, union recv_frame *precv_fram
 			u16 len = *(u16 *)(skb->data + ETH_HLEN + 2);
 			/* u16 ctrl_type = *(u16*)(skb->data+ETH_HLEN+4); */
 
-			/* RTW_INFO("eth, RC: len=0x%x, ctrl_type=0x%x\n", len, ctrl_type);  */
-			RTW_INFO("eth, RC: len=0x%x\n", len);
+			/* RTW_DBG("eth, RC: len=0x%x, ctrl_type=0x%x\n", len, ctrl_type);  */
+			RTW_DBG("eth, RC: len=0x%x\n", len);
 
 			for (i = 0; i < len; i++)
-				RTW_INFO("0x%x\n", *(skb->data + ETH_HLEN + 4 + i));
-			/* RTW_INFO("0x%x\n", *(skb->data+ETH_HLEN+6+i)); */
+				RTW_DBG("0x%x\n", *(skb->data + ETH_HLEN + 4 + i));
+			/* RTW_DBG("0x%x\n", *(skb->data+ETH_HLEN+6+i)); */
 
-			RTW_INFO("eth, RC-end\n");
+			RTW_DBG("eth, RC-end\n");
 
 #if 0
 			/* send_sz = ksocket_send(padapter->ksock_send, &padapter->kaddr_send, (skb->data+ETH_HLEN+2), len);				 */
 			rtw_recv_ksocket_send_cmd(padapter, (skb->data + ETH_HLEN + 2), len);
 
-			/* RTW_INFO("ksocket_send size=%d\n", send_sz);  */
+			/* RTW_DBG("ksocket_send size=%d\n", send_sz);  */
 #endif
 		}
 
@@ -688,7 +688,7 @@ int rtw_recv_monitor(_adapter *padapter, union recv_frame *precv_frame)
 
 	skb = precv_frame->u.hdr.pkt;
 	if (skb == NULL) {
-		RTW_INFO("%s :skb==NULL something wrong!!!!\n", __func__);
+		RTW_DBG("%s :skb==NULL something wrong!!!!\n", __func__);
 		goto _recv_drop;
 	}
 
@@ -801,7 +801,7 @@ int rtw_recv_indicatepkt(_adapter *padapter, union recv_frame *precv_frame)
 							, IPV4_DST(ip), TCP_DST(tcp)
 							, IPV4_SRC(ip), TCP_SRC(tcp));
 						if (DBG_SESSION_TRACKER)
-							RTW_INFO(FUNC_ADPT_FMT" local:"IP_FMT":"PORT_FMT", remote:"IP_FMT":"PORT_FMT" SYN-ACK\n"
+							RTW_DBG(FUNC_ADPT_FMT" local:"IP_FMT":"PORT_FMT", remote:"IP_FMT":"PORT_FMT" SYN-ACK\n"
 								, FUNC_ADPT_ARG(padapter)
 								, IP_ARG(IPV4_DST(ip)), PORT_ARG(TCP_DST(tcp))
 								, IP_ARG(IPV4_SRC(ip)), PORT_ARG(TCP_SRC(tcp)));
@@ -811,7 +811,7 @@ int rtw_recv_indicatepkt(_adapter *padapter, union recv_frame *precv_frame)
 							, IPV4_DST(ip), TCP_DST(tcp)
 							, IPV4_SRC(ip), TCP_SRC(tcp));
 						if (DBG_SESSION_TRACKER)
-							RTW_INFO(FUNC_ADPT_FMT" local:"IP_FMT":"PORT_FMT", remote:"IP_FMT":"PORT_FMT" FIN\n"
+							RTW_DBG(FUNC_ADPT_FMT" local:"IP_FMT":"PORT_FMT", remote:"IP_FMT":"PORT_FMT" FIN\n"
 								, FUNC_ADPT_ARG(padapter)
 								, IP_ARG(IPV4_DST(ip)), PORT_ARG(TCP_DST(tcp))
 								, IP_ARG(IPV4_SRC(ip)), PORT_ARG(TCP_SRC(tcp)));

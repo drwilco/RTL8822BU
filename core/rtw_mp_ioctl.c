@@ -632,7 +632,7 @@ NDIS_STATUS oid_rt_pro_set_continuous_tx_hdl(struct oid_par_priv *poid_par_priv)
 		struct mp_priv *pmp_priv = &Adapter->mppriv;
 		if (pmp_priv->tx.stop == 0) {
 			pmp_priv->tx.stop = 1;
-			RTW_INFO("%s: pkt tx is running...\n", __func__);
+			RTW_DBG("%s: pkt tx is running...\n", __func__);
 			rtw_msleep_os(5);
 		}
 		pmp_priv->tx.stop = 0;
@@ -667,7 +667,7 @@ NDIS_STATUS oid_rt_pro_set_single_carrier_tx_hdl(struct oid_par_priv *poid_par_p
 		struct mp_priv *pmp_priv = &Adapter->mppriv;
 		if (pmp_priv->tx.stop == 0) {
 			pmp_priv->tx.stop = 1;
-			RTW_INFO("%s: pkt tx is running...\n", __func__);
+			RTW_DBG("%s: pkt tx is running...\n", __func__);
 			rtw_msleep_os(5);
 		}
 		pmp_priv->tx.stop = 0;
@@ -702,7 +702,7 @@ NDIS_STATUS oid_rt_pro_set_carrier_suppression_tx_hdl(struct oid_par_priv *poid_
 		struct mp_priv *pmp_priv = &Adapter->mppriv;
 		if (pmp_priv->tx.stop == 0) {
 			pmp_priv->tx.stop = 1;
-			RTW_INFO("%s: pkt tx is running...\n", __func__);
+			RTW_DBG("%s: pkt tx is running...\n", __func__);
 			rtw_msleep_os(5);
 		}
 		pmp_priv->tx.stop = 0;
@@ -2396,7 +2396,7 @@ unsigned int mp_ioctl_xmit_packet_hdl(struct oid_par_priv *poid_par_priv)
 	struct mp_xmit_packet *pmp_xmitpkt = (struct mp_xmit_packet *)param;
 	u8 addr3[] = {0x02, 0xE0, 0x4C, 0x87, 0x66, 0x55};
 
-	/*	RTW_INFO("+mp_ioctl_xmit_packet_hdl\n"); */
+	/*	RTW_DBG("+mp_ioctl_xmit_packet_hdl\n"); */
 
 	pxframe = alloc_mp_xmitframe(&padapter->mppriv);
 	if (pxframe == NULL) {
@@ -2409,10 +2409,10 @@ unsigned int mp_ioctl_xmit_packet_hdl(struct oid_par_priv *poid_par_priv)
 	pmp_pkt = (unsigned char *)pmp_xmitpkt->mem;
 	pethhdr = (struct ethhdr *)pmp_pkt;
 
-	/* RTW_INFO("payload_len=%d, pkt_mem=0x%x\n", pmp_xmitpkt->len, (void*)pmp_xmitpkt->mem); */
+	/* RTW_DBG("payload_len=%d, pkt_mem=0x%x\n", pmp_xmitpkt->len, (void*)pmp_xmitpkt->mem); */
 
-	/* RTW_INFO("pxframe=0x%x\n", (void*)pxframe); */
-	/* RTW_INFO("pxframe->mem=0x%x\n", (void*)pxframe->mem); */
+	/* RTW_DBG("pxframe=0x%x\n", (void*)pxframe); */
+	/* RTW_DBG("pxframe->mem=0x%x\n", (void*)pxframe->mem); */
 
 	/* update attribute */
 	pattrib = &pxframe->attrib;

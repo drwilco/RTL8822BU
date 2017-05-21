@@ -31,13 +31,13 @@ struct xmit_frame	*rtw_IOL_accquire_xmit_frame(ADAPTER *adapter)
 #if 1
 	xmit_frame = rtw_alloc_xmitframe(pxmitpriv);
 	if (xmit_frame == NULL) {
-		RTW_INFO("%s rtw_alloc_xmitframe return null\n", __FUNCTION__);
+		RTW_DBG("%s rtw_alloc_xmitframe return null\n", __FUNCTION__);
 		goto exit;
 	}
 
 	xmitbuf = rtw_alloc_xmitbuf(pxmitpriv);
 	if (xmitbuf == NULL) {
-		RTW_INFO("%s rtw_alloc_xmitbuf return null\n", __FUNCTION__);
+		RTW_DBG("%s rtw_alloc_xmitbuf return null\n", __FUNCTION__);
 		rtw_free_xmitframe(pxmitpriv, xmit_frame);
 		xmit_frame = NULL;
 		goto exit;
@@ -57,7 +57,7 @@ struct xmit_frame	*rtw_IOL_accquire_xmit_frame(ADAPTER *adapter)
 #else
 	xmit_frame = alloc_mgtxmitframe(pxmitpriv);
 	if (xmit_frame == NULL)
-		RTW_INFO("%s alloc_mgtxmitframe return null\n", __FUNCTION__);
+		RTW_DBG("%s alloc_mgtxmitframe return null\n", __FUNCTION__);
 	else {
 		pattrib = &xmit_frame->attrib;
 		update_mgntframe_attrib(adapter, pattrib);
@@ -82,7 +82,7 @@ int rtw_IOL_append_cmds(struct xmit_frame *xmit_frame, u8 *IOL_cmds, u32 cmd_len
 
 	/* check if the io_buf can accommodate new cmds */
 	if (ori_len + cmd_len + 8 > MAX_XMITBUF_SZ) {
-		RTW_INFO("%s %u is large than MAX_XMITBUF_SZ:%u, can't accommodate new cmds\n", __FUNCTION__
+		RTW_DBG("%s %u is large than MAX_XMITBUF_SZ:%u, can't accommodate new cmds\n", __FUNCTION__
 			 , ori_len + cmd_len + 8, MAX_XMITBUF_SZ);
 		return _FAIL;
 	}
@@ -91,7 +91,7 @@ int rtw_IOL_append_cmds(struct xmit_frame *xmit_frame, u8 *IOL_cmds, u32 cmd_len
 	pattrib->pktlen += cmd_len;
 	pattrib->last_txcmdsz += cmd_len;
 
-	/* RTW_INFO("%s ori:%u + cmd_len:%u = %u\n", __FUNCTION__, ori_len, cmd_len, buf_offset+pattrib->pktlen); */
+	/* RTW_DBG("%s ori:%u + cmd_len:%u = %u\n", __FUNCTION__, ori_len, cmd_len, buf_offset+pattrib->pktlen); */
 
 	return _SUCCESS;
 }
@@ -134,7 +134,7 @@ int _rtw_IOL_append_WB_cmd(struct xmit_frame *xmit_frame, u16 addr, u8 value, u8
 		cmd.mask = cpu_to_le32(mask);
 	}
 
-	/* RTW_INFO("%s addr:0x%04x,value:0x%08x,mask:0x%08x\n", __FUNCTION__, addr,value,mask); */
+	/* RTW_DBG("%s addr:0x%04x,value:0x%08x,mask:0x%08x\n", __FUNCTION__, addr,value,mask); */
 
 	return rtw_IOL_append_cmds(xmit_frame, (u8 *)&cmd, cmd.length);
 
@@ -154,7 +154,7 @@ int _rtw_IOL_append_WW_cmd(struct xmit_frame *xmit_frame, u16 addr, u16 value, u
 		cmd.mask =  cpu_to_le32(mask);
 	}
 
-	/* RTW_INFO("%s addr:0x%04x,value:0x%08x,mask:0x%08x\n", __FUNCTION__, addr,value,mask); */
+	/* RTW_DBG("%s addr:0x%04x,value:0x%08x,mask:0x%08x\n", __FUNCTION__, addr,value,mask); */
 
 	return rtw_IOL_append_cmds(xmit_frame, (u8 *)&cmd, cmd.length);
 
@@ -174,7 +174,7 @@ int _rtw_IOL_append_WD_cmd(struct xmit_frame *xmit_frame, u16 addr, u32 value, u
 		cmd.mask =  cpu_to_le32(mask);
 	}
 
-	/* RTW_INFO("%s addr:0x%04x,value:0x%08x,mask:0x%08x\n", __FU2NCTION__, addr,value,mask); */
+	/* RTW_DBG("%s addr:0x%04x,value:0x%08x,mask:0x%08x\n", __FU2NCTION__, addr,value,mask); */
 
 	return rtw_IOL_append_cmds(xmit_frame, (u8 *)&cmd, cmd.length);
 
@@ -195,7 +195,7 @@ int _rtw_IOL_append_WRF_cmd(struct xmit_frame *xmit_frame, u8 rf_path, u16 addr,
 		cmd.mask =  cpu_to_le32(mask);
 	}
 
-	/* RTW_INFO("%s rf_path:0x%02x addr:0x%04x,value:0x%08x,mask:0x%08x\n", __FU2NCTION__,rf_path, addr,value,mask); */
+	/* RTW_DBG("%s rf_path:0x%02x addr:0x%04x,value:0x%08x,mask:0x%08x\n", __FU2NCTION__,rf_path, addr,value,mask); */
 
 	return rtw_IOL_append_cmds(xmit_frame, (u8 *)&cmd, cmd.length);
 
@@ -209,7 +209,7 @@ int rtw_IOL_append_DELAY_US_cmd(struct xmit_frame *xmit_frame, u16 us)
 	/* RTW_PUT_LE16((u8*)&cmd.address, us);	 */
 	cmd.address = cpu_to_le16(us);
 
-	/* RTW_INFO("%s %u\n", __FUNCTION__, us); */
+	/* RTW_DBG("%s %u\n", __FUNCTION__, us); */
 	return rtw_IOL_append_cmds(xmit_frame, (u8 *)&cmd, 4);
 }
 
@@ -220,7 +220,7 @@ int rtw_IOL_append_DELAY_MS_cmd(struct xmit_frame *xmit_frame, u16 ms)
 	/* RTW_PUT_LE16((u8*)&cmd.address, ms);	 */
 	cmd.address = cpu_to_le16(ms);
 
-	/* RTW_INFO("%s %u\n", __FUNCTION__, ms); */
+	/* RTW_DBG("%s %u\n", __FUNCTION__, ms); */
 	return rtw_IOL_append_cmds(xmit_frame, (u8 *)&cmd, 4);
 }
 int rtw_IOL_append_END_cmd(struct xmit_frame *xmit_frame)
@@ -307,7 +307,7 @@ int _rtw_IOL_append_WD_cmd(struct xmit_frame *xmit_frame, u16 addr, u32 value)
 int dbg_rtw_IOL_append_WB_cmd(struct xmit_frame *xmit_frame, u16 addr, u8 value, const char *caller, const int line)
 {
 	if (match_write_sniff_ranges(addr, 1))
-		RTW_INFO("DBG_IO %s:%d IOL_WB(0x%04x, 0x%02x)\n", caller, line, addr, value);
+		RTW_DBG("DBG_IO %s:%d IOL_WB(0x%04x, 0x%02x)\n", caller, line, addr, value);
 
 	return _rtw_IOL_append_WB_cmd(xmit_frame, addr, value);
 }
@@ -315,7 +315,7 @@ int dbg_rtw_IOL_append_WB_cmd(struct xmit_frame *xmit_frame, u16 addr, u8 value,
 int dbg_rtw_IOL_append_WW_cmd(struct xmit_frame *xmit_frame, u16 addr, u16 value, const char *caller, const int line)
 {
 	if (match_write_sniff_ranges(addr, 2))
-		RTW_INFO("DBG_IO %s:%d IOL_WW(0x%04x, 0x%04x)\n", caller, line, addr, value);
+		RTW_DBG("DBG_IO %s:%d IOL_WW(0x%04x, 0x%04x)\n", caller, line, addr, value);
 
 	return _rtw_IOL_append_WW_cmd(xmit_frame, addr, value);
 }
@@ -323,7 +323,7 @@ int dbg_rtw_IOL_append_WW_cmd(struct xmit_frame *xmit_frame, u16 addr, u16 value
 int dbg_rtw_IOL_append_WD_cmd(struct xmit_frame *xmit_frame, u16 addr, u32 value, const char *caller, const int line)
 {
 	if (match_write_sniff_ranges(addr, 4))
-		RTW_INFO("DBG_IO %s:%d IOL_WD(0x%04x, 0x%08x)\n", caller, line, addr, value);
+		RTW_DBG("DBG_IO %s:%d IOL_WD(0x%04x, 0x%08x)\n", caller, line, addr, value);
 
 	return _rtw_IOL_append_WD_cmd(xmit_frame, addr, value);
 }
@@ -335,7 +335,7 @@ int rtw_IOL_append_DELAY_US_cmd(struct xmit_frame *xmit_frame, u16 us)
 
 	RTW_PUT_BE32((u8 *)&cmd.value, (u32)us);
 
-	/* RTW_INFO("%s %u\n", __FUNCTION__, us); */
+	/* RTW_DBG("%s %u\n", __FUNCTION__, us); */
 
 	return rtw_IOL_append_cmds(xmit_frame, (u8 *)&cmd, 8);
 }
@@ -346,7 +346,7 @@ int rtw_IOL_append_DELAY_MS_cmd(struct xmit_frame *xmit_frame, u16 ms)
 
 	RTW_PUT_BE32((u8 *)&cmd.value, (u32)ms);
 
-	/* RTW_INFO("%s %u\n", __FUNCTION__, ms); */
+	/* RTW_DBG("%s %u\n", __FUNCTION__, ms); */
 
 	return rtw_IOL_append_cmds(xmit_frame, (u8 *)&cmd, 8);
 }

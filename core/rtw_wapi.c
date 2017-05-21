@@ -364,7 +364,7 @@ u8 rtw_wapi_is_wai_packet(_adapter *padapter, u8 *pkt_data)
 
 	/* YJ,add,091103. Data frame may also have skb->data[30]=0x88 and skb->data[31]=0xb4. */
 	if ((pkt_data[1] & 0x40) != 0) {
-		/* RTW_INFO("data is privacy\n"); */
+		/* RTW_DBG("data is privacy\n"); */
 		return 0;
 	}
 
@@ -462,13 +462,13 @@ u8 rtw_wapi_check_for_drop(
 	if (precv_hdr->bIsWaiPacket != 0) {
 		if (precv_hdr->bIsWaiPacket == 0x8) {
 
-			RTW_INFO("rtw_wapi_check_for_drop: dump packet\n");
+			RTW_DBG("rtw_wapi_check_for_drop: dump packet\n");
 			for (i = 0; i < 50; i++) {
-				RTW_INFO("%02X  ", ptr[i]);
+				RTW_DBG("%02X  ", ptr[i]);
 				if ((i + 1) % 8 == 0)
-					RTW_INFO("\n");
+					RTW_DBG("\n");
 			}
-			RTW_INFO("\n rtw_wapi_check_for_drop: dump packet\n");
+			RTW_DBG("\n rtw_wapi_check_for_drop: dump packet\n");
 
 			for (i = 0; i < 16; i++) {
 				if (ptr[i + 27] != 0)
@@ -693,10 +693,10 @@ void rtw_wapi_return_one_sta_info(_adapter *padapter, u8 *MacAddr)
 
 		list_for_each_entry(pWapiStaInfo, &(pWapiInfo->wapiSTAUsedList), list) {
 
-			RTW_INFO("MAC Addr %02x-%02x-%02x-%02x-%02x-%02x\n", MacAddr[0], MacAddr[1], MacAddr[2], MacAddr[3], MacAddr[4], MacAddr[5]);
+			RTW_DBG("MAC Addr %02x-%02x-%02x-%02x-%02x-%02x\n", MacAddr[0], MacAddr[1], MacAddr[2], MacAddr[3], MacAddr[4], MacAddr[5]);
 
 
-			RTW_INFO("peer Addr %02x-%02x-%02x-%02x-%02x-%02x\n", pWapiStaInfo->PeerMacAddr[0], pWapiStaInfo->PeerMacAddr[1], pWapiStaInfo->PeerMacAddr[2], pWapiStaInfo->PeerMacAddr[3],
+			RTW_DBG("peer Addr %02x-%02x-%02x-%02x-%02x-%02x\n", pWapiStaInfo->PeerMacAddr[0], pWapiStaInfo->PeerMacAddr[1], pWapiStaInfo->PeerMacAddr[2], pWapiStaInfo->PeerMacAddr[3],
 				pWapiStaInfo->PeerMacAddr[4], pWapiStaInfo->PeerMacAddr[5]);
 
 			if (pWapiStaInfo == NULL) {
@@ -729,7 +729,7 @@ void rtw_wapi_return_one_sta_info(_adapter *padapter, u8 *MacAddr)
 		while (!list_empty(&(pWapiInfo->wapiSTAUsedList))) {
 			pWapiStaInfo = (PRT_WAPI_STA_INFO)list_entry(pWapiInfo->wapiSTAUsedList.next, RT_WAPI_STA_INFO, list);
 
-			RTW_INFO("peer Addr %02x-%02x-%02x-%02x-%02x-%02x\n", pWapiStaInfo->PeerMacAddr[0], pWapiStaInfo->PeerMacAddr[1], pWapiStaInfo->PeerMacAddr[2], pWapiStaInfo->PeerMacAddr[3],
+			RTW_DBG("peer Addr %02x-%02x-%02x-%02x-%02x-%02x\n", pWapiStaInfo->PeerMacAddr[0], pWapiStaInfo->PeerMacAddr[1], pWapiStaInfo->PeerMacAddr[2], pWapiStaInfo->PeerMacAddr[3],
 				pWapiStaInfo->PeerMacAddr[4], pWapiStaInfo->PeerMacAddr[5]);
 
 			list_del_init(&pWapiStaInfo->list);

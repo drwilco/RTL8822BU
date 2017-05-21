@@ -757,7 +757,7 @@ __inline static u8 *recvframe_put(union recv_frame *precvframe, sint sz)
 	/* after putting, rx_tail must be still larger than rx_end. */
 	unsigned char *prev_rx_tail;
 
-	/* RTW_INFO("recvframe_put: len=%d\n", sz); */
+	/* RTW_DBG("recvframe_put: len=%d\n", sz); */
 
 	if (precvframe == NULL)
 		return NULL;

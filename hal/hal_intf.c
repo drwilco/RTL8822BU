@@ -60,7 +60,7 @@ void rtw_hal_read_chip_info(_adapter *padapter)
 	    && !rtw_is_hw_init_completed(padapter))
 		rtw_hal_power_off(padapter);
 
-	RTW_INFO("%s in %d ms\n", __func__, rtw_get_passing_time_ms(start));
+	RTW_DBG("%s in %d ms\n", __func__, rtw_get_passing_time_ms(start));
 }
 
 void rtw_hal_read_chip_version(_adapter *padapter)
@@ -95,7 +95,7 @@ u8 rtw_hal_data_init(_adapter *padapter)
 		padapter->hal_data_sz = sizeof(HAL_DATA_TYPE);
 		padapter->HalData = rtw_zvmalloc(padapter->hal_data_sz);
 		if (padapter->HalData == NULL) {
-			RTW_INFO("cant not alloc memory for HAL DATA\n");
+			RTW_DBG("cant not alloc memory for HAL DATA\n");
 			return _FAIL;
 		}
 	}
@@ -220,7 +220,7 @@ uint	 rtw_hal_init(_adapter *padapter)
 
 	} else {
 		pHalData->hw_init_completed = _FALSE;
-		RTW_INFO("rtw_hal_init: hal_init fail\n");
+		RTW_DBG("rtw_hal_init: hal_init fail\n");
 	}
 
 
@@ -241,7 +241,7 @@ uint rtw_hal_deinit(_adapter *padapter)
 		rtw_led_control(padapter, LED_CTL_POWER_OFF);
 		pHalData->hw_init_completed = _FALSE;
 	} else
-		RTW_INFO("\n rtw_hal_deinit: hal_init fail\n");
+		RTW_DBG("\n rtw_hal_deinit: hal_init fail\n");
 
 
 	return status;
@@ -298,7 +298,7 @@ u8 rtw_hal_check_ips_status(_adapter *padapter)
 	if (padapter->hal_func.check_ips_status)
 		val = padapter->hal_func.check_ips_status(padapter);
 	else
-		RTW_INFO("%s: hal_func.check_ips_status is NULL!\n", __FUNCTION__);
+		RTW_DBG("%s: hal_func.check_ips_status is NULL!\n", __FUNCTION__);
 
 	return val;
 }
@@ -389,11 +389,11 @@ s32	rtw_hal_mgnt_xmit(_adapter *padapter, struct xmit_frame *pmgntframe)
 				pmgntframe->attrib.encrypt = _AES_;
 				pmgntframe->attrib.bswenc = _TRUE;
 			} else {
-				RTW_INFO("%s, %d, bpairwise_key_installed is FALSE\n", __func__, __LINE__);
+				RTW_DBG("%s, %d, bpairwise_key_installed is FALSE\n", __func__, __LINE__);
 				goto no_mgmt_coalesce;
 			}
 		}
-		RTW_INFO("encrypt=%d, bswenc=%d\n", pmgntframe->attrib.encrypt, pmgntframe->attrib.bswenc);
+		RTW_DBG("encrypt=%d, bswenc=%d\n", pmgntframe->attrib.encrypt, pmgntframe->attrib.bswenc);
 		rtw_mgmt_xmitframe_coalesce(padapter, pmgntframe->pkt, pmgntframe);
 	}
 #endif /* CONFIG_IEEE80211W */
@@ -485,7 +485,7 @@ u32 rtw_hal_read_rfreg(_adapter *padapter, u32 eRFPath, u32 RegAddr, u32 BitMask
 		data = padapter->hal_func.read_rfreg(padapter, eRFPath, RegAddr, BitMask);
 
 		if (match_rf_read_sniff_ranges(eRFPath, RegAddr, BitMask)) {
-			RTW_INFO("DBG_IO rtw_hal_read_rfreg(%u, 0x%04x, 0x%08x) read:0x%08x(0x%08x)\n"
+			RTW_DBG("DBG_IO rtw_hal_read_rfreg(%u, 0x%04x, 0x%08x) read:0x%08x(0x%08x)\n"
 				, eRFPath, RegAddr, BitMask, (data << PHY_CalculateBitShift(BitMask)), data);
 		}
 	}
@@ -498,7 +498,7 @@ void rtw_hal_write_rfreg(_adapter *padapter, u32 eRFPath, u32 RegAddr, u32 BitMa
 	if (padapter->hal_func.write_rfreg) {
 
 		if (match_rf_write_sniff_ranges(eRFPath, RegAddr, BitMask)) {
-			RTW_INFO("DBG_IO rtw_hal_write_rfreg(%u, 0x%04x, 0x%08x) write:0x%08x(0x%08x)\n"
+			RTW_DBG("DBG_IO rtw_hal_write_rfreg(%u, 0x%04x, 0x%08x) write:0x%08x(0x%08x)\n"
 				, eRFPath, RegAddr, BitMask, (Data << PHY_CalculateBitShift(BitMask)), Data);
 		}
 
@@ -557,7 +557,7 @@ void	rtw_hal_set_chnl_bw(_adapter *padapter, u8 channel, CHANNEL_WIDTH Bandwidth
 	pHalData->cch_20 = cch_20;
 
 	if (0)
-		RTW_INFO("%s cch:%u, %s, offset40:%u, offset80:%u (%u, %u, %u)\n", __func__
+		RTW_DBG("%s cch:%u, %s, offset40:%u, offset80:%u (%u, %u, %u)\n", __func__
 			, channel, ch_width_str(Bandwidth), Offset40, Offset80
 			, pHalData->cch_80, pHalData->cch_40, pHalData->cch_20);
 
@@ -759,7 +759,7 @@ s32 c2h_handler(_adapter *adapter, u8 id, u8 seq, u8 plen, u8 *payload)
 		RTW_INFO_DUMP("C2H_DBG: ", payload, plen);
 		break;
 	case C2H_FW_SCAN_COMPLETE:
-		RTW_INFO("[C2H], FW Scan Complete\n");
+		RTW_DBG("[C2H], FW Scan Complete\n");
 		break;
 
 #ifdef CONFIG_BT_COEXIST

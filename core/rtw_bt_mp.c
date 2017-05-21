@@ -33,7 +33,7 @@ void MPh2c_timeout_handle(void *FunctionContext)
 	PMPT_CONTEXT pMptCtx;
 
 
-	RTW_INFO("[MPT], MPh2c_timeout_handle\n");
+	RTW_DBG("[MPT], MPh2c_timeout_handle\n");
 
 	pAdapter = (PADAPTER)FunctionContext;
 	pMptCtx = &pAdapter->mppriv.mpt_ctx;
@@ -52,7 +52,7 @@ u32 WaitC2Hevent(PADAPTER pAdapter, u8 *C2H_event, u32 delay_time)
 	pMptCtx->bMPh2c_timeout = _FALSE;
 
 	if (pAdapter->registrypriv.mp_mode == 0) {
-		RTW_INFO("[MPT], Error!! WaitC2Hevent mp_mode == 0!!\n");
+		RTW_ERR("[MPT] WaitC2Hevent mp_mode == 0!!\n");
 		return _FALSE;
 	}
 
@@ -81,18 +81,18 @@ mptbt_CheckC2hFrame(
 {
 	BT_CTRL_STATUS	c2hStatus = BT_STATUS_C2H_SUCCESS;
 
-	/* RTW_INFO("[MPT], MPT rsp C2H hex: %x %x %x  %x %x %x\n"), pExtC2h , pExtC2h+1 ,pExtC2h+2 ,pExtC2h+3 ,pExtC2h+4 ,pExtC2h+5); */
+	/* RTW_DBG("[MPT], MPT rsp C2H hex: %x %x %x  %x %x %x\n"), pExtC2h , pExtC2h+1 ,pExtC2h+2 ,pExtC2h+3 ,pExtC2h+4 ,pExtC2h+5); */
 
-	RTW_INFO("[MPT], statusCode = 0x%x\n", pExtC2h->statusCode);
-	RTW_INFO("[MPT], retLen = %d\n", pExtC2h->retLen);
-	RTW_INFO("[MPT], opCodeVer : req/rsp=%d/%d\n", pH2c->opCodeVer, pExtC2h->opCodeVer);
-	RTW_INFO("[MPT], reqNum : req/rsp=%d/%d\n", pH2c->reqNum, pExtC2h->reqNum);
+	RTW_DBG("[MPT], statusCode = 0x%x\n", pExtC2h->statusCode);
+	RTW_DBG("[MPT], retLen = %d\n", pExtC2h->retLen);
+	RTW_DBG("[MPT], opCodeVer : req/rsp=%d/%d\n", pH2c->opCodeVer, pExtC2h->opCodeVer);
+	RTW_DBG("[MPT], reqNum : req/rsp=%d/%d\n", pH2c->reqNum, pExtC2h->reqNum);
 	if (pExtC2h->reqNum != pH2c->reqNum) {
 		c2hStatus = BT_STATUS_C2H_REQNUM_MISMATCH;
-		RTW_INFO("[MPT], Error!! C2H reqNum Mismatch!!\n");
+		RTW_ERR("[MPT] C2H reqNum Mismatch!!\n");
 	} else if (pExtC2h->opCodeVer != pH2c->opCodeVer) {
 		c2hStatus = BT_STATUS_OPCODE_L_VERSION_MISMATCH;
-		RTW_INFO("[MPT], Error!! OPCode version L mismatch!!\n");
+		RTW_ERR("[MPT] OPCode version L mismatch!!\n");
 	}
 
 	return c2hStatus;
@@ -110,7 +110,7 @@ mptbt_SendH2c(
 	PMPT_CONTEXT		pMptCtx = &(Adapter->mppriv.mpt_ctx);
 	u1Byte				i;
 
-	RTW_INFO("[MPT], mptbt_SendH2c()=========>\n");
+	RTW_DBG("[MPT], mptbt_SendH2c()=========>\n");
 
 	/* PlatformResetEvent(&pMptCtx->MptH2cRspEvent); */
 	/* PlatformResetEvent(&pMptCtx->MptBtC2hEvent); */
@@ -120,7 +120,7 @@ mptbt_SendH2c(
 	/* RTPRINT_DATA(FMPBT, FMPBT_H2C_CONTENT, ("[MPT], MPT H2C hex:\n"), pH2c, h2cCmdLen); */
 
 	for (i = 0; i < BT_H2C_MAX_RETRY; i++) {
-		RTW_INFO("[MPT], Send H2C command to wifi!!!\n");
+		RTW_DBG("[MPT], Send H2C command to wifi!!!\n");
 
 		pMptCtx->MptH2cRspEvent = _FALSE;
 		pMptCtx->MptBtC2hEvent = _FALSE;
@@ -132,16 +132,16 @@ mptbt_SendH2c(
 		pMptCtx->h2cReqNum %= 16;
 
 		if (WaitC2Hevent(Adapter, &pMptCtx->MptH2cRspEvent, 100)) {
-			RTW_INFO("[MPT], Received WiFi MptH2cRspEvent!!!\n");
+			RTW_DBG("[MPT], Received WiFi MptH2cRspEvent!!!\n");
 			if (WaitC2Hevent(Adapter, &pMptCtx->MptBtC2hEvent, 400)) {
-				RTW_INFO("[MPT], Received MptBtC2hEvent!!!\n");
+				RTW_DBG("[MPT], Received MptBtC2hEvent!!!\n");
 				break;
 			} else {
-				RTW_INFO("[MPT], Error!!BT MptBtC2hEvent timeout!!\n");
+				RTW_ERR("[MPT]BT MptBtC2hEvent timeout!!\n");
 				h2cStatus = BT_STATUS_H2C_BT_NO_RSP;
 			}
 		} else {
-			RTW_INFO("[MPT], Error!!WiFi  MptH2cRspEvent timeout!!\n");
+			RTW_ERR("[MPT]WiFi  MptH2cRspEvent timeout!!\n");
 			h2cStatus = BT_STATUS_H2C_TIMTOUT;
 		}
 	}
@@ -152,7 +152,7 @@ mptbt_SendH2c(
 	 *		h2cStatus = BT_STATUS_WRONG_LEVEL;
 	 *	} */
 
-	RTW_INFO("[MPT], mptbt_SendH2c()<=========\n");
+	RTW_DBG("[MPT], mptbt_SendH2c()<=========\n");
 	return h2cStatus;
 }
 
@@ -169,23 +169,23 @@ mptbt_CheckBtRspStatus(
 	switch (pExtC2h->statusCode) {
 	case BT_OP_STATUS_SUCCESS:
 		retStatus = BT_STATUS_BT_OP_SUCCESS;
-		RTW_INFO("[MPT], BT status : BT_STATUS_SUCCESS\n");
+		RTW_DBG("[MPT], BT status : BT_STATUS_SUCCESS\n");
 		break;
 	case BT_OP_STATUS_VERSION_MISMATCH:
 		retStatus = BT_STATUS_OPCODE_L_VERSION_MISMATCH;
-		RTW_INFO("[MPT], BT status : BT_STATUS_OPCODE_L_VERSION_MISMATCH\n");
+		RTW_DBG("[MPT], BT status : BT_STATUS_OPCODE_L_VERSION_MISMATCH\n");
 		break;
 	case BT_OP_STATUS_UNKNOWN_OPCODE:
 		retStatus = BT_STATUS_UNKNOWN_OPCODE_L;
-		RTW_INFO("[MPT], BT status : BT_STATUS_UNKNOWN_OPCODE_L\n");
+		RTW_DBG("[MPT], BT status : BT_STATUS_UNKNOWN_OPCODE_L\n");
 		break;
 	case BT_OP_STATUS_ERROR_PARAMETER:
 		retStatus = BT_STATUS_PARAMETER_FORMAT_ERROR_L;
-		RTW_INFO("[MPT], BT status : BT_STATUS_PARAMETER_FORMAT_ERROR_L\n");
+		RTW_ERR("[MPT], BT status : BT_STATUS_PARAMETER_FORMAT_ERROR_L\n");
 		break;
 	default:
 		retStatus = BT_STATUS_UNKNOWN_STATUS_L;
-		RTW_INFO("[MPT], BT status : BT_STATUS_UNKNOWN_STATUS_L\n");
+		RTW_DBG("[MPT], BT status : BT_STATUS_UNKNOWN_STATUS_L\n");
 		break;
 	}
 
@@ -212,7 +212,7 @@ mptbt_BtFwOpCodeProcess(
 	BT_CTRL_STATUS	retStatus = BT_STATUS_H2C_BT_NO_RSP;
 
 	if (Adapter->registrypriv.mp_mode == 0) {
-		RTW_INFO("[MPT], Error!! mptbt_BtFwOpCodeProces mp_mode == 0!!\n");
+		RTW_ERR("[MPT] mptbt_BtFwOpCodeProces mp_mode == 0!!\n");
 		return _FALSE;
 	}
 
@@ -223,12 +223,12 @@ mptbt_BtFwOpCodeProcess(
 	/* _rtw_memcpy(&pH2c->buf[0], pH2cPar, h2cParaLen); */
 	_rtw_memcpy(pH2c->buf, pH2cPar, h2cParaLen);
 
-	RTW_INFO("[MPT], pH2c->opCode=%d\n", pH2c->opCode);
-	RTW_INFO("[MPT], pH2c->opCodeVer=%d\n", pH2c->opCodeVer);
-	RTW_INFO("[MPT], pH2c->reqNum=%d\n", pH2c->reqNum);
-	RTW_INFO("[MPT], h2c parameter length=%d\n", h2cParaLen);
+	RTW_DBG("[MPT], pH2c->opCode=%d\n", pH2c->opCode);
+	RTW_DBG("[MPT], pH2c->opCodeVer=%d\n", pH2c->opCodeVer);
+	RTW_DBG("[MPT], pH2c->reqNum=%d\n", pH2c->reqNum);
+	RTW_DBG("[MPT], h2c parameter length=%d\n", h2cParaLen);
 	for (i = 0; i < h2cParaLen; i++)
-		RTW_INFO("[MPT], parameter[%d]=0x%02x\n", i, pH2c->buf[i]);
+		RTW_DBG("[MPT], parameter[%d]=0x%02x\n", i, pH2c->buf[i]);
 
 	h2cStatus = mptbt_SendH2c(Adapter, pH2c, h2cParaLen + 2);
 	if (BT_STATUS_H2C_SUCCESS == h2cStatus) {
@@ -237,12 +237,12 @@ mptbt_BtFwOpCodeProcess(
 		if (BT_STATUS_C2H_SUCCESS == c2hStatus)
 			retStatus = mptbt_CheckBtRspStatus(Adapter, pExtC2h);
 		else {
-			RTW_INFO("[MPT], Error!! C2H failed for pH2c->opCode=%d\n", pH2c->opCode);
+			RTW_ERR("[MPT] C2H failed for pH2c->opCode=%d\n", pH2c->opCode);
 			/* check c2h status error, return error status code to upper layer. */
 			retStatus = c2hStatus;
 		}
 	} else {
-		RTW_INFO("[MPT], Error!! H2C failed for pH2c->opCode=%d\n", pH2c->opCode);
+		RTW_ERR("[MPT] H2C failed for pH2c->opCode=%d\n", pH2c->opCode);
 		/* check h2c status error, return error status code to upper layer. */
 		retStatus = h2cStatus;
 	}
@@ -279,7 +279,7 @@ mptbt_BtReady(
 
 	/* 1. check upper layer opcode version */
 	if (pBtReq->opCodeVer != 1) {
-		RTW_INFO("[MPT], Error!! Upper OP code version not match!!!\n");
+		RTW_ERR("[MPT] Upper OP code version not match!!!\n");
 		pBtRsp->status = BT_STATUS_OPCODE_U_VERSION_MISMATCH;
 		return paraLen;
 	}
@@ -298,13 +298,13 @@ mptbt_BtReady(
 	/* ckeck bt return status. */
 	if (BT_STATUS_BT_OP_SUCCESS != retStatus) {
 		pBtRsp->status = ((btOpcode << 8) | retStatus);
-		RTW_INFO("[MPT], Error!! status code=0x%x\n", pBtRsp->status);
+		RTW_ERR("[MPT] status code=0x%x\n", pBtRsp->status);
 		return paraLen;
 	} else {
 		pu2Tmp = (pu2Byte)&pExtC2h->buf[0];
 		btRealFwVer = *pu2Tmp;
 		btFwVer = pExtC2h->buf[1];
-		RTW_INFO("[MPT], btRealFwVer=0x%x, btFwVer=0x%x\n", btRealFwVer, btFwVer);
+		RTW_DBG("[MPT], btRealFwVer=0x%x, btFwVer=0x%x\n", btRealFwVer, btFwVer);
 	}
 
 	/* Get BD Address */
@@ -315,7 +315,7 @@ mptbt_BtReady(
 	/* ckeck bt return status. */
 	if (BT_STATUS_BT_OP_SUCCESS != retStatus) {
 		pBtRsp->status = ((btOpcode << 8) | retStatus);
-		RTW_INFO("[MPT], Error!! status code=0x%x\n", pBtRsp->status);
+		RTW_ERR("[MPT] status code=0x%x\n", pBtRsp->status);
 		return paraLen;
 	} else {
 		bdAddr[5] = pExtC2h->buf[0];
@@ -330,16 +330,16 @@ mptbt_BtReady(
 	/* ckeck bt return status. */
 	if (BT_STATUS_BT_OP_SUCCESS != retStatus) {
 		pBtRsp->status = ((btOpcode << 8) | retStatus);
-		RTW_INFO("[MPT], Error!! status code=0x%x\n", pBtRsp->status);
+		RTW_ERR("[MPT] status code=0x%x\n", pBtRsp->status);
 		return paraLen;
 	} else {
 		bdAddr[2] = pExtC2h->buf[0];
 		bdAddr[1] = pExtC2h->buf[1];
 		bdAddr[0] = pExtC2h->buf[2];
 	}
-	RTW_INFO("[MPT], Local BDAddr:");
+	RTW_DBG("[MPT], Local BDAddr:");
 	for (i = 0; i < 6; i++)
-		RTW_INFO(" 0x%x ", bdAddr[i]);
+		RTW_DBG(" 0x%x ", bdAddr[i]);
 	pBtRsp->status = BT_STATUS_SUCCESS;
 	pBtRsp->pParamStart[0] = MP_BT_READY;
 	pu2Tmp = (pu2Byte)&pBtRsp->pParamStart[1];
@@ -415,16 +415,16 @@ mptbt_BtSetMode(
 	/*  */
 	/* 1. check upper layer opcode version */
 	if (pBtReq->opCodeVer != 1) {
-		RTW_INFO("[MPT], Error!! Upper OP code version not match!!!\n");
+		RTW_ERR("[MPT] Upper OP code version not match!!!\n");
 		pBtRsp->status = BT_STATUS_OPCODE_U_VERSION_MISMATCH;
 		return paraLen;
 	}
 	/* 2. check upper layer parameter length */
 	if (1 == pBtReq->paraLength) {
 		btModeToSet = pBtReq->pParamStart[0];
-		RTW_INFO("[MPT], BtTestMode=%d\n", btModeToSet);
+		RTW_DBG("[MPT], BtTestMode=%d\n", btModeToSet);
 	} else {
-		RTW_INFO("[MPT], Error!! wrong parameter length=%d (should be 1)\n", pBtReq->paraLength);
+		RTW_ERR("[MPT] wrong parameter length=%d (should be 1)\n", pBtReq->paraLength);
 		pBtRsp->status = BT_STATUS_PARAMETER_FORMAT_ERROR_U;
 		return paraLen;
 	}
@@ -453,7 +453,7 @@ mptbt_BtSetMode(
 		pBtRsp->status = BT_STATUS_SUCCESS;
 	else {
 		pBtRsp->status = ((btOpcode << 8) | retStatus);
-		RTW_INFO("[MPT], Error!! status code=0x%x\n", pBtRsp->status);
+		RTW_ERR("[MPT] status code=0x%x\n", pBtRsp->status);
 	}
 
 	return paraLen;
@@ -472,11 +472,11 @@ MPTBT_FwC2hBtMpCtrl(
 	PBT_EXT_C2H pExtC2h = (PBT_EXT_C2H)tmpBuf;
 
 	if (Adapter->bBTFWReady == _FALSE || Adapter->registrypriv.mp_mode == 0) {
-		/* RTW_INFO("Ignore C2H BT MP Info since not in MP mode\n"); */
+		/* RTW_DBG("Ignore C2H BT MP Info since not in MP mode\n"); */
 		return;
 	}
 	if (length > 32 || length < 3) {
-		RTW_INFO("\n [MPT], pExtC2h->buf hex: length=%d > 32 || < 3\n", length);
+		RTW_DBG("\n [MPT], pExtC2h->buf hex: length=%d > 32 || < 3\n", length);
 		return;
 	}
 
@@ -484,16 +484,16 @@ MPTBT_FwC2hBtMpCtrl(
 	_cancel_timer_ex(&pMptCtx->MPh2c_timeout_timer);
 
 	for (i = 0; i < length; i++)
-		RTW_INFO("[MPT], %s, buf[%d]=0x%02x ", __FUNCTION__, i, tmpBuf[i]);
-	RTW_INFO("[MPT], pExtC2h->extendId=0x%x\n", pExtC2h->extendId);
+		RTW_DBG("[MPT], %s, buf[%d]=0x%02x ", __FUNCTION__, i, tmpBuf[i]);
+	RTW_DBG("[MPT], pExtC2h->extendId=0x%x\n", pExtC2h->extendId);
 
 	switch (pExtC2h->extendId) {
 	case EXT_C2H_WIFI_FW_ACTIVE_RSP:
-		RTW_INFO("[MPT], EXT_C2H_WIFI_FW_ACTIVE_RSP\n");
+		RTW_DBG("[MPT], EXT_C2H_WIFI_FW_ACTIVE_RSP\n");
 #if 0
-		RTW_INFO("[MPT], pExtC2h->buf hex:\n");
+		RTW_DBG("[MPT], pExtC2h->buf hex:\n");
 		for (i = 0; i < (length - 3); i++)
-			RTW_INFO(" 0x%x ", pExtC2h->buf[i]);
+			RTW_DBG(" 0x%x ", pExtC2h->buf[i]);
 #endif
 		if ((_FALSE == pMptCtx->bMPh2c_timeout)
 		    && (_FALSE == pMptCtx->MptH2cRspEvent)) {
@@ -503,14 +503,14 @@ MPTBT_FwC2hBtMpCtrl(
 		break;
 
 	case EXT_C2H_TRIG_BY_BT_FW:
-		RTW_INFO("[MPT], EXT_C2H_TRIG_BY_BT_FW\n");
+		RTW_DBG("[MPT], EXT_C2H_TRIG_BY_BT_FW\n");
 		_rtw_memcpy(&pMptCtx->c2hBuf[0], tmpBuf, length);
-		RTW_INFO("[MPT], pExtC2h->statusCode=0x%x\n", pExtC2h->statusCode);
-		RTW_INFO("[MPT], pExtC2h->retLen=0x%x\n", pExtC2h->retLen);
-		RTW_INFO("[MPT], pExtC2h->opCodeVer=0x%x\n", pExtC2h->opCodeVer);
-		RTW_INFO("[MPT], pExtC2h->reqNum=0x%x\n", pExtC2h->reqNum);
+		RTW_DBG("[MPT], pExtC2h->statusCode=0x%x\n", pExtC2h->statusCode);
+		RTW_DBG("[MPT], pExtC2h->retLen=0x%x\n", pExtC2h->retLen);
+		RTW_DBG("[MPT], pExtC2h->opCodeVer=0x%x\n", pExtC2h->opCodeVer);
+		RTW_DBG("[MPT], pExtC2h->reqNum=0x%x\n", pExtC2h->reqNum);
 		for (i = 0; i < (length - 3); i++)
-			RTW_INFO("[MPT], pExtC2h->buf[%d]=0x%02x\n", i, pExtC2h->buf[i]);
+			RTW_DBG("[MPT], pExtC2h->buf[%d]=0x%02x\n", i, pExtC2h->buf[i]);
 
 		if ((_FALSE == pMptCtx->bMPh2c_timeout)
 		    && (_TRUE == pMptCtx->MptH2cRspEvent)
@@ -521,7 +521,7 @@ MPTBT_FwC2hBtMpCtrl(
 		break;
 
 	default:
-		RTW_INFO("[MPT], EXT_C2H Target not found,pExtC2h->extendId =%d ,pExtC2h->reqNum=%d\n", pExtC2h->extendId, pExtC2h->reqNum);
+		RTW_DBG("[MPT], EXT_C2H Target not found,pExtC2h->extendId =%d ,pExtC2h->reqNum=%d\n", pExtC2h->extendId, pExtC2h->reqNum);
 		break;
 	}
 
@@ -559,32 +559,32 @@ mptbt_BtGetGeneral(
 
 	/* check upper layer opcode version */
 	if (pBtReq->opCodeVer != 1) {
-		RTW_INFO("[MPT], Error!! Upper OP code version not match!!!\n");
+		RTW_ERR("[MPT] Upper OP code version not match!!!\n");
 		pBtRsp->status = BT_STATUS_OPCODE_U_VERSION_MISMATCH;
 		return paraLen;
 	}
 	/* check upper layer parameter length */
 	if (pBtReq->paraLength < 1) {
-		RTW_INFO("[MPT], Error!! wrong parameter length=%d (should larger than 1)\n", pBtReq->paraLength);
+		RTW_ERR("[MPT] wrong parameter length=%d (should larger than 1)\n", pBtReq->paraLength);
 		pBtRsp->status = BT_STATUS_PARAMETER_FORMAT_ERROR_U;
 		return paraLen;
 	}
 	getParaLen = pBtReq->paraLength - 1;
 	getType = pBtReq->pParamStart[0];
 
-	RTW_INFO("[MPT], getType=%d, getParaLen=%d\n", getType, getParaLen);
+	RTW_DBG("[MPT], getType=%d, getParaLen=%d\n", getType, getParaLen);
 
 	/* check parameter first */
 	switch (getType) {
 	case BT_GGET_REG:
-		RTW_INFO("[MPT], [BT_GGET_REG]\n");
+		RTW_DBG("[MPT], [BT_GGET_REG]\n");
 		validParaLen = 5;
 		if (getParaLen == validParaLen) {
 			btOpcode = BT_LO_OP_READ_REG;
 			regType = pBtReq->pParamStart[1];
 			pu4Tmp = (pu4Byte)&pBtReq->pParamStart[2];
 			regAddr = *pu4Tmp;
-			RTW_INFO("[MPT], BT_GGET_REG regType=0x%02x, regAddr=0x%08x!!\n",
+			RTW_DBG("[MPT], BT_GGET_REG regType=0x%02x, regAddr=0x%08x!!\n",
 				 regType, regAddr);
 			if (regType >= BT_REG_MAX) {
 				pBtRsp->status = (btOpcode << 8) | BT_STATUS_PARAMETER_OUT_OF_RANGE_U;
@@ -602,15 +602,15 @@ mptbt_BtGetGeneral(
 		}
 		break;
 	case BT_GGET_STATUS:
-		RTW_INFO("[MPT], [BT_GGET_STATUS]\n");
+		RTW_DBG("[MPT], [BT_GGET_STATUS]\n");
 		validParaLen = 0;
 		break;
 	case BT_GGET_REPORT:
-		RTW_INFO("[MPT], [BT_GGET_REPORT]\n");
+		RTW_DBG("[MPT], [BT_GGET_REPORT]\n");
 		validParaLen = 1;
 		if (getParaLen == validParaLen) {
 			reportType = pBtReq->pParamStart[1];
-			RTW_INFO("[MPT], BT_GGET_REPORT reportType=0x%x!!\n", reportType);
+			RTW_DBG("[MPT], BT_GGET_REPORT reportType=0x%x!!\n", reportType);
 			if (reportType >= BT_REPORT_MAX) {
 				pBtRsp->status = BT_STATUS_PARAMETER_OUT_OF_RANGE_U;
 				return paraLen;
@@ -618,14 +618,14 @@ mptbt_BtGetGeneral(
 		}
 		break;
 	default: {
-		RTW_INFO("[MPT], Error!! getType=%d, out of range\n", getType);
+		RTW_ERR("[MPT] getType=%d, out of range\n", getType);
 		pBtRsp->status = BT_STATUS_PARAMETER_OUT_OF_RANGE_U;
 		return paraLen;
 	}
 	break;
 	}
 	if (getParaLen != validParaLen) {
-		RTW_INFO("[MPT], Error!! wrong parameter length=%d for BT_GET_GEN_CMD cmd id=0x%x, paraLen should=0x%x\n",
+		RTW_ERR("[MPT] wrong parameter length=%d for BT_GET_GEN_CMD cmd id=0x%x, paraLen should=0x%x\n",
 			 getParaLen, getType, validParaLen);
 		pBtRsp->status = BT_STATUS_PARAMETER_FORMAT_ERROR_U;
 		return paraLen;
@@ -647,13 +647,13 @@ mptbt_BtGetGeneral(
 		/* construct respond status code and data. */
 		if (BT_STATUS_BT_OP_SUCCESS != retStatus) {
 			pBtRsp->status = ((btOpcode << 8) | retStatus);
-			RTW_INFO("[MPT], Error!! status code=0x%x\n", pBtRsp->status);
+			RTW_ERR("[MPT] status code=0x%x\n", pBtRsp->status);
 			return paraLen;
 		}
 
 		pu2Tmp = (pu2Byte)&pExtC2h->buf[0];
 		regValue = *pu2Tmp;
-		RTW_INFO("[MPT], read reg regType=0x%02x, regAddr=0x%08x, regValue=0x%04x\n",
+		RTW_DBG("[MPT], read reg regType=0x%02x, regAddr=0x%08x, regValue=0x%04x\n",
 			 regType, regAddr, regValue);
 
 		pu4Tmp = (pu4Byte)&pBtRsp->pParamStart[0];
@@ -667,19 +667,19 @@ mptbt_BtGetGeneral(
 		/* construct respond status code and data. */
 		if (BT_STATUS_BT_OP_SUCCESS != retStatus) {
 			pBtRsp->status = ((btOpcode << 8) | retStatus);
-			RTW_INFO("[MPT], Error!! status code=0x%x\n", pBtRsp->status);
+			RTW_ERR("[MPT] status code=0x%x\n", pBtRsp->status);
 			return paraLen;
 		}
 
 		pBtRsp->pParamStart[0] = pExtC2h->buf[0];
 		pBtRsp->pParamStart[1] = pExtC2h->buf[1];
-		RTW_INFO("[MPT], read bt status, testMode=0x%x, testStatus=0x%x\n",
+		RTW_DBG("[MPT], read bt status, testMode=0x%x, testStatus=0x%x\n",
 			 pBtRsp->pParamStart[0], pBtRsp->pParamStart[1]);
 		paraLen = 2;
 	} else if (BT_GGET_REPORT == getType) {
 		switch (reportType) {
 		case BT_REPORT_RX_PACKET_CNT: {
-			RTW_INFO("[MPT], [Rx Packet Counts]\n");
+			RTW_DBG("[MPT], [Rx Packet Counts]\n");
 			btOpcode = BT_LO_OP_GET_RX_PKT_CNT_L;
 			h2cParaLen = 0;
 			/* execute h2c and check respond c2h from bt fw is correct or not */
@@ -687,7 +687,7 @@ mptbt_BtGetGeneral(
 			/* construct respond status code and data. */
 			if (BT_STATUS_BT_OP_SUCCESS != retStatus) {
 				pBtRsp->status = ((btOpcode << 8) | retStatus);
-				RTW_INFO("[MPT], Error!! status code=0x%x\n", pBtRsp->status);
+				RTW_ERR("[MPT] status code=0x%x\n", pBtRsp->status);
 				return paraLen;
 			}
 			pBtRsp->pParamStart[0] = pExtC2h->buf[0];
@@ -700,7 +700,7 @@ mptbt_BtGetGeneral(
 			/* construct respond status code and data. */
 			if (BT_STATUS_BT_OP_SUCCESS != retStatus) {
 				pBtRsp->status = ((btOpcode << 8) | retStatus);
-				RTW_INFO("[MPT], Error!! status code=0x%x\n", pBtRsp->status);
+				RTW_ERR("[MPT] status code=0x%x\n", pBtRsp->status);
 				return paraLen;
 			}
 			pBtRsp->pParamStart[2] = pExtC2h->buf[0];
@@ -709,7 +709,7 @@ mptbt_BtGetGeneral(
 		}
 		break;
 		case BT_REPORT_RX_ERROR_BITS: {
-			RTW_INFO("[MPT], [Rx Error Bits]\n");
+			RTW_ERR("[MPT], [Rx Error Bits]\n");
 			btOpcode = BT_LO_OP_GET_RX_ERROR_BITS_L;
 			h2cParaLen = 0;
 			/* execute h2c and check respond c2h from bt fw is correct or not */
@@ -717,7 +717,7 @@ mptbt_BtGetGeneral(
 			/* construct respond status code and data. */
 			if (BT_STATUS_BT_OP_SUCCESS != retStatus) {
 				pBtRsp->status = ((btOpcode << 8) | retStatus);
-				RTW_INFO("[MPT], Error!! status code=0x%x\n", pBtRsp->status);
+				RTW_ERR("[MPT] status code=0x%x\n", pBtRsp->status);
 				return paraLen;
 			}
 			pBtRsp->pParamStart[0] = pExtC2h->buf[0];
@@ -730,7 +730,7 @@ mptbt_BtGetGeneral(
 			/* construct respond status code and data. */
 			if (BT_STATUS_BT_OP_SUCCESS != retStatus) {
 				pBtRsp->status = ((btOpcode << 8) | retStatus);
-				RTW_INFO("[MPT], Error!! status code=0x%x\n", pBtRsp->status);
+				RTW_ERR("[MPT] status code=0x%x\n", pBtRsp->status);
 				return paraLen;
 			}
 			pBtRsp->pParamStart[2] = pExtC2h->buf[0];
@@ -739,7 +739,7 @@ mptbt_BtGetGeneral(
 		}
 		break;
 		case BT_REPORT_RSSI: {
-			RTW_INFO("[MPT], [RSSI]\n");
+			RTW_DBG("[MPT], [RSSI]\n");
 			btOpcode = BT_LO_OP_GET_RSSI;
 			h2cParaLen = 0;
 			/* execute h2c and check respond c2h from bt fw is correct or not */
@@ -747,7 +747,7 @@ mptbt_BtGetGeneral(
 			/* construct respond status code and data. */
 			if (BT_STATUS_BT_OP_SUCCESS != retStatus) {
 				pBtRsp->status = ((btOpcode << 8) | retStatus);
-				RTW_INFO("[MPT], Error!! status code=0x%x\n", pBtRsp->status);
+				RTW_ERR("[MPT] status code=0x%x\n", pBtRsp->status);
 				return paraLen;
 			}
 			pBtRsp->pParamStart[0] = pExtC2h->buf[0];
@@ -756,7 +756,7 @@ mptbt_BtGetGeneral(
 		}
 		break;
 		case BT_REPORT_CFO_HDR_QUALITY: {
-			RTW_INFO("[MPT], [CFO & Header Quality]\n");
+			RTW_DBG("[MPT], [CFO & Header Quality]\n");
 			btOpcode = BT_LO_OP_GET_CFO_HDR_QUALITY_L;
 			h2cParaLen = 0;
 			/* execute h2c and check respond c2h from bt fw is correct or not */
@@ -764,7 +764,7 @@ mptbt_BtGetGeneral(
 			/* construct respond status code and data. */
 			if (BT_STATUS_BT_OP_SUCCESS != retStatus) {
 				pBtRsp->status = ((btOpcode << 8) | retStatus);
-				RTW_INFO("[MPT], Error!! status code=0x%x\n", pBtRsp->status);
+				RTW_ERR("[MPT] status code=0x%x\n", pBtRsp->status);
 				return paraLen;
 			}
 			pBtRsp->pParamStart[0] = pExtC2h->buf[0];
@@ -777,7 +777,7 @@ mptbt_BtGetGeneral(
 			/* construct respond status code and data. */
 			if (BT_STATUS_BT_OP_SUCCESS != retStatus) {
 				pBtRsp->status = ((btOpcode << 8) | retStatus);
-				RTW_INFO("[MPT], Error!! status code=0x%x\n", pBtRsp->status);
+				RTW_ERR("[MPT] status code=0x%x\n", pBtRsp->status);
 				return paraLen;
 			}
 			pBtRsp->pParamStart[2] = pExtC2h->buf[0];
@@ -786,7 +786,7 @@ mptbt_BtGetGeneral(
 		}
 		break;
 		case BT_REPORT_CONNECT_TARGET_BD_ADDR: {
-			RTW_INFO("[MPT], [Connected Target BD ADDR]\n");
+			RTW_DBG("[MPT], [Connected Target BD ADDR]\n");
 			btOpcode = BT_LO_OP_GET_TARGET_BD_ADDR_L;
 			h2cParaLen = 0;
 			/* execute h2c and check respond c2h from bt fw is correct or not */
@@ -794,7 +794,7 @@ mptbt_BtGetGeneral(
 			/* construct respond status code and data. */
 			if (BT_STATUS_BT_OP_SUCCESS != retStatus) {
 				pBtRsp->status = ((btOpcode << 8) | retStatus);
-				RTW_INFO("[MPT], Error!! status code=0x%x\n", pBtRsp->status);
+				RTW_ERR("[MPT] status code=0x%x\n", pBtRsp->status);
 				return paraLen;
 			}
 			bdAddr[5] = pExtC2h->buf[0];
@@ -808,14 +808,14 @@ mptbt_BtGetGeneral(
 			/* construct respond status code and data. */
 			if (BT_STATUS_BT_OP_SUCCESS != retStatus) {
 				pBtRsp->status = ((btOpcode << 8) | retStatus);
-				RTW_INFO("[MPT], Error!! status code=0x%x\n", pBtRsp->status);
+				RTW_ERR("[MPT] status code=0x%x\n", pBtRsp->status);
 				return paraLen;
 			}
 			bdAddr[2] = pExtC2h->buf[0];
 			bdAddr[1] = pExtC2h->buf[1];
 			bdAddr[0] = pExtC2h->buf[2];
 
-			RTW_INFO("[MPT], Connected Target BDAddr:%s", bdAddr);
+			RTW_DBG("[MPT], Connected Target BDAddr:%s", bdAddr);
 			for (i = 0; i < 6; i++)
 				pBtRsp->pParamStart[i] = bdAddr[5 - i];
 			paraLen = 6;
@@ -861,25 +861,25 @@ mptbt_BtSetGeneral(
 
 	/* check upper layer opcode version */
 	if (pBtReq->opCodeVer != 1) {
-		RTW_INFO("[MPT], Error!! Upper OP code version not match!!!\n");
+		RTW_ERR("[MPT] Upper OP code version not match!!!\n");
 		pBtRsp->status = BT_STATUS_OPCODE_U_VERSION_MISMATCH;
 		return paraLen;
 	}
 	/* check upper layer parameter length */
 	if (pBtReq->paraLength < 1) {
-		RTW_INFO("[MPT], Error!! wrong parameter length=%d (should larger than 1)\n", pBtReq->paraLength);
+		RTW_ERR("[MPT] wrong parameter length=%d (should larger than 1)\n", pBtReq->paraLength);
 		pBtRsp->status = BT_STATUS_PARAMETER_FORMAT_ERROR_U;
 		return paraLen;
 	}
 	setParaLen = pBtReq->paraLength - 1;
 	setType = pBtReq->pParamStart[0];
 
-	RTW_INFO("[MPT], setType=%d, setParaLen=%d\n", setType, setParaLen);
+	RTW_DBG("[MPT], setType=%d, setParaLen=%d\n", setType, setParaLen);
 
 	/* check parameter first */
 	switch (setType) {
 	case BT_GSET_REG:
-		RTW_INFO("[MPT], [BT_GSET_REG]\n");
+		RTW_DBG("[MPT], [BT_GSET_REG]\n");
 		validParaLen = 9;
 		if (setParaLen == validParaLen) {
 			btOpcode = BT_LO_OP_WRITE_REG_VALUE;
@@ -888,7 +888,7 @@ mptbt_BtSetGeneral(
 			regAddr = *pu4Tmp;
 			pu4Tmp = (pu4Byte)&pBtReq->pParamStart[6];
 			regValue = *pu4Tmp;
-			RTW_INFO("[MPT], BT_GSET_REG regType=0x%x, regAddr=0x%x, regValue=0x%x!!\n",
+			RTW_DBG("[MPT], BT_GSET_REG regType=0x%x, regAddr=0x%x, regValue=0x%x!!\n",
 				 regType, regAddr, regValue);
 			if (regType >= BT_REG_MAX) {
 				pBtRsp->status = (btOpcode << 8) | BT_STATUS_PARAMETER_OUT_OF_RANGE_U;
@@ -906,11 +906,11 @@ mptbt_BtSetGeneral(
 		}
 		break;
 	case BT_GSET_RESET:
-		RTW_INFO("[MPT], [BT_GSET_RESET]\n");
+		RTW_DBG("[MPT], [BT_GSET_RESET]\n");
 		validParaLen = 0;
 		break;
 	case BT_GSET_TARGET_BD_ADDR:
-		RTW_INFO("[MPT], [BT_GSET_TARGET_BD_ADDR]\n");
+		RTW_DBG("[MPT], [BT_GSET_TARGET_BD_ADDR]\n");
 		validParaLen = 6;
 		if (setParaLen == validParaLen) {
 			btOpcode = BT_LO_OP_SET_TARGET_BD_ADDR_H;
@@ -920,7 +920,7 @@ mptbt_BtSetGeneral(
 			    (pBtReq->pParamStart[4] == 0) &&
 			    (pBtReq->pParamStart[5] == 0) &&
 			    (pBtReq->pParamStart[6] == 0)) {
-				RTW_INFO("[MPT], Error!! targetBDAddr=all zero\n");
+				RTW_ERR("[MPT] targetBDAddr=all zero\n");
 				pBtRsp->status = (btOpcode << 8) | BT_STATUS_PARAMETER_OUT_OF_RANGE_U;
 				return paraLen;
 			}
@@ -930,7 +930,7 @@ mptbt_BtSetGeneral(
 			    (pBtReq->pParamStart[4] == 0xff) &&
 			    (pBtReq->pParamStart[5] == 0xff) &&
 			    (pBtReq->pParamStart[6] == 0xff)) {
-				RTW_INFO("[MPT], Error!! targetBDAddr=all 0xf\n");
+				RTW_ERR("[MPT] targetBDAddr=all 0xf\n");
 				pBtRsp->status = (btOpcode << 8) | BT_STATUS_PARAMETER_OUT_OF_RANGE_U;
 				return paraLen;
 			}
@@ -940,12 +940,12 @@ mptbt_BtSetGeneral(
 			bdAddr[3] = pBtReq->pParamStart[3];
 			bdAddr[4] = pBtReq->pParamStart[2];
 			bdAddr[5] = pBtReq->pParamStart[1];
-			RTW_INFO("[MPT], target BDAddr:%x,%x,%x,%x,%x,%x\n",
+			RTW_DBG("[MPT], target BDAddr:%x,%x,%x,%x,%x,%x\n",
 				bdAddr[0], bdAddr[1], bdAddr[2], bdAddr[3], bdAddr[4], bdAddr[5]);
 		}
 		break;
 	case BT_GSET_TX_PWR_FINETUNE:
-		RTW_INFO("[MPT], [BT_GSET_TX_PWR_FINETUNE]\n");
+		RTW_DBG("[MPT], [BT_GSET_TX_PWR_FINETUNE]\n");
 		validParaLen = 1;
 		if (setParaLen == validParaLen) {
 			btOpcode = BT_LO_OP_SET_TX_POWER_CALIBRATION;
@@ -954,24 +954,24 @@ mptbt_BtSetGeneral(
 				pBtRsp->status = (btOpcode << 8) | BT_STATUS_PARAMETER_OUT_OF_RANGE_U;
 				return paraLen;
 			}
-			RTW_INFO("[MPT], calVal=%d\n", calVal);
+			RTW_DBG("[MPT], calVal=%d\n", calVal);
 		}
 		break;
 	case BT_SET_TRACKING_INTERVAL:
-		RTW_INFO("[MPT], [BT_SET_TRACKING_INTERVAL] setParaLen =%d\n", setParaLen);
+		RTW_DBG("[MPT], [BT_SET_TRACKING_INTERVAL] setParaLen =%d\n", setParaLen);
 
 		validParaLen = 1;
 		if (setParaLen == validParaLen)
 			calVal = pBtReq->pParamStart[1];
 		break;
 	case BT_SET_THERMAL_METER:
-		RTW_INFO("[MPT], [BT_SET_THERMAL_METER] setParaLen =%d\n", setParaLen);
+		RTW_DBG("[MPT], [BT_SET_THERMAL_METER] setParaLen =%d\n", setParaLen);
 		validParaLen = 1;
 		if (setParaLen == validParaLen)
 			calVal = pBtReq->pParamStart[1];
 		break;
 	case BT_ENABLE_CFO_TRACKING:
-		RTW_INFO("[MPT], [BT_ENABLE_CFO_TRACKING] setParaLen =%d\n", setParaLen);
+		RTW_DBG("[MPT], [BT_ENABLE_CFO_TRACKING] setParaLen =%d\n", setParaLen);
 		validParaLen = 1;
 		if (setParaLen == validParaLen)
 			calVal = pBtReq->pParamStart[1];
@@ -980,14 +980,14 @@ mptbt_BtSetGeneral(
 
 		break;
 	default: {
-		RTW_INFO("[MPT], Error!! setType=%d, out of range\n", setType);
+		RTW_ERR("[MPT] setType=%d, out of range\n", setType);
 		pBtRsp->status = BT_STATUS_PARAMETER_OUT_OF_RANGE_U;
 		return paraLen;
 	}
 	break;
 	}
 	if (setParaLen != validParaLen) {
-		RTW_INFO("[MPT], Error!! wrong parameter length=%d for BT_SET_GEN_CMD cmd id=0x%x, paraLen should=0x%x\n",
+		RTW_ERR("[MPT] wrong parameter length=%d for BT_SET_GEN_CMD cmd id=0x%x, paraLen should=0x%x\n",
 			 setParaLen, setType, validParaLen);
 		pBtRsp->status = BT_STATUS_PARAMETER_FORMAT_ERROR_U;
 		return paraLen;
@@ -1009,7 +1009,7 @@ mptbt_BtSetGeneral(
 		/* construct respond status code and data. */
 		if (BT_STATUS_BT_OP_SUCCESS != retStatus) {
 			pBtRsp->status = ((btOpcode << 8) | retStatus);
-			RTW_INFO("[MPT], Error!! status code=0x%x\n", pBtRsp->status);
+			RTW_ERR("[MPT] status code=0x%x\n", pBtRsp->status);
 			return paraLen;
 		}
 
@@ -1024,7 +1024,7 @@ mptbt_BtSetGeneral(
 		/* construct respond status code and data. */
 		if (BT_STATUS_BT_OP_SUCCESS != retStatus) {
 			pBtRsp->status = ((btOpcode << 8) | retStatus);
-			RTW_INFO("[MPT], Error!! status code=0x%x\n", pBtRsp->status);
+			RTW_ERR("[MPT] status code=0x%x\n", pBtRsp->status);
 			return paraLen;
 		}
 	} else if (BT_GSET_RESET == setType) {
@@ -1035,7 +1035,7 @@ mptbt_BtSetGeneral(
 		/* construct respond status code and data. */
 		if (BT_STATUS_BT_OP_SUCCESS != retStatus) {
 			pBtRsp->status = ((btOpcode << 8) | retStatus);
-			RTW_INFO("[MPT], Error!! status code=0x%x\n", pBtRsp->status);
+			RTW_ERR("[MPT] status code=0x%x\n", pBtRsp->status);
 			return paraLen;
 		}
 	} else if (BT_GSET_TARGET_BD_ADDR == setType) {
@@ -1049,7 +1049,7 @@ mptbt_BtSetGeneral(
 		/* ckeck bt return status. */
 		if (BT_STATUS_BT_OP_SUCCESS != retStatus) {
 			pBtRsp->status = ((btOpcode << 8) | retStatus);
-			RTW_INFO("[MPT], Error!! status code=0x%x\n", pBtRsp->status);
+			RTW_ERR("[MPT] status code=0x%x\n", pBtRsp->status);
 			return paraLen;
 		}
 
@@ -1062,7 +1062,7 @@ mptbt_BtSetGeneral(
 		/* ckeck bt return status. */
 		if (BT_STATUS_BT_OP_SUCCESS != retStatus) {
 			pBtRsp->status = ((btOpcode << 8) | retStatus);
-			RTW_INFO("[MPT], Error!! status code=0x%x\n", pBtRsp->status);
+			RTW_ERR("[MPT] status code=0x%x\n", pBtRsp->status);
 			return paraLen;
 		}
 	} else if (BT_GSET_TX_PWR_FINETUNE == setType) {
@@ -1074,7 +1074,7 @@ mptbt_BtSetGeneral(
 		/* ckeck bt return status. */
 		if (BT_STATUS_BT_OP_SUCCESS != retStatus) {
 			pBtRsp->status = ((btOpcode << 8) | retStatus);
-			RTW_INFO("[MPT], Error!! status code=0x%x\n", pBtRsp->status);
+			RTW_ERR("[MPT] status code=0x%x\n", pBtRsp->status);
 			return paraLen;
 		}
 	} else if (BT_SET_TRACKING_INTERVAL == setType) {
@@ -1088,7 +1088,7 @@ mptbt_BtSetGeneral(
 		/* ckeck bt return status. */
 		if (BT_STATUS_BT_OP_SUCCESS != retStatus) {
 			pBtRsp->status = ((btOpcode << 8) | retStatus);
-			RTW_INFO("[MPT], Error!! status code=0x%x\n", pBtRsp->status);
+			RTW_ERR("[MPT] status code=0x%x\n", pBtRsp->status);
 			return paraLen;
 		}
 	} else if (BT_SET_THERMAL_METER == setType) {
@@ -1099,7 +1099,7 @@ mptbt_BtSetGeneral(
 		/* ckeck bt return status. */
 		if (BT_STATUS_BT_OP_SUCCESS != retStatus) {
 			pBtRsp->status = ((btOpcode << 8) | retStatus);
-			RTW_INFO("[MPT], Error!! status code=0x%x\n", pBtRsp->status);
+			RTW_ERR("[MPT] status code=0x%x\n", pBtRsp->status);
 			return paraLen;
 		}
 	} else if (BT_ENABLE_CFO_TRACKING == setType) {
@@ -1110,7 +1110,7 @@ mptbt_BtSetGeneral(
 		/* ckeck bt return status. */
 		if (BT_STATUS_BT_OP_SUCCESS != retStatus) {
 			pBtRsp->status = ((btOpcode << 8) | retStatus);
-			RTW_INFO("[MPT], Error!! status code=0x%x\n", pBtRsp->status);
+			RTW_ERR("[MPT] status code=0x%x\n", pBtRsp->status);
 			return paraLen;
 		}
 	}
@@ -1145,30 +1145,30 @@ mptbt_BtSetTxRxPars(
 
 	/* 1. check upper layer opcode version */
 	if (pBtReq->opCodeVer != 1) {
-		RTW_INFO("[MPT], Error!! Upper OP code version not match!!!\n");
+		RTW_ERR("[MPT] Upper OP code version not match!!!\n");
 		pBtRsp->status = BT_STATUS_OPCODE_U_VERSION_MISMATCH;
 		return paraLen;
 	}
 	/* 2. check upper layer parameter length */
 	if (pBtReq->paraLength == sizeof(BT_TXRX_PARAMETERS)) {
-		RTW_INFO("[MPT], pTxRxPars->txrxChannel=0x%x\n", pTxRxPars->txrxChannel);
-		RTW_INFO("[MPT], pTxRxPars->txrxTxPktCnt=0x%8x\n", pTxRxPars->txrxTxPktCnt);
-		RTW_INFO("[MPT], pTxRxPars->txrxTxPktInterval=0x%x\n", pTxRxPars->txrxTxPktInterval);
-		RTW_INFO("[MPT], pTxRxPars->txrxPayloadType=0x%x\n", pTxRxPars->txrxPayloadType);
-		RTW_INFO("[MPT], pTxRxPars->txrxPktType=0x%x\n", pTxRxPars->txrxPktType);
-		RTW_INFO("[MPT], pTxRxPars->txrxPayloadLen=0x%x\n", pTxRxPars->txrxPayloadLen);
-		RTW_INFO("[MPT], pTxRxPars->txrxPktHeader=0x%x\n", pTxRxPars->txrxPktHeader);
-		RTW_INFO("[MPT], pTxRxPars->txrxWhitenCoeff=0x%x\n", pTxRxPars->txrxWhitenCoeff);
+		RTW_DBG("[MPT], pTxRxPars->txrxChannel=0x%x\n", pTxRxPars->txrxChannel);
+		RTW_DBG("[MPT], pTxRxPars->txrxTxPktCnt=0x%8x\n", pTxRxPars->txrxTxPktCnt);
+		RTW_DBG("[MPT], pTxRxPars->txrxTxPktInterval=0x%x\n", pTxRxPars->txrxTxPktInterval);
+		RTW_DBG("[MPT], pTxRxPars->txrxPayloadType=0x%x\n", pTxRxPars->txrxPayloadType);
+		RTW_DBG("[MPT], pTxRxPars->txrxPktType=0x%x\n", pTxRxPars->txrxPktType);
+		RTW_DBG("[MPT], pTxRxPars->txrxPayloadLen=0x%x\n", pTxRxPars->txrxPayloadLen);
+		RTW_DBG("[MPT], pTxRxPars->txrxPktHeader=0x%x\n", pTxRxPars->txrxPktHeader);
+		RTW_DBG("[MPT], pTxRxPars->txrxWhitenCoeff=0x%x\n", pTxRxPars->txrxWhitenCoeff);
 		bdAddr[0] = pTxRxPars->txrxBdaddr[5];
 		bdAddr[1] = pTxRxPars->txrxBdaddr[4];
 		bdAddr[2] = pTxRxPars->txrxBdaddr[3];
 		bdAddr[3] = pTxRxPars->txrxBdaddr[2];
 		bdAddr[4] = pTxRxPars->txrxBdaddr[1];
 		bdAddr[5] = pTxRxPars->txrxBdaddr[0];
-		RTW_INFO("[MPT], pTxRxPars->txrxBdaddr: %s", &bdAddr[0]);
-		RTW_INFO("[MPT], pTxRxPars->txrxTxGainIndex=0x%x\n", pTxRxPars->txrxTxGainIndex);
+		RTW_DBG("[MPT], pTxRxPars->txrxBdaddr: %s", &bdAddr[0]);
+		RTW_DBG("[MPT], pTxRxPars->txrxTxGainIndex=0x%x\n", pTxRxPars->txrxTxGainIndex);
 	} else {
-		RTW_INFO("[MPT], Error!! pBtReq->paraLength=%d, correct Len=%d\n", pBtReq->paraLength, lenTxRx);
+		RTW_ERR("[MPT] pBtReq->paraLength=%d, correct Len=%d\n", pBtReq->paraLength, lenTxRx);
 		pBtRsp->status = BT_STATUS_PARAMETER_FORMAT_ERROR_U;
 		return paraLen;
 	}
@@ -1180,7 +1180,7 @@ mptbt_BtSetTxRxPars(
 	/* fill h2c parameters */
 	btOpcode = BT_LO_OP_SET_PKT_HEADER;
 	if (pTxRxPars->txrxPktHeader > 0x3ffff) {
-		RTW_INFO("[MPT], Error!! pTxRxPars->txrxPktHeader=0x%x is out of range, (should be between 0x0~0x3ffff)\n", pTxRxPars->txrxPktHeader);
+		RTW_ERR("[MPT] pTxRxPars->txrxPktHeader=0x%x is out of range, (should be between 0x0~0x3ffff)\n", pTxRxPars->txrxPktHeader);
 		pBtRsp->status = (btOpcode << 8) | BT_STATUS_PARAMETER_OUT_OF_RANGE_U;
 		return paraLen;
 	} else {
@@ -1194,7 +1194,7 @@ mptbt_BtSetTxRxPars(
 	/* ckeck bt return status. */
 	if (BT_STATUS_BT_OP_SUCCESS != retStatus) {
 		pBtRsp->status = ((btOpcode << 8) | retStatus);
-		RTW_INFO("[MPT], Error!! status code=0x%x\n", pBtRsp->status);
+		RTW_ERR("[MPT] status code=0x%x\n", pBtRsp->status);
 		return paraLen;
 	}
 
@@ -1234,7 +1234,7 @@ mptbt_BtSetTxRxPars(
 			payloadLenLimit = 39 * 8;
 			break;
 		default: {
-			RTW_INFO("[MPT], Error!! Unknown pTxRxPars->txrxPktType=0x%x\n", pTxRxPars->txrxPktType);
+			RTW_ERR("[MPT] Unknown pTxRxPars->txrxPktType=0x%x\n", pTxRxPars->txrxPktType);
 			pBtRsp->status = (btOpcode << 8) | BT_STATUS_PARAMETER_OUT_OF_RANGE_U;
 			return paraLen;
 		}
@@ -1242,7 +1242,7 @@ mptbt_BtSetTxRxPars(
 		}
 
 		if (pTxRxPars->txrxPayloadLen > payloadLenLimit) {
-			RTW_INFO("[MPT], Error!! pTxRxPars->txrxPayloadLen=0x%x, (should smaller than %d)\n",
+			RTW_ERR("[MPT] pTxRxPars->txrxPayloadLen=0x%x, (should smaller than %d)\n",
 				 pTxRxPars->txrxPayloadLen, payloadLenLimit);
 			pBtRsp->status = (btOpcode << 8) | BT_STATUS_PARAMETER_OUT_OF_RANGE_U;
 			return paraLen;
@@ -1258,14 +1258,14 @@ mptbt_BtSetTxRxPars(
 	/* ckeck bt return status. */
 	if (BT_STATUS_BT_OP_SUCCESS != retStatus) {
 		pBtRsp->status = ((btOpcode << 8) | retStatus);
-		RTW_INFO("[MPT], Error!! status code=0x%x\n", pBtRsp->status);
+		RTW_ERR("[MPT] status code=0x%x\n", pBtRsp->status);
 		return paraLen;
 	}
 
 	/* fill h2c parameters */
 	btOpcode = BT_LO_OP_SET_PKT_CNT_L_PL_TYPE;
 	if (pTxRxPars->txrxPayloadType > MP_BT_PAYLOAD_MAX) {
-		RTW_INFO("[MPT], Error!! pTxRxPars->txrxPayloadType=0x%x, (should be between 0~4)\n", pTxRxPars->txrxPayloadType);
+		RTW_ERR("[MPT] pTxRxPars->txrxPayloadType=0x%x, (should be between 0~4)\n", pTxRxPars->txrxPayloadType);
 		pBtRsp->status = (btOpcode << 8) | BT_STATUS_PARAMETER_OUT_OF_RANGE_U;
 		return paraLen;
 	} else {
@@ -1279,14 +1279,14 @@ mptbt_BtSetTxRxPars(
 	/* ckeck bt return status. */
 	if (BT_STATUS_BT_OP_SUCCESS != retStatus) {
 		pBtRsp->status = ((btOpcode << 8) | retStatus);
-		RTW_INFO("[MPT], Error!! status code=0x%x\n", pBtRsp->status);
+		RTW_ERR("[MPT] status code=0x%x\n", pBtRsp->status);
 		return paraLen;
 	}
 
 	/* fill h2c parameters */
 	btOpcode = BT_LO_OP_SET_PKT_CNT_H_PKT_INTV;
 	if (pTxRxPars->txrxTxPktInterval > 15) {
-		RTW_INFO("[MPT], Error!! pTxRxPars->txrxTxPktInterval=0x%x, (should be between 0~15)\n", pTxRxPars->txrxTxPktInterval);
+		RTW_ERR("[MPT] pTxRxPars->txrxTxPktInterval=0x%x, (should be between 0~15)\n", pTxRxPars->txrxTxPktInterval);
 		pBtRsp->status = (btOpcode << 8) | BT_STATUS_PARAMETER_OUT_OF_RANGE_U;
 		return paraLen;
 	} else {
@@ -1300,7 +1300,7 @@ mptbt_BtSetTxRxPars(
 	/* ckeck bt return status. */
 	if (BT_STATUS_BT_OP_SUCCESS != retStatus) {
 		pBtRsp->status = ((btOpcode << 8) | retStatus);
-		RTW_INFO("[MPT], Error!! status code=0x%x\n", pBtRsp->status);
+		RTW_ERR("[MPT] status code=0x%x\n", pBtRsp->status);
 		return paraLen;
 	}
 
@@ -1315,7 +1315,7 @@ mptbt_BtSetTxRxPars(
 	/* ckeck bt return status. */
 	if (BT_STATUS_BT_OP_SUCCESS != retStatus) {
 		pBtRsp->status = ((btOpcode << 8) | retStatus);
-		RTW_INFO("[MPT], Error!! status code=0x%x\n", pBtRsp->status);
+		RTW_ERR("[MPT] status code=0x%x\n", pBtRsp->status);
 		return paraLen;
 	}
 
@@ -1324,8 +1324,8 @@ mptbt_BtSetTxRxPars(
 	btOpcode = BT_LO_OP_SET_CHNL_TX_GAIN;
 	if ((pTxRxPars->txrxChannel > 78) ||
 	    (pTxRxPars->txrxTxGainIndex > 7)) {
-		RTW_INFO("[MPT], Error!! pTxRxPars->txrxChannel=0x%x, (should be between 0~78)\n", pTxRxPars->txrxChannel);
-		RTW_INFO("[MPT], Error!! pTxRxPars->txrxTxGainIndex=0x%x, (should be between 0~7)\n", pTxRxPars->txrxTxGainIndex);
+		RTW_ERR("[MPT] pTxRxPars->txrxChannel=0x%x, (should be between 0~78)\n", pTxRxPars->txrxChannel);
+		RTW_ERR("[MPT] pTxRxPars->txrxTxGainIndex=0x%x, (should be between 0~7)\n", pTxRxPars->txrxTxGainIndex);
 		pBtRsp->status = (btOpcode << 8) | BT_STATUS_PARAMETER_OUT_OF_RANGE_U;
 		return paraLen;
 	} else {
@@ -1338,7 +1338,7 @@ mptbt_BtSetTxRxPars(
 	/* ckeck bt return status. */
 	if (BT_STATUS_BT_OP_SUCCESS != retStatus) {
 		pBtRsp->status = ((btOpcode << 8) | retStatus);
-		RTW_INFO("[MPT], Error!! status code=0x%x\n", pBtRsp->status);
+		RTW_ERR("[MPT] status code=0x%x\n", pBtRsp->status);
 		return paraLen;
 	}
 
@@ -1350,7 +1350,7 @@ mptbt_BtSetTxRxPars(
 	    (pTxRxPars->txrxBdaddr[3] == 0) &&
 	    (pTxRxPars->txrxBdaddr[4] == 0) &&
 	    (pTxRxPars->txrxBdaddr[5] == 0)) {
-		RTW_INFO("[MPT], Error!! pTxRxPars->txrxBdaddr=all zero\n");
+		RTW_ERR("[MPT] pTxRxPars->txrxBdaddr=all zero\n");
 		pBtRsp->status = (btOpcode << 8) | BT_STATUS_PARAMETER_OUT_OF_RANGE_U;
 		return paraLen;
 	}
@@ -1360,7 +1360,7 @@ mptbt_BtSetTxRxPars(
 	    (pTxRxPars->txrxBdaddr[3] == 0xff) &&
 	    (pTxRxPars->txrxBdaddr[4] == 0xff) &&
 	    (pTxRxPars->txrxBdaddr[5] == 0xff)) {
-		RTW_INFO("[MPT], Error!! pTxRxPars->txrxBdaddr=all 0xf\n");
+		RTW_ERR("[MPT] pTxRxPars->txrxBdaddr=all 0xf\n");
 		pBtRsp->status = (btOpcode << 8) | BT_STATUS_PARAMETER_OUT_OF_RANGE_U;
 		return paraLen;
 	}
@@ -1375,7 +1375,7 @@ mptbt_BtSetTxRxPars(
 	/* ckeck bt return status. */
 	if (BT_STATUS_BT_OP_SUCCESS != retStatus) {
 		pBtRsp->status = ((btOpcode << 8) | retStatus);
-		RTW_INFO("[MPT], Error!! status code=0x%x\n", pBtRsp->status);
+		RTW_ERR("[MPT] status code=0x%x\n", pBtRsp->status);
 		return paraLen;
 	}
 
@@ -1390,7 +1390,7 @@ mptbt_BtSetTxRxPars(
 	/* ckeck bt return status. */
 	if (BT_STATUS_BT_OP_SUCCESS != retStatus) {
 		pBtRsp->status = ((btOpcode << 8) | retStatus);
-		RTW_INFO("[MPT], Error!! status code=0x%x\n", pBtRsp->status);
+		RTW_ERR("[MPT] status code=0x%x\n", pBtRsp->status);
 		return paraLen;
 	}
 
@@ -1421,16 +1421,16 @@ mptbt_BtTestCtrl(
 
 	/* 1. check upper layer opcode version */
 	if (pBtReq->opCodeVer != 1) {
-		RTW_INFO("[MPT], Error!! Upper OP code version not match!!!\n");
+		RTW_ERR("[MPT] Upper OP code version not match!!!\n");
 		pBtRsp->status = BT_STATUS_OPCODE_U_VERSION_MISMATCH;
 		return paraLen;
 	}
 	/* 2. check upper layer parameter length */
 	if (1 == pBtReq->paraLength) {
 		testCtrl = pBtReq->pParamStart[0];
-		RTW_INFO("[MPT], testCtrl=%d\n", testCtrl);
+		RTW_DBG("[MPT], testCtrl=%d\n", testCtrl);
 	} else {
-		RTW_INFO("[MPT], Error!! wrong parameter length=%d (should be 1)\n", pBtReq->paraLength);
+		RTW_ERR("[MPT] wrong parameter length=%d (should be 1)\n", pBtReq->paraLength);
 		pBtRsp->status = BT_STATUS_PARAMETER_FORMAT_ERROR_U;
 		return paraLen;
 	}
@@ -1443,7 +1443,7 @@ mptbt_BtTestCtrl(
 	/* check bt mode */
 	btOpcode = BT_LO_OP_TEST_CTRL;
 	if (testCtrl >= MP_BT_TEST_MAX) {
-		RTW_INFO("[MPT], Error!! testCtrl=0x%x, (should be between smaller or equal to 0x%x)\n",
+		RTW_ERR("[MPT] testCtrl=0x%x, (should be between smaller or equal to 0x%x)\n",
 			 testCtrl, MP_BT_TEST_MAX - 1);
 		pBtRsp->status = BT_STATUS_PARAMETER_OUT_OF_RANGE_U;
 		return paraLen;
@@ -1456,7 +1456,7 @@ mptbt_BtTestCtrl(
 	/* 3. construct respond status code and data. */
 	if (BT_STATUS_BT_OP_SUCCESS != retStatus) {
 		pBtRsp->status = ((btOpcode << 8) | retStatus);
-		RTW_INFO("[MPT], Error!! status code=0x%x\n", pBtRsp->status);
+		RTW_ERR("[MPT] status code=0x%x\n", pBtRsp->status);
 		return paraLen;
 	}
 
@@ -1496,7 +1496,7 @@ mptbt_TestBT(
 	/* 3. construct respond status code and data. */
 	if (BT_STATUS_BT_OP_SUCCESS != retStatus) {
 		pBtRsp->status = ((btOpcode << 8) | retStatus);
-		RTW_INFO("[MPT], Error!! status code=0x%x\n", pBtRsp->status);
+		RTW_ERR("[MPT] status code=0x%x\n", pBtRsp->status);
 		return paraLen;
 	}
 
@@ -1518,13 +1518,13 @@ mptbt_BtControlProcess(
 	u1Byte			i;
 
 
-	RTW_INFO("[MPT], mptbt_BtControlProcess()=========>\n");
+	RTW_DBG("[MPT], mptbt_BtControlProcess()=========>\n");
 
-	RTW_INFO("[MPT], input opCodeVer=%d\n", pBtReq->opCodeVer);
-	RTW_INFO("[MPT], input OpCode=%d\n", pBtReq->OpCode);
-	RTW_INFO("[MPT], paraLength=%d\n", pBtReq->paraLength);
+	RTW_DBG("[MPT], input opCodeVer=%d\n", pBtReq->opCodeVer);
+	RTW_DBG("[MPT], input OpCode=%d\n", pBtReq->OpCode);
+	RTW_DBG("[MPT], paraLength=%d\n", pBtReq->paraLength);
 	if (pBtReq->paraLength) {
-		/* RTW_INFO("[MPT], parameters(hex):0x%x %d\n",&pBtReq->pParamStart[0], pBtReq->paraLength); */
+		/* RTW_DBG("[MPT], parameters(hex):0x%x %d\n",&pBtReq->pParamStart[0], pBtReq->paraLength); */
 	}
 
 	_rtw_memset((void *)pMptCtx->mptOutBuf, 0, 100);
@@ -1537,35 +1537,35 @@ mptbt_BtControlProcess(
 	/* The following we should maintain the User OP codes sent by upper layer */
 	switch (pBtReq->OpCode) {
 	case BT_UP_OP_BT_READY:
-		RTW_INFO("[MPT], OPcode : [BT_READY]\n");
+		RTW_DBG("[MPT], OPcode : [BT_READY]\n");
 		pBtRsp->paraLength = mptbt_BtReady(Adapter, pBtReq, pBtRsp);
 		break;
 	case BT_UP_OP_BT_SET_MODE:
-		RTW_INFO("[MPT], OPcode : [BT_SET_MODE]\n");
+		RTW_DBG("[MPT], OPcode : [BT_SET_MODE]\n");
 		pBtRsp->paraLength = mptbt_BtSetMode(Adapter, pBtReq, pBtRsp);
 		break;
 	case BT_UP_OP_BT_SET_TX_RX_PARAMETER:
-		RTW_INFO("[MPT], OPcode : [BT_SET_TXRX_PARAMETER]\n");
+		RTW_DBG("[MPT], OPcode : [BT_SET_TXRX_PARAMETER]\n");
 		pBtRsp->paraLength = mptbt_BtSetTxRxPars(Adapter, pBtReq, pBtRsp);
 		break;
 	case BT_UP_OP_BT_SET_GENERAL:
-		RTW_INFO("[MPT], OPcode : [BT_SET_GENERAL]\n");
+		RTW_DBG("[MPT], OPcode : [BT_SET_GENERAL]\n");
 		pBtRsp->paraLength = mptbt_BtSetGeneral(Adapter, pBtReq, pBtRsp);
 		break;
 	case BT_UP_OP_BT_GET_GENERAL:
-		RTW_INFO("[MPT], OPcode : [BT_GET_GENERAL]\n");
+		RTW_DBG("[MPT], OPcode : [BT_GET_GENERAL]\n");
 		pBtRsp->paraLength = mptbt_BtGetGeneral(Adapter, pBtReq, pBtRsp);
 		break;
 	case BT_UP_OP_BT_TEST_CTRL:
-		RTW_INFO("[MPT], OPcode : [BT_TEST_CTRL]\n");
+		RTW_DBG("[MPT], OPcode : [BT_TEST_CTRL]\n");
 		pBtRsp->paraLength = mptbt_BtTestCtrl(Adapter, pBtReq, pBtRsp);
 		break;
 	case BT_UP_OP_TEST_BT:
-		RTW_INFO("[MPT], OPcode : [TEST_BT]\n");
+		RTW_DBG("[MPT], OPcode : [TEST_BT]\n");
 		pBtRsp->paraLength = mptbt_TestBT(Adapter, pBtReq, pBtRsp);
 		break;
 	default:
-		RTW_INFO("[MPT], Error!! OPcode : UNDEFINED!!!!\n");
+		RTW_ERR("[MPT] OPcode : UNDEFINED!!!!\n");
 		pBtRsp->status = BT_STATUS_UNKNOWN_OPCODE_U;
 		pBtRsp->paraLength = 0x0;
 		break;
@@ -1573,8 +1573,8 @@ mptbt_BtControlProcess(
 
 	pMptCtx->mptOutLen += pBtRsp->paraLength;
 
-	RTW_INFO("[MPT], pMptCtx->mptOutLen=%d, pBtRsp->paraLength=%d\n", pMptCtx->mptOutLen, pBtRsp->paraLength);
-	RTW_INFO("[MPT], mptbt_BtControlProcess()<=========\n");
+	RTW_DBG("[MPT], pMptCtx->mptOutLen=%d, pBtRsp->paraLength=%d\n", pMptCtx->mptOutLen, pBtRsp->paraLength);
+	RTW_DBG("[MPT], mptbt_BtControlProcess()<=========\n");
 }
 
 #endif
