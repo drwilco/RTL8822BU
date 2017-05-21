@@ -278,7 +278,7 @@ u8 rtw_set_802_11_bssid(_adapter *padapter, u8 *bssid)
 	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
 
 
-	RTW_PRINT("set bssid:%pM\n", bssid);
+	RTW_DBG("set bssid:%pM\n", bssid);
 
 	if ((bssid[0] == 0x00 && bssid[1] == 0x00 && bssid[2] == 0x00 && bssid[3] == 0x00 && bssid[4] == 0x00 && bssid[5] == 0x00) ||
 	    (bssid[0] == 0xFF && bssid[1] == 0xFF && bssid[2] == 0xFF && bssid[3] == 0xFF && bssid[4] == 0xFF && bssid[5] == 0xFF)) {
@@ -350,7 +350,7 @@ u8 rtw_set_802_11_ssid(_adapter *padapter, NDIS_802_11_SSID *ssid)
 	struct wlan_network *pnetwork = &pmlmepriv->cur_network;
 
 
-	RTW_PRINT("set ssid [%s] fw_state=0x%08x\n",
+	RTW_DBG("set ssid [%s] fw_state=0x%08x\n",
 		  ssid->Ssid, get_fwstate(pmlmepriv));
 
 	if (!rtw_is_hw_init_completed(padapter)) {
@@ -468,7 +468,7 @@ u8 rtw_set_802_11_connect(_adapter *padapter, u8 *bssid, NDIS_802_11_SSID *ssid)
 
 	_enter_critical_bh(&pmlmepriv->lock, &irqL);
 
-	RTW_PRINT(FUNC_ADPT_FMT"  fw_state=0x%08x\n",
+	RTW_DBG(FUNC_ADPT_FMT"  fw_state=0x%08x\n",
 		  FUNC_ADPT_ARG(padapter), get_fwstate(pmlmepriv));
 
 	if (check_fwstate(pmlmepriv, _FW_UNDER_SURVEY) == _TRUE)
@@ -1247,6 +1247,6 @@ int rtw_set_band(_adapter *adapter, u8 band)
 		return _SUCCESS;
 	}
 
-	RTW_PRINT(FUNC_ADPT_FMT" band:%d fail\n", FUNC_ADPT_ARG(adapter), band);
+	RTW_ERR(FUNC_ADPT_FMT" band:%d fail\n", FUNC_ADPT_ARG(adapter), band);
 	return _FAIL;
 }

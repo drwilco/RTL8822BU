@@ -923,7 +923,7 @@ s32 rtw_hal_fill_h2c_cmd(PADAPTER padapter, u8 ElementID, u32 CmdLen, u8 *pCmdBu
 	if (pri_adapter->bFWReady == _TRUE)
 		return padapter->hal_func.fill_h2c_cmd(padapter, ElementID, CmdLen, pCmdBuffer);
 	else if (padapter->registrypriv.mp_mode == 0)
-		RTW_PRINT(FUNC_ADPT_FMT" FW doesn't exit when no MP mode, by pass H2C id:0x%02x\n"
+		RTW_ERR(FUNC_ADPT_FMT" FW doesn't exit when no MP mode, by pass H2C id:0x%02x\n"
 			  , FUNC_ADPT_ARG(padapter), ElementID);
 	return _FAIL;
 }
@@ -1008,7 +1008,7 @@ u8 rtw_hal_init_phy(PADAPTER adapter)
 #endif /* RTW_HALMAC */
 
 #define rtw_hal_error_msg(ops_fun)		\
-	RTW_PRINT("### %s - Error : Please hook hal_func.%s ###\n", __FUNCTION__, ops_fun)
+	RTW_ERR("### %s: Please hook hal_func.%s ###\n", __FUNCTION__, ops_fun)
 
 u8 rtw_hal_ops_check(_adapter *padapter)
 {

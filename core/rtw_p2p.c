@@ -3290,23 +3290,20 @@ static void ro_ch_handler(_adapter *padapter)
 	u8 ch, bw, offset;
 
 	if (rtw_mi_get_ch_setting_union(padapter, &ch, &bw, &offset) != 0) {
-		if (0)
-			RTW_INFO(FUNC_ADPT_FMT" back to linked/linking union - ch:%u, bw:%u, offset:%u\n",
-				 FUNC_ADPT_ARG(padapter), ch, bw, offset);
+		RTW_DBG(FUNC_ADPT_FMT" back to linked/linking union - ch:%u, bw:%u, offset:%u\n",
+			 FUNC_ADPT_ARG(padapter), ch, bw, offset);
 	} else if (adapter_wdev_data(padapter)->p2p_enabled && pwdinfo->listen_channel) {
 		ch = pwdinfo->listen_channel;
 		bw = CHANNEL_WIDTH_20;
 		offset = HAL_PRIME_CHNL_OFFSET_DONT_CARE;
-		if (0)
-			RTW_INFO(FUNC_ADPT_FMT" back to listen ch - ch:%u, bw:%u, offset:%u\n",
-				 FUNC_ADPT_ARG(padapter), ch, bw, offset);
+		RTW_DBG(FUNC_ADPT_FMT" back to listen ch - ch:%u, bw:%u, offset:%u\n",
+			 FUNC_ADPT_ARG(padapter), ch, bw, offset);
 	} else {
 		ch = pcfg80211_wdinfo->restore_channel;
 		bw = CHANNEL_WIDTH_20;
 		offset = HAL_PRIME_CHNL_OFFSET_DONT_CARE;
-		if (0)
-			RTW_INFO(FUNC_ADPT_FMT" back to restore ch - ch:%u, bw:%u, offset:%u\n",
-				 FUNC_ADPT_ARG(padapter), ch, bw, offset);
+		RTW_DBG(FUNC_ADPT_FMT" back to restore ch - ch:%u, bw:%u, offset:%u\n",
+			 FUNC_ADPT_ARG(padapter), ch, bw, offset);
 	}
 
 	set_channel_bwmode(padapter, ch, offset, bw);

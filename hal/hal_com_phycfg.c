@@ -1219,7 +1219,7 @@ s8 rtw_regsty_get_target_tx_power(
 	s8 value = 0;
 
 	if (RfPath > RF_PATH_D) {
-		RTW_PRINT("%s invalid RfPath:%d\n", __func__, RfPath);
+		RTW_ERR("%s invalid RfPath:%d\n", __func__, RfPath);
 		return -1;
 	}
 
@@ -1228,7 +1228,7 @@ s8 rtw_regsty_get_target_tx_power(
 		&& Band != BAND_ON_5G
 		#endif
 	) {
-		RTW_PRINT("%s invalid Band:%d\n", __func__, Band);
+		RTW_ERR("%s invalid Band:%d\n", __func__, Band);
 		return -1;
 	}
 
@@ -1237,7 +1237,7 @@ s8 rtw_regsty_get_target_tx_power(
 		|| (Band == BAND_ON_5G && RateSection == CCK)
 		#endif
 	) {
-		RTW_PRINT("%s invalid RateSection:%d in Band:%d, RfPath:%d\n", __func__
+		RTW_ERR("%s invalid RateSection:%d in Band:%d, RfPath:%d\n", __func__
 			, RateSection, Band, RfPath);
 		return -1;
 	}
@@ -1280,7 +1280,7 @@ bool rtw_regsty_chk_target_tx_power_valid(_adapter *adapter)
 
 				target = rtw_regsty_get_target_tx_power(adapter, band, path, rs);
 				if (target == -1) {
-					RTW_PRINT("%s return _FALSE for band:%d, path:%d, rs:%d, t:%d\n", __func__, band, path, rs, target);
+					RTW_ERR("%s return _FALSE for band:%d, path:%d, rs:%d, t:%d\n", __func__, band, path, rs, target);
 					return _FALSE;
 				}
 			}
@@ -1308,19 +1308,19 @@ PHY_GetTxPowerByRateBase(
 	u8 value = 0;
 
 	if (RfPath > RF_PATH_D) {
-		RTW_PRINT("%s invalid RfPath:%d\n", __func__, RfPath);
+		RTW_ERR("%s invalid RfPath:%d\n", __func__, RfPath);
 		return 0;
 	}
 
 	if (Band != BAND_ON_2_4G && Band != BAND_ON_5G) {
-		RTW_PRINT("%s invalid Band:%d\n", __func__, Band);
+		RTW_ERR("%s invalid Band:%d\n", __func__, Band);
 		return 0;
 	}
 
 	if (RateSection >= RATE_SECTION_NUM
 		|| (Band == BAND_ON_5G && RateSection == CCK)
 	) {
-		RTW_PRINT("%s invalid RateSection:%d in Band:%d, RfPath:%d, TxNum:%d\n", __func__
+		RTW_ERR("%s invalid RateSection:%d in Band:%d, RfPath:%d, TxNum:%d\n", __func__
 			, RateSection, Band, RfPath, TxNum);
 		return 0;
 	}
@@ -1346,19 +1346,19 @@ phy_SetTxPowerByRateBase(
 	HAL_DATA_TYPE *pHalData = GET_HAL_DATA(Adapter);
 
 	if (RfPath > RF_PATH_D) {
-		RTW_PRINT("%s invalid RfPath:%d\n", __func__, RfPath);
+		RTW_ERR("%s invalid RfPath:%d\n", __func__, RfPath);
 		return;
 	}
 
 	if (Band != BAND_ON_2_4G && Band != BAND_ON_5G) {
-		RTW_PRINT("%s invalid Band:%d\n", __func__, Band);
+		RTW_ERR("%s invalid Band:%d\n", __func__, Band);
 		return;
 	}
 
 	if (RateSection >= RATE_SECTION_NUM
 		|| (Band == BAND_ON_5G && RateSection == CCK)
 	) {
-		RTW_PRINT("%s invalid RateSection:%d in %sG, RfPath:%d, TxNum:%d\n", __func__
+		RTW_ERR("%s invalid RateSection:%d in %sG, RfPath:%d, TxNum:%d\n", __func__
 			, RateSection, (Band == BAND_ON_2_4G) ? "2.4" : "5", RfPath, TxNum);
 		return;
 	}
@@ -1893,7 +1893,7 @@ PHY_GetRateValuesOfTxPowerByRate(
 		break;
 
 	default:
-		RTW_PRINT("Invalid RegAddr 0x%x in %s()\n", RegAddr, __func__);
+		RTW_ERR("Invalid RegAddr 0x%x in %s()\n", RegAddr, __func__);
 		break;
 	};
 }
@@ -1916,17 +1916,17 @@ PHY_StoreTxPowerByRateNew(
 	PHY_GetRateValuesOfTxPowerByRate(pAdapter, RegAddr, BitMask, Data, rates, PwrByRateVal, &rateNum);
 
 	if (Band != BAND_ON_2_4G && Band != BAND_ON_5G) {
-		RTW_PRINT("Invalid Band %d\n", Band);
+		RTW_ERR("Invalid Band %d\n", Band);
 		return;
 	}
 
 	if (RfPath > ODM_RF_PATH_D) {
-		RTW_PRINT("Invalid RfPath %d\n", RfPath);
+		RTW_ERR("Invalid RfPath %d\n", RfPath);
 		return;
 	}
 
 	if (TxNum > ODM_RF_PATH_D) {
-		RTW_PRINT("Invalid TxNum %d\n", TxNum);
+		RTW_ERR("Invalid TxNum %d\n", TxNum);
 		return;
 	}
 
@@ -2823,10 +2823,10 @@ phy_GetChannelIndexOfTxPowerLimit(
 				channelIndex = i;
 		}
 	} else
-		RTW_PRINT("Invalid Band %d in %s\n", Band, __func__);
+		RTW_ERR("Invalid Band %d in %s\n", Band, __func__);
 
 	if (channelIndex == -1)
-		RTW_PRINT("Invalid Channel %d of Band %d in %s\n", Channel, Band, __func__);
+		RTW_ERR("Invalid Channel %d of Band %d in %s\n", Channel, Band, __func__);
 
 	return channelIndex;
 }
@@ -3501,7 +3501,7 @@ phy_set_tx_power_limit(
 	if (GetU1ByteIntegerFromStringInDecimal((s8 *)Channel, &channel) == _FALSE
 		|| GetU1ByteIntegerFromStringInDecimal((s8 *)PowerLimit, &powerLimit) == _FALSE
 	) {
-		RTW_PRINT("Illegal index of power limit table [ch %s][val %s]\n", Channel, PowerLimit);
+		RTW_ERR("Illegal index of power limit table [ch %s][val %s]\n", Channel, PowerLimit);
 		return;
 	}
 
@@ -3516,7 +3516,7 @@ phy_set_tx_power_limit(
 	else if (eqNByte(Regulation, (u8 *)("WW13"), 4))
 		regulation = TXPWR_LMT_WW;
 	else {
-		RTW_PRINT("unknown regulation:%s", Regulation);
+		RTW_ERR("unknown regulation:%s", Regulation);
 		return;
 	}
 
@@ -3541,7 +3541,7 @@ phy_set_tx_power_limit(
 	else if (eqNByte(RateSection, (u8 *)("VHT"), 3) && eqNByte(RfPath, (u8 *)("4T"), 2))
 		rateSection = VHT_4SS;
 	else {
-		RTW_PRINT("Wrong rate section: (%s,%s)\n", RateSection, RfPath);
+		RTW_ERR("Wrong rate section: (%s,%s)\n", RateSection, RfPath);
 		return;
 	}
 
@@ -3552,7 +3552,7 @@ phy_set_tx_power_limit(
 	else if (eqNByte(Bandwidth, (u8 *)("80M"), 3))
 		bandwidth = CHANNEL_WIDTH_80;
 	else {
-		RTW_PRINT("unknown bandwidth: %s\n", Bandwidth);
+		RTW_ERR("unknown bandwidth: %s\n", Bandwidth);
 		return;
 	}
 
@@ -3560,50 +3560,48 @@ phy_set_tx_power_limit(
 		channelIndex = phy_GetChannelIndexOfTxPowerLimit(BAND_ON_2_4G, channel);
 
 		if (channelIndex == -1) {
-			RTW_PRINT("unsupported channel: %d at 2.4G\n", channel);
+			RTW_ERR("unsupported channel: %d at 2.4G\n", channel);
 			return;
 		}
 
 		if (bandwidth >= MAX_2_4G_BANDWIDTH_NUM) {
-			RTW_PRINT("unsupported bandwidth: %s at 2.4G\n", Bandwidth);
+			RTW_ERR("unsupported bandwidth: %s at 2.4G\n", Bandwidth);
 			return;
 		}
 
 		prevPowerLimit = pHalData->TxPwrLimit_2_4G[regulation][bandwidth][rateSection][channelIndex][RF_PATH_A];
 
 		if (prevPowerLimit != MAX_POWER_INDEX)
-			RTW_PRINT("duplicate tx power limit combination [band %s][regulation %s][bw %s][rate section %s][rf path %s][chnl %s]\n"
+			RTW_WARN("duplicate tx power limit combination [band %s][regulation %s][bw %s][rate section %s][rf path %s][chnl %s]\n"
 				, Band, Regulation, Bandwidth, RateSection, RfPath, Channel);
 
 		if (powerLimit < prevPowerLimit)
 			pHalData->TxPwrLimit_2_4G[regulation][bandwidth][rateSection][channelIndex][RF_PATH_A] = powerLimit;
 
-		if (0)
-			RTW_INFO("2.4G Band value : [regulation %d][bw %d][rate_section %d][chnl %d][val %d]\n"
-				, regulation, bandwidth, rateSection, channelIndex, pHalData->TxPwrLimit_2_4G[regulation][bandwidth][rateSection][channelIndex][ODM_RF_PATH_A]);
+		RTW_INFO("2.4G Band value : [regulation %d][bw %d][rate_section %d][chnl %d][val %d]\n"
+			, regulation, bandwidth, rateSection, channelIndex, pHalData->TxPwrLimit_2_4G[regulation][bandwidth][rateSection][channelIndex][ODM_RF_PATH_A]);
 	} else if (eqNByte(Band, (u8 *)("5G"), 2)) {
 
 		channelIndex = phy_GetChannelIndexOfTxPowerLimit(BAND_ON_5G, channel);
 
 		if (channelIndex == -1) {
-			RTW_PRINT("unsupported channel: %d at 5G\n", channel);
+			RTW_ERR("unsupported channel: %d at 5G\n", channel);
 			return;
 		}
 
 		prevPowerLimit = pHalData->TxPwrLimit_5G[regulation][bandwidth][rateSection][channelIndex][RF_PATH_A];
 
 		if (prevPowerLimit != MAX_POWER_INDEX)
-			RTW_PRINT("duplicate tx power limit combination [band %s][regulation %s][bw %s][rate section %s][rf path %s][chnl %s]\n"
+			RTW_WARN("duplicate tx power limit combination [band %s][regulation %s][bw %s][rate section %s][rf path %s][chnl %s]\n"
 				, Band, Regulation, Bandwidth, RateSection, RfPath, Channel);
 
 		if (powerLimit < prevPowerLimit)
 			pHalData->TxPwrLimit_5G[regulation][bandwidth][rateSection][channelIndex][RF_PATH_A] = powerLimit;
 
-		if (0)
-			RTW_INFO("5G Band value : [regulation %d][bw %d][rate_section %d][chnl %d][val %d]\n"
-				, regulation, bandwidth, rateSection, channel, pHalData->TxPwrLimit_5G[regulation][bandwidth][rateSection][channelIndex][RF_PATH_A]);
+		RTW_INFO("5G Band value : [regulation %d][bw %d][rate_section %d][chnl %d][val %d]\n"
+			, regulation, bandwidth, rateSection, channel, pHalData->TxPwrLimit_5G[regulation][bandwidth][rateSection][channelIndex][RF_PATH_A]);
 	} else {
-		RTW_PRINT("Cannot recognize the band info in %s\n", Band);
+		RTW_ERR("Cannot recognize the band info in %s\n", Band);
 		return;
 	}
 }

@@ -1565,7 +1565,7 @@ static int __init rtw_drv_entry(void)
 {
 	int ret = 0;
 
-	RTW_PRINT("module init start\n");
+	RTW_DBG("module init start\n");
 	dump_drv_version(RTW_DBGDUMP);
 #ifdef BTCOEXVERSION
 	RTW_PRINT(DRV_NAME" BT-Coex version = %s\n", BTCOEXVERSION);
@@ -1573,7 +1573,7 @@ static int __init rtw_drv_entry(void)
 
 	ret = platform_wifi_power_on();
 	if (ret != 0) {
-		RTW_INFO("%s: power on failed!!(%d)\n", __FUNCTION__, ret);
+		RTW_ERR("%s: power on failed!!(%d)\n", __FUNCTION__, ret);
 		ret = -1;
 		goto exit;
 	}
@@ -1597,13 +1597,13 @@ static int __init rtw_drv_entry(void)
 	}
 
 exit:
-	RTW_PRINT("module init ret=%d\n", ret);
+	RTW_DBG("module init ret=%d\n", ret);
 	return ret;
 }
 
 static void __exit rtw_drv_halt(void)
 {
-	RTW_PRINT("module exit start\n");
+	RTW_DBG("module exit start\n");
 
 	usb_drv.drv_registered = _FALSE;
 
@@ -1615,7 +1615,7 @@ static void __exit rtw_drv_halt(void)
 	rtw_drv_proc_deinit();
 	rtw_ndev_notifier_unregister();
 
-	RTW_PRINT("module exit success\n");
+	RTW_DBG("module exit success\n");
 
 	rtw_mstat_dump(RTW_DBGDUMP);
 }

@@ -681,7 +681,7 @@ static void update_ra_mask(PADAPTER adapter, struct sta_info *psta, u32 mac_id, 
 	u8 bw;
 
 	if (psta == NULL) {
-		RTW_PRINT(FUNC_ADPT_FMT " macid:%u, sta is NULL\n",
+		RTW_ERR(FUNC_ADPT_FMT " macid:%u, sta is NULL\n",
 			  FUNC_ADPT_ARG(adapter), mac_id);
 		return;
 	}
@@ -2069,12 +2069,12 @@ static void hw_port_reconfig(_adapter * if_ap, _adapter *if_port0)
 	u8 port = if_ap->hw_port;
 
 	if (port > (hal_spec->port_num - 1)) {
-		RTW_INFO("[WARN] "ADPT_FMT"- hw_port : %d,will switch to invalid port-%d\n",
+		RTW_WARN(ADPT_FMT"- hw_port : %d,will switch to invalid port-%d\n",
 			 ADPT_ARG(if_port0), if_port0->hw_port, port);
 		rtw_warn_on(1);
 	}
 
-	RTW_PRINT(ADPT_FMT" - hw_port : %d,will switch to port-%d\n",
+	RTW_INFO(ADPT_FMT" - hw_port : %d,will switch to port-%d\n",
 		  ADPT_ARG(if_port0), if_port0->hw_port, port);
 
 	/*backup*/
@@ -2494,8 +2494,8 @@ void rtl8822b_sethwreg(PADAPTER adapter, u8 variable, u8 *val)
 		else if (RTW_CANNOT_RUN(adapter))
 			RTW_INFO("[HW_VAR_CHECK_TXBUF] bDriverStopped or bSurpriseRemoved\n");
 		else {
-			RTW_PRINT("[HW_VAR_CHECK_TXBUF] NOT empty in %d ms\n", passtime);
-			RTW_PRINT("[HW_VAR_CHECK_TXBUF] 0x230=0x%08x 0x234=0x%08x 0x238=0x%08x 0x23c=0x%08x 0x240=0x%08x\n",
+			RTW_ERR("[HW_VAR_CHECK_TXBUF] NOT empty in %d ms\n", passtime);
+			RTW_ERR("[HW_VAR_CHECK_TXBUF] 0x230=0x%08x 0x234=0x%08x 0x238=0x%08x 0x23c=0x%08x 0x240=0x%08x\n",
 				  high, low, normal, extra, publc);
 		}
 

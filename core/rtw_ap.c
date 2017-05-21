@@ -1742,10 +1742,10 @@ int rtw_check_beacon_data(_adapter *padapter, u8 *pbuf,  int len)
 		HT_CAP_AMPDU_FACTOR max_rx_ampdu_factor = MAX_AMPDU_FACTOR_64K;
 		struct rtw_ieee80211_ht_cap *pht_cap = (struct rtw_ieee80211_ht_cap *)(p + 2);
 
-		if (0) {
-			RTW_INFO(FUNC_ADPT_FMT" HT_CAP_IE from upper layer:\n", FUNC_ADPT_ARG(padapter));
-			dump_ht_cap_ie_content(RTW_DBGDUMP, p + 2, ie_len);
-		}
+#ifdef CONFIG_RTW_DEBUG
+		RTW_DBG(FUNC_ADPT_FMT" HT_CAP_IE from upper layer:\n", FUNC_ADPT_ARG(padapter));
+		dump_ht_cap_ie_content(RTW_DBGDUMP, p + 2, ie_len);
+#endif /* CONFIG_RTW_DEBUG */
 
 		pHT_caps_ie = p;
 
@@ -1839,12 +1839,11 @@ int rtw_check_beacon_data(_adapter *padapter, u8 *pbuf,  int len)
 
 		_rtw_memcpy(&pmlmepriv->htpriv.ht_cap, p + 2, ie_len);
 
-		if (0) {
-			RTW_INFO(FUNC_ADPT_FMT" HT_CAP_IE driver masked:\n", FUNC_ADPT_ARG(padapter));
-			dump_ht_cap_ie_content(RTW_DBGDUMP, p + 2, ie_len);
-		}
+#ifdef CONFIG_RTW_DEBUG
+		RTW_INFO(FUNC_ADPT_FMT" HT_CAP_IE driver masked:\n", FUNC_ADPT_ARG(padapter));
+		dump_ht_cap_ie_content(RTW_DBGDUMP, p + 2, ie_len);
+#endif /* CONFIG_RTW_DEBUG */
 	}
-
 	/* parsing HT_INFO_IE */
 	p = rtw_get_ie(ie + _BEACON_IE_OFFSET_, _HT_ADD_INFO_IE_, &ie_len, (pbss_network->IELength - _BEACON_IE_OFFSET_));
 	if (p && ie_len > 0)
@@ -2764,8 +2763,7 @@ void _update_beacon(_adapter *padapter, u8 ie_id, u8 *oui, u8 tx, const char *ta
 #if defined(CONFIG_USB_HCI) || defined(CONFIG_SDIO_HCI) || defined(CONFIG_GSPI_HCI)
 	if (tx) {
 		/* send_beacon(padapter); */ /* send_beacon must execute on TSR level */
-		if (0)
-			RTW_INFO(FUNC_ADPT_FMT" ie_id:%u - %s\n", FUNC_ADPT_ARG(padapter), ie_id, tag);
+		RTW_DBG(FUNC_ADPT_FMT" ie_id:%u - %s\n", FUNC_ADPT_ARG(padapter), ie_id, tag);
 		set_tx_beacon_cmd(padapter);
 	}
 #else

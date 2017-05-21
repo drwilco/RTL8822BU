@@ -2731,7 +2731,7 @@ u32 rtw_read_efuse_from_file(const char *path, u8 *buf, int map_size)
 	u8 *map = NULL;
 
 	if (rtw_is_file_readable_with_size(path, &file_size) != _TRUE) {
-		RTW_PRINT("%s %s is not readable\n", __func__, path);
+		RTW_ERR("%s %s is not readable\n", __func__, path);
 		goto exit;
 	}
 
@@ -2796,7 +2796,7 @@ u32 rtw_read_efuse_from_file(const char *path, u8 *buf, int map_size)
 		}
 	}
 
-	RTW_PRINT("efuse file:%s, 0x%03x byte content read\n", path, i);
+	RTW_INFO("efuse file:%s, 0x%03x byte content read\n", path, i);
 
 	_rtw_memcpy(buf, map, map_size);
 
@@ -2822,7 +2822,7 @@ u32 rtw_read_macaddr_from_file(const char *path, u8 *buf)
 	u8 addr[ETH_ALEN];
 
 	if (rtw_is_file_readable(path) != _TRUE) {
-		RTW_PRINT("%s %s is not readable\n", __func__, path);
+		RTW_ERR("%s %s is not readable\n", __func__, path);
 		goto exit;
 	}
 
@@ -2855,10 +2855,8 @@ u32 rtw_read_macaddr_from_file(const char *path, u8 *buf)
 
 	_rtw_memcpy(buf, addr, ETH_ALEN);
 
-	RTW_PRINT("wifi_mac file: %s\n", path);
-#ifdef CONFIG_RTW_DEBUG
-	RTW_INFO(MAC_FMT"\n", MAC_ARG(buf));
-#endif
+	RTW_INFO("wifi_mac file: %s\n", path);
+	RTW_DBG(MAC_FMT"\n", MAC_ARG(buf));
 
 	ret = _SUCCESS;
 

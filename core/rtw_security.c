@@ -843,7 +843,7 @@ u32 rtw_tkip_decrypt(_adapter *padapter, u8 *precvframe)
 
 					if (rtw_get_passing_time_ms(start) > 1000) {
 						if (no_gkey_bc_cnt || no_gkey_mc_cnt) {
-							RTW_PRINT(FUNC_ADPT_FMT" no_gkey_bc_cnt:%u, no_gkey_mc_cnt:%u\n",
+							RTW_DBG(FUNC_ADPT_FMT" no_gkey_bc_cnt:%u, no_gkey_mc_cnt:%u\n",
 								FUNC_ADPT_ARG(padapter), no_gkey_bc_cnt, no_gkey_mc_cnt);
 						}
 						start = rtw_get_current_time();
@@ -854,7 +854,7 @@ u32 rtw_tkip_decrypt(_adapter *padapter, u8 *precvframe)
 				}
 
 				if (no_gkey_bc_cnt || no_gkey_mc_cnt) {
-					RTW_PRINT(FUNC_ADPT_FMT" gkey installed. no_gkey_bc_cnt:%u, no_gkey_mc_cnt:%u\n",
+					RTW_DBG(FUNC_ADPT_FMT" gkey installed. no_gkey_bc_cnt:%u, no_gkey_mc_cnt:%u\n",
 						FUNC_ADPT_ARG(padapter), no_gkey_bc_cnt, no_gkey_mc_cnt);
 				}
 				start = 0;
@@ -1972,7 +1972,7 @@ u32	rtw_aes_decrypt(_adapter *padapter, u8 *precvframe)
 
 					if (rtw_get_passing_time_ms(start) > 1000) {
 						if (no_gkey_bc_cnt || no_gkey_mc_cnt) {
-							RTW_PRINT(FUNC_ADPT_FMT" no_gkey_bc_cnt:%u, no_gkey_mc_cnt:%u\n",
+							RTW_DBG(FUNC_ADPT_FMT" no_gkey_bc_cnt:%u, no_gkey_mc_cnt:%u\n",
 								FUNC_ADPT_ARG(padapter), no_gkey_bc_cnt, no_gkey_mc_cnt);
 						}
 						start = rtw_get_current_time();
@@ -1984,7 +1984,7 @@ u32	rtw_aes_decrypt(_adapter *padapter, u8 *precvframe)
 				}
 
 				if (no_gkey_bc_cnt || no_gkey_mc_cnt) {
-					RTW_PRINT(FUNC_ADPT_FMT" gkey installed. no_gkey_bc_cnt:%u, no_gkey_mc_cnt:%u\n",
+					RTW_DBG(FUNC_ADPT_FMT" gkey installed. no_gkey_bc_cnt:%u, no_gkey_mc_cnt:%u\n",
 						FUNC_ADPT_ARG(padapter), no_gkey_bc_cnt, no_gkey_mc_cnt);
 				}
 				start = 0;
@@ -2002,28 +2002,22 @@ u32	rtw_aes_decrypt(_adapter *padapter, u8 *precvframe)
 				prwskey = &stainfo->dot118021x_UncstKey.skey[0];
 
 			length = ((union recv_frame *)precvframe)->u.hdr.len - prxattrib->hdrlen - prxattrib->iv_len;
-#if 0
+#ifdef CONFIG_RTW_DEBUG
 			/*  add for CONFIG_IEEE80211W, debug */
-			if (0)
-				printk("@@@@@@@@@@@@@@@@@@ length=%d, prxattrib->hdrlen=%d, prxattrib->pkt_len=%d\n"
-				       , length, prxattrib->hdrlen, prxattrib->pkt_len);
-			if (0) {
-				int no;
-				/* test print PSK */
-				printk("PSK key below:\n");
-				for (no = 0; no < 16; no++)
-					printk(" %02x ", prwskey[no]);
-				printk("\n");
+			RTW_DBG("@@@@@@@@@@@@@@@@@@ length=%d, prxattrib->hdrlen=%d, prxattrib->pkt_len=%d\n"
+			       , length, prxattrib->hdrlen, prxattrib->pkt_len);
+			int no;
+			/* test print PSK */
+			RTW_DBG("PSK key below:\n");
+			for (no = 0; no < 16; no++)
+				_RTW_DBG(" %02x ", prwskey[no]);
+			_RTW_DBG("\n");
+			RTW_DBG("frame:\n");
+			for (no = 0; no < prxattrib->pkt_len; no++)
+				_RTW_DBG(" %02x ", pframe[no]);
+			_RTW_DBG("\n");
 			}
-			if (0) {
-				int no;
-				/* test print PSK */
-				printk("frame:\n");
-				for (no = 0; no < prxattrib->pkt_len; no++)
-					printk(" %02x ", pframe[no]);
-				printk("\n");
-			}
-#endif
+#endif /* CONFIG_RTW_DEBUG */
 
 			res = aes_decipher(prwskey, prxattrib->hdrlen, pframe, length);
 
@@ -3116,12 +3110,12 @@ u8 rtw_handle_tkip_countermeasure(_adapter *adapter, const char *caller)
 	if (securitypriv->btkip_countermeasure == _TRUE) {
 		u32 passing_ms = rtw_get_passing_time_ms(securitypriv->btkip_countermeasure_time);
 		if (passing_ms > 60 * 1000) {
-			RTW_PRINT("%s("ADPT_FMT") countermeasure time:%ds > 60s\n",
+			RTW_DBG("%s("ADPT_FMT") countermeasure time:%ds > 60s\n",
 				  caller, ADPT_ARG(adapter), passing_ms / 1000);
 			securitypriv->btkip_countermeasure = _FALSE;
 			securitypriv->btkip_countermeasure_time = 0;
 		} else {
-			RTW_PRINT("%s("ADPT_FMT") countermeasure time:%ds < 60s\n",
+			RTW_DBG("%s("ADPT_FMT") countermeasure time:%ds < 60s\n",
 				  caller, ADPT_ARG(adapter), passing_ms / 1000);
 			status = _FAIL;
 		}

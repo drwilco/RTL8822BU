@@ -195,7 +195,7 @@ int rtw_mlme_update_wfd_ie_data(struct mlme_priv *mlme, u8 type, u8 *ie, u32 ie_
 	if (!ie && !ie_len)
 		clear = 1;
 	else if (!ie || !ie_len) {
-		RTW_PRINT(FUNC_ADPT_FMT" type:%u, ie:%p, ie_len:%u"
+		RTW_DBG(FUNC_ADPT_FMT" type:%u, ie:%p, ie_len:%u"
 			  , FUNC_ADPT_ARG(adapter), type, ie, ie_len);
 		rtw_warn_on(1);
 		goto exit;
@@ -227,7 +227,7 @@ int rtw_mlme_update_wfd_ie_data(struct mlme_priv *mlme, u8 type, u8 *ie, u32 ie_
 		t_ie_len = &mlme->wfd_assoc_resp_ie_len;
 		break;
 	default:
-		RTW_PRINT(FUNC_ADPT_FMT" unsupported type:%u"
+		RTW_WARN(FUNC_ADPT_FMT" unsupported type:%u"
 			  , FUNC_ADPT_ARG(adapter), type);
 		rtw_warn_on(1);
 		goto exit;
@@ -2017,7 +2017,7 @@ void rtw_joinbss_event_prehandle(_adapter *adapter, u8 *pbuf)
 			if (ptarget_wlan)
 				rtw_joinbss_update_network(adapter, ptarget_wlan, pnetwork);
 			else {
-				RTW_PRINT("Can't find ptarget_wlan when joinbss_event callback\n");
+				RTW_WARN("Can't find ptarget_wlan when joinbss_event callback\n");
 				_exit_critical_bh(&(pmlmepriv->scanned_queue.lock), &irqL);
 				goto ignore_joinbss_callback;
 			}
@@ -2111,21 +2111,21 @@ void rtw_sta_media_status_rpt(_adapter *adapter, struct sta_info *sta, bool conn
 	u8 role = H2C_MSR_ROLE_RSVD;
 
 	if (sta == NULL) {
-		RTW_PRINT(FUNC_ADPT_FMT" sta is NULL\n"
+		RTW_WARN(FUNC_ADPT_FMT" sta is NULL\n"
 			  , FUNC_ADPT_ARG(adapter));
 		rtw_warn_on(1);
 		return;
 	}
 
 	if (sta->mac_id >= macid_ctl->num) {
-		RTW_PRINT(FUNC_ADPT_FMT" invalid macid:%u\n"
+		RTW_WARN(FUNC_ADPT_FMT" invalid macid:%u\n"
 			  , FUNC_ADPT_ARG(adapter), sta->mac_id);
 		rtw_warn_on(1);
 		return;
 	}
 
 	if (!rtw_macid_is_used(macid_ctl, sta->mac_id)) {
-		RTW_PRINT(FUNC_ADPT_FMT" macid:%u not is used, set connected to 0\n"
+		RTW_WARN(FUNC_ADPT_FMT" macid:%u not is used, set connected to 0\n"
 			  , FUNC_ADPT_ARG(adapter), sta->mac_id);
 		connected = 0;
 		rtw_warn_on(1);
@@ -2462,7 +2462,7 @@ void rtw_sta_mstatus_disc_rpt(_adapter *adapter, u8 mac_id)
 		/*if (MLME_IS_STA(adapter))*/
 		rtw_hal_macid_wakeup(adapter, mac_id);
 	} else {
-		RTW_PRINT(FUNC_ADPT_FMT" invalid macid:%u\n"
+		RTW_WARN(FUNC_ADPT_FMT" invalid macid:%u\n"
 			  , FUNC_ADPT_ARG(adapter), mac_id);
 		rtw_warn_on(1);
 	}
@@ -3042,8 +3042,7 @@ inline void rtw_clear_scan_deny(_adapter *adapter)
 {
 	struct mlme_priv *mlmepriv = &adapter->mlmepriv;
 	ATOMIC_SET(&mlmepriv->set_scan_deny, 0);
-	if (0)
-		RTW_INFO(FUNC_ADPT_FMT"\n", FUNC_ADPT_ARG(adapter));
+	RTW_DBG(FUNC_ADPT_FMT"\n", FUNC_ADPT_ARG(adapter));
 }
 
 void rtw_set_scan_deny_timer_hdl(_adapter *adapter)
@@ -3053,8 +3052,7 @@ void rtw_set_scan_deny_timer_hdl(_adapter *adapter)
 void rtw_set_scan_deny(_adapter *adapter, u32 ms)
 {
 	struct mlme_priv *mlmepriv = &adapter->mlmepriv;
-	if (0)
-		RTW_INFO(FUNC_ADPT_FMT"\n", FUNC_ADPT_ARG(adapter));
+	RTW_DBG(FUNC_ADPT_FMT"\n", FUNC_ADPT_ARG(adapter));
 	ATOMIC_SET(&mlmepriv->set_scan_deny, 1);
 	_set_timer(&mlmepriv->set_scan_deny_timer, ms);
 }
@@ -3180,12 +3178,11 @@ int rtw_select_roaming_candidate(struct mlme_priv *mlme)
 
 		mlme->pscanned = get_next(mlme->pscanned);
 
-		if (0)
-			RTW_INFO("%s("MAC_FMT", ch%u) rssi:%d\n"
-				 , pnetwork->network.Ssid.Ssid
-				 , MAC_ARG(pnetwork->network.MacAddress)
-				 , pnetwork->network.Configuration.DSConfig
-				 , (int)pnetwork->network.Rssi);
+		RTW_DBG("%s("MAC_FMT", ch%u) rssi:%d\n"
+			 , pnetwork->network.Ssid.Ssid
+			 , MAC_ARG(pnetwork->network.MacAddress)
+			 , pnetwork->network.Configuration.DSConfig
+			 , (int)pnetwork->network.Rssi);
 
 		rtw_check_roaming_candidate(mlme, &candidate, pnetwork);
 
@@ -3322,12 +3319,11 @@ int rtw_select_and_join_from_scanned_queue(struct mlme_priv *pmlmepriv)
 
 		pmlmepriv->pscanned = get_next(pmlmepriv->pscanned);
 
-		if (0)
-			RTW_INFO("%s("MAC_FMT", ch%u) rssi:%d\n"
-				 , pnetwork->network.Ssid.Ssid
-				 , MAC_ARG(pnetwork->network.MacAddress)
-				 , pnetwork->network.Configuration.DSConfig
-				 , (int)pnetwork->network.Rssi);
+		RTW_DBG("%s("MAC_FMT", ch%u) rssi:%d\n"
+			 , pnetwork->network.Ssid.Ssid
+			 , MAC_ARG(pnetwork->network.MacAddress)
+			 , pnetwork->network.Configuration.DSConfig
+			 , (int)pnetwork->network.Rssi);
 
 		rtw_check_join_candidate(pmlmepriv, &candidate, pnetwork);
 

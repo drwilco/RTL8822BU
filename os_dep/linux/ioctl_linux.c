@@ -237,7 +237,7 @@ void rtw_indicate_wx_assoc_event(_adapter *padapter)
 	else
 		_rtw_memcpy(wrqu.ap_addr.sa_data, pmlmepriv->cur_network.network.MacAddress, ETH_ALEN);
 
-	RTW_PRINT("assoc success\n");
+	RTW_DBG("assoc success\n");
 #ifndef CONFIG_IOCTL_CFG80211
 	wireless_send_event(padapter->pnetdev, SIOCGIWAP, &wrqu, NULL);
 #endif
@@ -253,7 +253,7 @@ void rtw_indicate_wx_disassoc_event(_adapter *padapter)
 	_rtw_memset(wrqu.ap_addr.sa_data, 0, ETH_ALEN);
 
 #ifndef CONFIG_IOCTL_CFG80211
-	RTW_PRINT("indicate disassoc\n");
+	RTW_DBG("indicate disassoc\n");
 	wireless_send_event(padapter->pnetdev, SIOCGIWAP, &wrqu, NULL);
 #endif
 }
@@ -8708,7 +8708,7 @@ static int rtw_wowlan_ctrl(struct net_device *dev,
 	/* mutex_lock(&ioctl_mutex); */
 _rtw_wowlan_ctrl_exit_free:
 	RTW_INFO("-rtw_wowlan_ctrl( subcode = %d)\n", poidparam.subcode);
-	RTW_PRINT("%s in %d ms\n", __func__,
+	RTW_DBG("%s in %d ms\n", __func__,
 		  rtw_get_passing_time_ms(start_time));
 _rtw_wowlan_ctrl_exit:
 	return ret;
@@ -8837,7 +8837,7 @@ static int rtw_ap_wowlan_ctrl(struct net_device *dev,
 	/* mutex_lock(&ioctl_mutex); */
 _rtw_ap_wowlan_ctrl_exit_free:
 	RTW_INFO("-rtw_ap_wowlan_ctrl( subcode = %d)\n", poidparam.subcode);
-	RTW_PRINT("%s in %d ms\n", __func__,
+	RTW_DBG("%s in %d ms\n", __func__,
 		  rtw_get_passing_time_ms(start_time));
 _rtw_ap_wowlan_ctrl_exit:
 	return ret;

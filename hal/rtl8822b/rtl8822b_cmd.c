@@ -1078,12 +1078,10 @@ void rtl8822b_download_BTCoex_AP_mode_rsvd_page(PADAPTER adapter)
 	RTW_INFO("+" FUNC_ADPT_FMT ": hw_port=%d fw_state=0x%08X\n",
 		FUNC_ADPT_ARG(adapter), get_hw_port(adapter), get_fwstate(&adapter->mlmepriv));
 
-#ifdef CONFIG_RTW_DEBUG
 	if (check_fwstate(&adapter->mlmepriv, WIFI_AP_STATE) == _FALSE) {
-		RTW_INFO(FUNC_ADPT_FMT ": [WARNING] not in AP mode!!\n",
+		RTW_WARN(FUNC_ADPT_FMT "%s: not in AP mode!!\n",
 			 FUNC_ADPT_ARG(adapter));
 	}
-#endif /* CONFIG_RTW_DEBUG */
 
 	hal = GET_HAL_DATA(adapter);
 	pmlmeext = &adapter->mlmeextpriv;

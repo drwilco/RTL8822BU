@@ -877,14 +877,14 @@ static void deinit_priv(struct halmacpriv *priv)
 				if (!indicator[i].sctx)
 					continue;
 
-				RTW_INFO("%s: <WARN> %s id(%d) sctx still exist!!\n",
+				RTW_WARN("%s: %s id(%d) sctx still exist!!\n",
 					__FUNCTION__, RTW_HALMAC_FEATURE_NAME[i], i);
 				sctx = indicator[i].sctx;
 				indicator[i].sctx = NULL;
 				rtw_mfree((u8 *)sctx, sizeof(*sctx));
 			}
 		}
-#endif /* !CONFIG_RTW_DEBUG */
+#endif /* CONFIG_RTW_DEBUG */
 		size = sizeof(*indicator) * count;
 		rtw_mfree((u8 *)indicator, size);
 	}

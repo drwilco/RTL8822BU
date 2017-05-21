@@ -263,13 +263,13 @@ chk_hw_country_code:
 			chplan = ent->chplan;
 			goto chk_sw_config;
 		} else
-			RTW_PRINT("%s unsupported hw_alpha2:\"%c%c\"\n", __func__, hw_alpha2[0], hw_alpha2[1]);
+			RTW_ERR("%s unsupported hw_alpha2:\"%c%c\"\n", __func__, hw_alpha2[0], hw_alpha2[1]);
 	}
 
 	if (rtw_is_channel_plan_valid(hw_chplan))
 		chplan = hw_chplan;
 	else if (force_hw_chplan == _TRUE) {
-		RTW_PRINT("%s unsupported hw_chplan:0x%02X\n", __func__, hw_chplan);
+		RTW_ERR("%s unsupported hw_chplan:0x%02X\n", __func__, hw_chplan);
 		/* hw infomaton invalid, refer to sw information */
 		force_hw_chplan = _FALSE;
 	}
@@ -286,7 +286,7 @@ chk_sw_config:
 			chplan = ent->chplan;
 			goto done;
 		} else
-			RTW_PRINT("%s unsupported sw_alpha2:\"%c%c\"\n", __func__, sw_alpha2[0], sw_alpha2[1]);
+			RTW_ERR("%s unsupported sw_alpha2:\"%c%c\"\n", __func__, sw_alpha2[0], sw_alpha2[1]);
 	}
 
 	if (rtw_is_channel_plan_valid(sw_chplan)) {
@@ -294,17 +294,17 @@ chk_sw_config:
 		country_ent = NULL;
 		chplan = sw_chplan;
 	} else if (sw_chplan != RTW_CHPLAN_MAX)
-		RTW_PRINT("%s unsupported sw_chplan:0x%02X\n", __func__, sw_chplan);
+		RTW_ERR("%s unsupported sw_chplan:0x%02X\n", __func__, sw_chplan);
 
 done:
 	if (chplan == -1) {
-		RTW_PRINT("%s use def_chplan:0x%02X\n", __func__, def_chplan);
+		RTW_INFO("%s use def_chplan:0x%02X\n", __func__, def_chplan);
 		chplan = def_chplan;
 	} else if (country_ent) {
-		RTW_PRINT("%s country code:\"%c%c\" with chplan:0x%02X\n", __func__
+		RTW_INFO("%s country code:\"%c%c\" with chplan:0x%02X\n", __func__
 			, country_ent->alpha2[0], country_ent->alpha2[1], country_ent->chplan);
 	} else
-		RTW_PRINT("%s chplan:0x%02X\n", __func__, chplan);
+		RTW_INFO("%s chplan:0x%02X\n", __func__, chplan);
 
 	padapter->mlmepriv.country_ent = country_ent;
 	pHalData->bDisableSWChannelPlan = force_hw_chplan;
@@ -1285,7 +1285,7 @@ exit:
 	if (parse_fail)
 		RTW_ERR("%s parse fail, buf=%p, len=:%u\n", __func__, buf, len);
 	else if (ret != _SUCCESS || bypass || DBG_C2H_PKT_HDL > 0) {
-		RTW_PRINT("%s: id=0x%02x, seq=%u, plen=%u, %s %s\n", __func__, id, seq, plen
+		RTW_DBG("%s: id=0x%02x, seq=%u, plen=%u, %s %s\n", __func__, id, seq, plen
 			, !bypass ? "handle" : "bypass"
 			, ret == _SUCCESS ? "ok" : "fail"
 		);
@@ -1392,19 +1392,19 @@ int c2h_mac_hidden_rpt_hdl(_adapter *adapter, u8 *data, u8 len)
 
 	if (DBG_C2H_MAC_HIDDEN_RPT_HANDLE) {
 		for (i = 0; i < len; i++)
-			RTW_PRINT("%s: 0x%02X\n", __func__, *(data + i));
+			RTW_DBG("%s: 0x%02X\n", __func__, *(data + i));
 
-		RTW_PRINT("uuid x:0x%02x y:0x%02x z:0x%x crc:0x%x\n", uuid_x, uuid_y, uuid_z, uuid_crc);
-		RTW_PRINT("hci_type:0x%x\n", hci_type);
-		RTW_PRINT("package_type:0x%x\n", package_type);
-		RTW_PRINT("tr_switch:0x%x\n", tr_switch);
-		RTW_PRINT("wl_func:0x%x\n", wl_func);
-		RTW_PRINT("hw_stype:0x%x\n", hw_stype);
-		RTW_PRINT("bw:0x%x\n", bw);
-		RTW_PRINT("fab:0x%x\n", fab);
-		RTW_PRINT("ant_num:0x%x\n", ant_num);
-		RTW_PRINT("protocol:0x%x\n", protocol);
-		RTW_PRINT("nic:0x%x\n", nic);
+		RTW_DBG("uuid x:0x%02x y:0x%02x z:0x%x crc:0x%x\n", uuid_x, uuid_y, uuid_z, uuid_crc);
+		RTW_DBG("hci_type:0x%x\n", hci_type);
+		RTW_DBG("package_type:0x%x\n", package_type);
+		RTW_DBG("tr_switch:0x%x\n", tr_switch);
+		RTW_DBG("wl_func:0x%x\n", wl_func);
+		RTW_DBG("hw_stype:0x%x\n", hw_stype);
+		RTW_DBG("bw:0x%x\n", bw);
+		RTW_DBG("fab:0x%x\n", fab);
+		RTW_DBG("ant_num:0x%x\n", ant_num);
+		RTW_DBG("protocol:0x%x\n", protocol);
+		RTW_DBG("nic:0x%x\n", nic);
 	}
 
 	/*
@@ -1444,7 +1444,7 @@ int c2h_mac_hidden_rpt_2_hdl(_adapter *adapter, u8 *data, u8 len)
 
 	if (DBG_C2H_MAC_HIDDEN_RPT_HANDLE) {
 		for (i = 0; i < len; i++)
-			RTW_PRINT("%s: 0x%02X\n", __func__, *(data + i));
+			RTW_DBG("%s: 0x%02X\n", __func__, *(data + i));
 	}
 
 	ret = _SUCCESS;
@@ -1539,7 +1539,7 @@ int c2h_defeature_dbg_hdl(_adapter *adapter, u8 *data, u8 len)
 	}
 
 	for (i = 0; i < len; i++)
-		RTW_PRINT("%s: 0x%02X\n", __func__, *(data + i));
+		RTW_DBG("%s: 0x%02X\n", __func__, *(data + i));
 
 	ret = _SUCCESS;
 	
@@ -2841,12 +2841,12 @@ void hw_var_port_switch(_adapter *adapter)
 	if (adapter->hw_port == HW_PORT0) {
 		adapter->hw_port = HW_PORT1;
 		iface->hw_port = HW_PORT0;
-		RTW_PRINT("port switch - port0("ADPT_FMT"), port1("ADPT_FMT")\n",
+		RTW_INFO("port switch - port0("ADPT_FMT"), port1("ADPT_FMT")\n",
 			  ADPT_ARG(iface), ADPT_ARG(adapter));
 	} else {
 		adapter->hw_port = HW_PORT0;
 		iface->hw_port = HW_PORT1;
-		RTW_PRINT("port switch - port0("ADPT_FMT"), port1("ADPT_FMT")\n",
+		RTW_INFO("port switch - port0("ADPT_FMT"), port1("ADPT_FMT")\n",
 			  ADPT_ARG(adapter), ADPT_ARG(iface));
 	}
 
@@ -2877,7 +2877,7 @@ void hw_var_port_switch(_adapter *adapter)
 	for (i = 0; i < 6; i++)
 		bssid_1[i] = rtw_read8(adapter, REG_BSSID1 + i);
 
-	RTW_INFO(FUNC_ADPT_FMT" after switch\n"
+	RTW_DBG(FUNC_ADPT_FMT" after switch\n"
 		 "msr:0x%02x\n"
 		 "bcn_ctrl:0x%02x\n"
 		 "bcn_ctrl_1:0x%02x\n"
@@ -3246,7 +3246,7 @@ static void rtw_hal_force_enable_rxdma(_adapter *adapter)
 	RTW_INFO("%s: Set 0x690=0x00\n", __func__);
 	rtw_write8(adapter, REG_WOW_CTRL,
 		   (rtw_read8(adapter, REG_WOW_CTRL) & 0xf0));
-	RTW_PRINT("%s: Release RXDMA\n", __func__);
+	RTW_INFO("%s: Release RXDMA\n", __func__);
 	rtw_write32(adapter, REG_RXPKT_NUM,
 		    (rtw_read32(adapter, REG_RXPKT_NUM) & (~RW_RELEASE_EN)));
 }
@@ -3285,7 +3285,7 @@ static u8 rtw_hal_pause_rx_dma(_adapter *adapter)
 	u32 tmp = 0;
 	int res = 0;
 	/* RX DMA stop */
-	RTW_PRINT("Pause DMA\n");
+	RTW_INFO("Pause DMA\n");
 	rtw_write32(adapter, REG_RXPKT_NUM,
 		    (rtw_read32(adapter, REG_RXPKT_NUM) | RW_RELEASE_EN));
 	do {
@@ -3299,14 +3299,14 @@ static u8 rtw_hal_pause_rx_dma(_adapter *adapter)
 			}
 #endif /* CONFIG_USB_HCI */
 
-			RTW_PRINT("RX_DMA_IDLE is true\n");
+			RTW_DBG("RX_DMA_IDLE is true\n");
 			ret = _SUCCESS;
 			break;
 		}
 #if defined(CONFIG_SDIO_HCI) || defined(CONFIG_GSPI_HCI)
 		else {
 			res = RecvOnePkt(adapter);
-			RTW_PRINT("RecvOnePkt Result: %d\n", res);
+			RTW_DBG("RecvOnePkt Result: %d\n", res);
 		}
 #endif /* CONFIG_SDIO_HCI || CONFIG_GSPI_HCI */
 
@@ -3322,15 +3322,15 @@ static u8 rtw_hal_pause_rx_dma(_adapter *adapter)
 	if (trycnt < 0) {
 		tmp = rtw_read16(adapter, REG_RXPKT_NUM + 3);
 
-		RTW_PRINT("Stop RX DMA failed......\n");
-		RTW_PRINT("%s, RXPKT_NUM: 0x%04x\n",
+		RTW_ERR("Stop RX DMA failed......\n");
+		RTW_ERR("%s, RXPKT_NUM: 0x%04x\n",
 			  __func__, tmp);
 		tmp = rtw_read16(adapter, REG_RXPKT_NUM + 2);
 		if (tmp & BIT(3))
-			RTW_PRINT("%s, RX DMA has req\n",
+			RTW_ERR("%s, RX DMA has req\n",
 				  __func__);
 		else
-			RTW_PRINT("%s, RX DMA no req\n",
+			RTW_ERR("%s, RX DMA no req\n",
 				  __func__);
 		ret = _FAIL;
 	}
@@ -3348,13 +3348,13 @@ static u8 rtw_hal_enable_cpwm2(_adapter *adapter)
 #ifdef CONFIG_GPIO_WAKEUP
 	return _SUCCESS;
 #else
-	RTW_PRINT("%s\n", __func__);
+	RTW_DBG("%s\n", __func__);
 
 	res = sdio_local_read(adapter, SDIO_REG_HIMR, 4, (u8 *)&tmp);
 	if (!res)
-		RTW_INFO("read SDIO_REG_HIMR: 0x%08x\n", tmp);
+		RTW_DBG("read SDIO_REG_HIMR: 0x%08x\n", tmp);
 	else
-		RTW_INFO("sdio_local_read fail\n");
+		RTW_ERR("sdio_local_read fail\n");
 
 	tmp = SDIO_HIMR_CPWM2_MSK;
 
@@ -3362,10 +3362,10 @@ static u8 rtw_hal_enable_cpwm2(_adapter *adapter)
 
 	if (!res) {
 		res = sdio_local_read(adapter, SDIO_REG_HIMR, 4, (u8 *)&tmp);
-		RTW_INFO("read again SDIO_REG_HIMR: 0x%08x\n", tmp);
+		RTW_DBG("read again SDIO_REG_HIMR: 0x%08x\n", tmp);
 		ret = _SUCCESS;
 	} else {
-		RTW_INFO("sdio_local_write fail\n");
+		RTW_ERR("sdio_local_write fail\n");
 		ret = _FAIL;
 	}
 	return ret;
@@ -3393,7 +3393,7 @@ static u8 rtw_hal_check_wow_ctrl(_adapter *adapter, u8 chk_type)
 	if (chk_type) {
 		while (!(mstatus & BIT1) && trycnt > 1) {
 			mstatus = rtw_read8(adapter, REG_WOW_CTRL);
-			RTW_PRINT("Loop index: %d :0x%02x\n",
+			RTW_DBG("Loop index: %d :0x%02x\n",
 				  trycnt, mstatus);
 			trycnt--;
 			rtw_msleep_os(20);
@@ -3405,7 +3405,7 @@ static u8 rtw_hal_check_wow_ctrl(_adapter *adapter, u8 chk_type)
 	} else {
 		while (mstatus & BIT1 && trycnt > 1) {
 			mstatus = rtw_read8(adapter, REG_WOW_CTRL);
-			RTW_PRINT("Loop index: %d :0x%02x\n",
+			RTW_DBG("Loop index: %d :0x%02x\n",
 				  trycnt, mstatus);
 			trycnt--;
 			rtw_msleep_os(20);
@@ -3416,7 +3416,7 @@ static u8 rtw_hal_check_wow_ctrl(_adapter *adapter, u8 chk_type)
 		else
 			res = _TRUE;
 	}
-	RTW_PRINT("%s check_type: %d res: %d trycnt: %d\n",
+	RTW_DBG("%s check_type: %d res: %d trycnt: %d\n",
 		  __func__, chk_type, res, (25 - trycnt));
 	return res;
 }
@@ -3621,7 +3621,7 @@ static void rtw_hal_update_gtk_offload_info(_adapter *adapter)
 				RTW_TKIP_MIC_LEN);
 		}
 
-		RTW_PRINT("GTK (%d) "KEY_FMT"\n", gtk_id,
+		RTW_DBG("GTK (%d) "KEY_FMT"\n", gtk_id,
 			KEY_ARG(psecuritypriv->dot118021XGrpKey[gtk_id].skey));
 	}
 
@@ -3962,7 +3962,7 @@ void rtw_hal_set_fw_wow_related_cmd(_adapter *padapter, u8 enable)
 	u8	pkt_type = 0;
 	u8 ret = _SUCCESS;
 
-	RTW_PRINT("+%s()+: enable=%d\n", __func__, enable);
+	RTW_DBG("+%s()+: enable=%d\n", __func__, enable);
 
 	rtw_hal_set_wowlan_ctrl_cmd(padapter, enable, _FALSE);
 
@@ -3999,7 +3999,7 @@ void rtw_hal_set_fw_wow_related_cmd(_adapter *padapter, u8 enable)
 
 		rtw_hal_set_remote_wake_ctrl_cmd(padapter, enable);
 	}
-	RTW_PRINT("-%s()-\n", __func__);
+	RTW_DBG("-%s()-\n", __func__);
 }
 #endif /* CONFIG_WOWLAN */
 
@@ -4157,7 +4157,7 @@ static void rtw_hal_ap_wow_enable(_adapter *padapter)
 #ifdef DBG_CHECK_FW_PS_STATE
 	if (rtw_fw_ps_state(padapter) == _FAIL) {
 		pdbgpriv->dbg_enwow_dload_fw_fail_cnt++;
-		RTW_PRINT("wowlan enable no leave 32k\n");
+		RTW_ERR("wowlan enable no leave 32k\n");
 	}
 #endif /*DBG_CHECK_FW_PS_STATE*/
 
@@ -4178,20 +4178,20 @@ static void rtw_hal_ap_wow_enable(_adapter *padapter)
 	/* RX DMA stop */
 	res = rtw_hal_pause_rx_dma(padapter);
 	if (res == _FAIL)
-		RTW_PRINT("[WARNING] pause RX DMA fail\n");
+		RTW_WARN("pause RX DMA fail\n");
 
 #if defined(CONFIG_SDIO_HCI) || defined(CONFIG_GSPI_HCI)
 	/* Enable CPWM2 only. */
 	res = rtw_hal_enable_cpwm2(padapter);
 	if (res == _FAIL)
-		RTW_PRINT("[WARNING] enable cpwm2 fail\n");
+		RTW_WARN("enable cpwm2 fail\n");
 #endif
 
 #ifdef CONFIG_GPIO_WAKEUP
 	rtw_hal_switch_gpio_wl_ctrl(padapter, WAKEUP_GPIO_IDX, _TRUE);
 #endif
 	/* 5. Set Enable WOWLAN H2C command. */
-	RTW_PRINT("Set Enable AP WOWLan cmd\n");
+	RTW_INFO("Set Enable AP WOWLan cmd\n");
 	rtw_hal_set_fw_ap_wow_related_cmd(padapter, 1);
 
 	rtw_write8(padapter, REG_MCUTST_WOWLAN, 0);
@@ -4219,7 +4219,7 @@ static void rtw_hal_ap_wow_disable(_adapter *padapter)
 	/* 1. Read wakeup reason*/
 	pwrctl->wowlan_wake_reason = rtw_read8(padapter, REG_MCUTST_WOWLAN);
 
-	RTW_PRINT("wakeup_reason: 0x%02x\n",
+	RTW_INFO("wakeup_reason: 0x%02x\n",
 		  pwrctl->wowlan_wake_reason);
 
 	rtw_hal_set_fw_ap_wow_related_cmd(padapter, 0);
@@ -4228,7 +4228,7 @@ static void rtw_hal_ap_wow_disable(_adapter *padapter)
 #ifdef DBG_CHECK_FW_PS_STATE
 	if (rtw_fw_ps_state(padapter) == _FAIL) {
 		pdbgpriv->dbg_diswow_dload_fw_fail_cnt++;
-		RTW_PRINT("wowlan enable no leave 32k\n");
+		RTW_ERR("wowlan enable no leave 32k\n");
 	}
 #endif /*DBG_CHECK_FW_PS_STATE*/
 
@@ -4243,7 +4243,7 @@ static void rtw_hal_ap_wow_disable(_adapter *padapter)
 
 #ifdef CONFIG_GPIO_WAKEUP
 	val8 = (pwrctl->is_high_active == 0) ? 1 : 0;
-	RTW_PRINT("Set Wake GPIO to default(%d).\n", val8);
+	RTW_INFO("Set Wake GPIO to default(%d).\n", val8);
 	rtw_hal_set_output_gpio(padapter, WAKEUP_GPIO_IDX, val8);
 
 	rtw_hal_switch_gpio_wl_ctrl(padapter, WAKEUP_GPIO_IDX, _FALSE);
@@ -7524,7 +7524,7 @@ static void rtw_hal_wow_enable(_adapter *adapter)
 	u16 media_status_rpt;
 
 
-	RTW_PRINT("%s, WOWLAN_ENABLE\n", __func__);
+	RTW_INFO("%s, WOWLAN_ENABLE\n", __func__);
 	rtw_hal_gate_bb(adapter, _TRUE);
 #ifdef CONFIG_GTK_OL
 	if (psecuritypriv->binstallKCK_KEK == _TRUE)
@@ -7541,7 +7541,7 @@ static void rtw_hal_wow_enable(_adapter *adapter)
 
 	res = rtw_hal_pause_rx_dma(adapter);
 	if (res == _FAIL)
-		RTW_PRINT("[WARNING] pause RX DMA fail\n");
+		RTW_WARN("pause RX DMA fail\n");
 
 	#ifndef CONFIG_WOW_PATTERN_HW_CAM
 	/* Reconfig RX_FF Boundary */
@@ -7566,24 +7566,24 @@ static void rtw_hal_wow_enable(_adapter *adapter)
 	/* Enable CPWM2 only. */
 	res = rtw_hal_enable_cpwm2(adapter);
 	if (res == _FAIL)
-		RTW_PRINT("[WARNING] enable cpwm2 fail\n");
+		RTW_WARN("enable cpwm2 fail\n");
 #endif
 #ifdef CONFIG_GPIO_WAKEUP
 	rtw_hal_switch_gpio_wl_ctrl(adapter, WAKEUP_GPIO_IDX, _TRUE);
 #endif
 	/* Set WOWLAN H2C command. */
-	RTW_PRINT("Set WOWLan cmd\n");
+	RTW_INFO("Set WOWLan cmd\n");
 	rtw_hal_set_fw_wow_related_cmd(adapter, 1);
 
 	res = rtw_hal_check_wow_ctrl(adapter, _TRUE);
 
 	if (res == _FALSE)
-		RTW_INFO("[Error]%s: set wowlan CMD fail!!\n", __func__);
+		RTW_ERR("%s: set wowlan CMD fail!!\n", __func__);
 
 	pwrctl->wowlan_wake_reason =
 		rtw_read8(adapter, REG_WOWLAN_WAKE_REASON);
 
-	RTW_PRINT("wowlan_wake_reason: 0x%02x\n",
+	RTW_DBG("wowlan_wake_reason: 0x%02x\n",
 		  pwrctl->wowlan_wake_reason);
 #ifdef CONFIG_GTK_OL_DBG
 	dump_sec_cam(RTW_DBGDUMP, adapter);
@@ -7664,7 +7664,7 @@ static void rtw_hal_wow_disable(_adapter *adapter)
 	u16 media_status_rpt;
 	u8 val8;
 
-	RTW_PRINT("%s, WOWLAN_DISABLE\n", __func__);
+	RTW_DBG("%s, WOWLAN_DISABLE\n", __func__);
 
 	if (!pwrctl->wowlan_pno_enable) {
 		psta = rtw_get_stainfo(&adapter->stapriv, get_bssid(pmlmepriv));
@@ -7683,7 +7683,7 @@ static void rtw_hal_wow_disable(_adapter *adapter)
 
 	pwrctl->wowlan_wake_reason = rtw_read8(adapter, REG_WOWLAN_WAKE_REASON);
 
-	RTW_PRINT("wakeup_reason: 0x%02x\n",
+	RTW_DBG("wakeup_reason: 0x%02x\n",
 		  pwrctl->wowlan_wake_reason);
 	#ifdef DBG_WAKEUP_REASON
 	_dbg_rtw_wake_up_reason(adapter, pwrctl->wowlan_wake_reason);
@@ -7694,7 +7694,7 @@ static void rtw_hal_wow_disable(_adapter *adapter)
 	res = rtw_hal_check_wow_ctrl(adapter, _FALSE);
 
 	if (res == _FALSE) {
-		RTW_INFO("[Error]%s: disable WOW cmd fail\n!!", __func__);
+		RTW_ERR("%s: disable WOW cmd fail\n!!", __func__);
 		rtw_hal_force_enable_rxdma(adapter);
 	}
 
@@ -7702,7 +7702,7 @@ static void rtw_hal_wow_disable(_adapter *adapter)
 
 	res = rtw_hal_pause_rx_dma(adapter);
 	if (res == _FAIL)
-		RTW_PRINT("[WARNING] pause RX DMA fail\n");
+		RTW_WARN("pause RX DMA fail\n");
 
 	/* clean HW pattern match */
 	rtw_hal_dl_pattern(adapter, 0);
@@ -7732,7 +7732,7 @@ static void rtw_hal_wow_disable(_adapter *adapter)
 
 #ifdef CONFIG_GPIO_WAKEUP
 	val8 = (pwrctl->is_high_active == 0) ? 1 : 0;
-	RTW_PRINT("Set Wake GPIO to default(%d).\n", val8);
+	RTW_DBG("Set Wake GPIO to default(%d).\n", val8);
 	rtw_hal_set_output_gpio(adapter, WAKEUP_GPIO_IDX, val8);
 
 	rtw_hal_switch_gpio_wl_ctrl(adapter, WAKEUP_GPIO_IDX, _FALSE);
@@ -8557,7 +8557,7 @@ void SetHwReg(_adapter *adapter, u8 variable, u8 *val)
 
 	default:
 		if (0)
-			RTW_PRINT(FUNC_ADPT_FMT" variable(%d) not defined!\n",
+			RTW_WARN(FUNC_ADPT_FMT" variable(%d) not defined!\n",
 				  FUNC_ADPT_ARG(adapter), variable);
 		break;
 	}
@@ -8593,7 +8593,7 @@ void GetHwReg(_adapter *adapter, u8 variable, u8 *val)
 		break;
 	default:
 		if (0)
-			RTW_PRINT(FUNC_ADPT_FMT" variable(%d) not defined!\n",
+			RTW_WARN(FUNC_ADPT_FMT" variable(%d) not defined!\n",
 				  FUNC_ADPT_ARG(adapter), variable);
 		break;
 	}
@@ -8621,7 +8621,7 @@ SetHalDefVar(_adapter *adapter, HAL_DEF_VARIABLE variable, void *value)
 		hal_data->bDisableTXPowerTraining = *((u8 *)value);
 		break;
 	default:
-		RTW_PRINT("%s: [WARNING] HAL_DEF_VARIABLE(%d) not defined!\n", __FUNCTION__, variable);
+		RTW_WARN("%s: HAL_DEF_VARIABLE(%d) not defined!\n", __FUNCTION__, variable);
 		bResult = _FAIL;
 		break;
 	}
@@ -8728,7 +8728,7 @@ GetHalDefVar(_adapter *adapter, HAL_DEF_VARIABLE variable, void *value)
 		break;
 #endif
 	default:
-		RTW_PRINT("%s: [WARNING] HAL_DEF_VARIABLE(%d) not defined!\n", __FUNCTION__, variable);
+		RTW_WARN("%s: HAL_DEF_VARIABLE(%d) not defined!\n", __FUNCTION__, variable);
 		bResult = _FAIL;
 		break;
 	}
@@ -10244,7 +10244,7 @@ int rtw_hal_register_gpio_interrupt(_adapter *adapter, int gpio_num, void(*callb
 
 	if (IS_HARDWARE_TYPE_8188E(adapter)) {
 		if (gpio_num > 7 || gpio_num < 4) {
-			RTW_PRINT("%s The gpio number does not included 4~7.\n", __FUNCTION__);
+			RTW_ERR("%s The gpio number does not included 4~7.\n", __FUNCTION__);
 			return -1;
 		}
 	}
@@ -10256,7 +10256,7 @@ int rtw_hal_register_gpio_interrupt(_adapter *adapter, int gpio_num, void(*callb
 	/* Read GPIO direction */
 	direction = (rtw_read8(adapter, REG_GPIO_PIN_CTRL + 2) & BIT(gpio_num)) >> gpio_num;
 	if (direction) {
-		RTW_PRINT("%s Can't register output gpio as interrupt.\n", __FUNCTION__);
+		RTW_ERR("%s Can't register output gpio as interrupt.\n", __FUNCTION__);
 		return -1;
 	}
 

@@ -27,8 +27,12 @@ enum {
 	_DRV_ERR_ = 2,
 	_DRV_WARNING_ = 3,
 	_DRV_INFO_ = 4,
+#ifdef CONFIG_RTW_DEBUG
 	_DRV_DEBUG_ = 5,
 	_DRV_MAX_ = 6
+#else
+	_DRV_MAX_ = 5
+#endif /* CONFIG_RTW_DEBUG */
 };
 
 #define DRIVER_PREFIX "RTW: "
@@ -96,8 +100,6 @@ extern void rtl871x_cedbg(const char *fmt, ...);
 	#define _seqdump(sel, fmt, arg...) _dbgdump(fmt, ##arg)
 #endif
 
-#ifdef CONFIG_RTW_DEBUG
-
 #ifndef _OS_INTFS_C_
 extern uint rtw_drv_log_level;
 #endif
@@ -139,6 +141,8 @@ extern uint rtw_drv_log_level;
 	} while (0)
 
 
+#ifdef CONFIG_RTW_DEBUG
+
 #undef RTW_DBG
 #define RTW_DBG(fmt, arg...)     \
 	do {\
@@ -147,6 +151,7 @@ extern uint rtw_drv_log_level;
 		} \
 	} while (0)
 
+#endif /* CONFIG_RTW_DEBUG */
 
 #undef RTW_INFO_DUMP
 #define RTW_INFO_DUMP(_TitleString, _HexData, _HexDataLen)			\
@@ -165,6 +170,8 @@ extern uint rtw_drv_log_level;
 		} \
 	} while (0)
 
+#ifdef CONFIG_RTW_DEBUG
+
 #undef RTW_DBG_DUMP
 #define RTW_DBG_DUMP(_TitleString, _HexData, _HexDataLen)			\
 	do {\
@@ -182,6 +189,7 @@ extern uint rtw_drv_log_level;
 		} \
 	} while (0)
 
+#endif /* CONFIG_RTW_DEBUG */
 
 #undef RTW_PRINT_DUMP
 #define RTW_PRINT_DUMP(_TitleString, _HexData, _HexDataLen)			\
@@ -234,6 +242,8 @@ extern uint rtw_drv_log_level;
 		} \
 	} while (0)
 
+#ifdef CONFIG_RTW_DEBUG
+
 #undef _RTW_DBG
 #define _RTW_DBG(fmt, arg...)     \
 	do {\
@@ -242,6 +252,7 @@ extern uint rtw_drv_log_level;
 		} \
 	} while (0)
 
+#endif /* CONFIG_RTW_DEBUG */
 
 #undef _RTW_INFO_DUMP
 #define _RTW_INFO_DUMP(_TitleString, _HexData, _HexDataLen)			\
@@ -256,6 +267,8 @@ extern uint rtw_drv_log_level;
 		}								\
 		_dbgdump("\n");							\
 	}
+
+#ifdef CONFIG_RTW_DEBUG
 
 #undef _RTW_DBG_DUMP
 #define _RTW_DBG_DUMP(_TitleString, _HexData, _HexDataLen)			\
@@ -275,8 +288,9 @@ extern uint rtw_drv_log_level;
 #undef RTW_DBG_EXPR
 #define RTW_DBG_EXPR(EXPR) do { if (_DRV_DEBUG_ <= rtw_drv_log_level) EXPR; } while (0)
 
-#endif /* defined(_dbgdump) */
 #endif /* CONFIG_RTW_DEBUG */
+
+#endif /* defined(_dbgdump) */
 
 
 #if defined(_seqdump)
@@ -285,7 +299,7 @@ extern uint rtw_drv_log_level;
 #define RTW_PRINT_SEL(sel, fmt, arg...) \
 	do {\
 		if (sel == RTW_DBGDUMP)\
-			RTW_PRINT(fmt, ##arg); \
+			RTW_DBG(fmt, ##arg); \
 		else {\
 			_seqdump(sel, fmt, ##arg) /*rtw_warn_on(1)*/; \
 		} \
@@ -296,7 +310,7 @@ extern uint rtw_drv_log_level;
 #define _RTW_PRINT_SEL(sel, fmt, arg...) \
 	do {\
 		if (sel == RTW_DBGDUMP)\
-			_RTW_PRINT(fmt, ##arg); \
+			_RTW_DBG(fmt, ##arg); \
 		else {\
 			_seqdump(sel, fmt, ##arg) /*rtw_warn_on(1)*/; \
 		} \

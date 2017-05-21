@@ -22,17 +22,19 @@
 #include <drv_types.h>
 #include <hal_data.h>
 
-#ifdef CONFIG_RTW_DEBUG
 const char *rtw_log_level_str[] = {
 	"_DRV_NONE_ = 0",
 	"_DRV_ALWAYS_ = 1",
 	"_DRV_ERR_ = 2",
 	"_DRV_WARNING_ = 3",
 	"_DRV_INFO_ = 4",
+#ifdef CONFIG_RTW_DEBUG
 	"_DRV_DEBUG_ = 5",
 	"_DRV_MAX_ = 6",
+#else
+	"_DRV_MAX_ = 5",
+#endif /* CONFIG_RTW_DEBUG */
 };
-#endif
 
 #ifdef CONFIG_DEBUG_RTL871X
 	u64 GlobalDebugComponents = 0;
@@ -177,7 +179,6 @@ void dump_drv_cfg(void *sel)
 
 void dump_log_level(void *sel)
 {
-#ifdef CONFIG_RTW_DEBUG
 	int i;
 
 	RTW_PRINT_SEL(sel, "drv_log_level:%d\n", rtw_drv_log_level);
@@ -186,9 +187,6 @@ void dump_log_level(void *sel)
 			RTW_PRINT_SEL(sel, "%c %s = %d\n",
 				(rtw_drv_log_level == i) ? '+' : ' ', rtw_log_level_str[i], i);
 	}
-#else
-	RTW_PRINT_SEL(sel, "CONFIG_RTW_DEBUG is disabled\n");
-#endif
 }
 
 #ifdef CONFIG_SDIO_HCI
@@ -339,7 +337,7 @@ static u8 fwdl_test_wintint_rdy_fail = 0;
 bool rtw_fwdl_test_trigger_chksum_fail(void)
 {
 	if (fwdl_test_chksum_fail) {
-		RTW_PRINT("fwdl test case: trigger chksum_fail\n");
+		RTW_ERR("fwdl test case: trigger chksum_fail\n");
 		fwdl_test_chksum_fail--;
 		return _TRUE;
 	}
@@ -349,7 +347,7 @@ bool rtw_fwdl_test_trigger_chksum_fail(void)
 bool rtw_fwdl_test_trigger_wintint_rdy_fail(void)
 {
 	if (fwdl_test_wintint_rdy_fail) {
-		RTW_PRINT("fwdl test case: trigger wintint_rdy_fail\n");
+		RTW_ERR("fwdl test case: trigger wintint_rdy_fail\n");
 		fwdl_test_wintint_rdy_fail--;
 		return _TRUE;
 	}
@@ -368,7 +366,7 @@ static u8 del_rx_ampdu_test_no_tx_fail = 0;
 bool rtw_del_rx_ampdu_test_trigger_no_tx_fail(void)
 {
 	if (del_rx_ampdu_test_no_tx_fail) {
-		RTW_PRINT("del_rx_ampdu test case: trigger no_tx_fail\n");
+		RTW_ERR("del_rx_ampdu test case: trigger no_tx_fail\n");
 		del_rx_ampdu_test_no_tx_fail--;
 		return _TRUE;
 	}

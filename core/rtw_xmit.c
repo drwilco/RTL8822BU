@@ -1382,7 +1382,7 @@ static s32 update_attrib(_adapter *padapter, _pkt *pkt, struct pkt_attrib *pattr
 		}
 
 	} else if (0x888e == pattrib->ether_type)
-		RTW_PRINT("send eapol packet\n");
+		RTW_DBG("send eapol packet\n");
 
 	if ((pattrib->ether_type == 0x888e) || (pattrib->dhcp_pkt == 1))
 		rtw_mi_set_scan_deny(padapter, 3000);
