@@ -2256,7 +2256,7 @@ inline u8 rtw_set_country_cmd(_adapter *adapter, int flags, const char *country_
 		return _FAIL;
 	}
 
-	RTW_DBG("%s country_code:\"%c%c\" mapping to chplan:0x%02x\n", __func__, country_code[0], country_code[1], ent->chplan);
+	RTW_INFO("%s country_code:\"%c%c\" mapping to chplan:0x%02x\n", __func__, country_code[0], country_code[1], ent->chplan);
 
 	return _rtw_set_chplan_cmd(adapter, flags, RTW_CHPLAN_UNSPECIFIED, ent, swconfig);
 }
