@@ -214,7 +214,7 @@ inline void rtw_mi_update_iface_status(struct mlme_priv *pmlmepriv, sint state)
 #ifdef CONFIG_RTW_DEBUG
 		dump_adapters_status(RTW_DBGDUMP , dvobj);
 #endif /* CONFIG_RTW_DEBUG */
-		RTW_ERR("%s cannot get union channel\n", __func__);
+		RTW_DBG("%s cannot get union channel\n", __func__);
 	}
 
 #ifdef DBG_IFACE_STATUS

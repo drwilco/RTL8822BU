@@ -2494,8 +2494,8 @@ void rtl8822b_sethwreg(PADAPTER adapter, u8 variable, u8 *val)
 		else if (RTW_CANNOT_RUN(adapter))
 			RTW_DBG("[HW_VAR_CHECK_TXBUF] bDriverStopped or bSurpriseRemoved\n");
 		else {
-			RTW_ERR("[HW_VAR_CHECK_TXBUF] NOT empty in %d ms\n", passtime);
-			RTW_ERR("[HW_VAR_CHECK_TXBUF] 0x230=0x%08x 0x234=0x%08x 0x238=0x%08x 0x23c=0x%08x 0x240=0x%08x\n",
+			RTW_DBG("[HW_VAR_CHECK_TXBUF] NOT empty in %d ms\n", passtime);
+			RTW_DBG("[HW_VAR_CHECK_TXBUF] 0x230=0x%08x 0x234=0x%08x 0x238=0x%08x 0x23c=0x%08x 0x240=0x%08x\n",
 				  high, low, normal, extra, publc);
 		}
 
