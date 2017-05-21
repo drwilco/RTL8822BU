@@ -919,7 +919,7 @@ SwLedBlink9(
 	} else {
 		SwLedOff(Adapter, pLed);
 	}
-	/* RTW_INFO("%s, pLed->CurrLedState=%d, pLed->BlinkingLedState=%d\n", __FUNCTION__, pLed->CurrLedState, pLed->BlinkingLedState); */
+	/* RTW_DBG("%s, pLed->CurrLedState=%d, pLed->BlinkingLedState=%d\n", __FUNCTION__, pLed->CurrLedState, pLed->BlinkingLedState); */
 
 
 	switch (pLed->CurrLedState) {
@@ -1735,10 +1735,10 @@ void BlinkHandler(PLED_USB pLed)
 	_adapter		*padapter = pLed->padapter;
 	struct led_priv	*ledpriv = adapter_to_led(padapter);
 
-	/* RTW_INFO("%s (%s:%d)\n",__FUNCTION__, current->comm, current->pid); */
+	/* RTW_DBG("%s (%s:%d)\n",__FUNCTION__, current->comm, current->pid); */
 
 	if (RTW_CANNOT_RUN(padapter) || (!rtw_is_hw_init_completed(padapter))) {
-		/*RTW_INFO("%s bDriverStopped:%s, bSurpriseRemoved:%s\n"
+		/*RTW_DBG("%s bDriverStopped:%s, bSurpriseRemoved:%s\n"
 		, __func__
 		, rtw_is_drv_stopped(padapter)?"True":"False"
 		, rtw_is_surprise_removed(padapter)?"True":"False" );*/
@@ -1832,10 +1832,10 @@ void BlinkTimerCallback(void *data)
 	PLED_USB	 pLed = (PLED_USB)data;
 	_adapter		*padapter = pLed->padapter;
 
-	/* RTW_INFO("%s\n", __FUNCTION__); */
+	RTW_DBG("%s\n", __FUNCTION__);
 
 	if (RTW_CANNOT_RUN(padapter) || (!rtw_is_hw_init_completed(padapter))) {
-		/*RTW_INFO("%s bDriverStopped:%s, bSurpriseRemoved:%s\n"
+		/*RTW_DBG("%s bDriverStopped:%s, bSurpriseRemoved:%s\n"
 			, __func__
 			, rtw_is_drv_stopped(padapter)?"True":"False"
 			, rtw_is_surprise_removed(padapter)?"True":"False" );*/
@@ -3096,7 +3096,7 @@ SwLedControlMode9(
 	PLED_USB	pLed1 = &(ledpriv->SwLed1);
 	PLED_USB	pLed2 = &(ledpriv->SwLed2);
 	BOOLEAN  bWPSOverLap = _FALSE;
-	/* RTW_INFO("LedAction=%d\n", LedAction); */
+	/* RTW_DBG("LedAction=%d\n", LedAction); */
 	switch (LedAction) {
 	case LED_CTL_START_TO_LINK:
 		if (pLed2->bLedBlinkInProgress == _FALSE) {
@@ -4132,7 +4132,7 @@ LedControlUSB(
 #endif
 
 	if (RTW_CANNOT_RUN(padapter) || (!rtw_is_hw_init_completed(padapter))) {
-		/*RTW_INFO("%s bDriverStopped:%s, bSurpriseRemoved:%s\n"
+		/*RTW_DBG("%s bDriverStopped:%s, bSurpriseRemoved:%s\n"
 		, __func__
 		, rtw_is_drv_stopped(padapter)?"True":"False"
 		, rtw_is_surprise_removed(padapter)?"True":"False" );*/

@@ -369,7 +369,7 @@ int issue_nulldata_to_TDLS_peer_STA(_adapter *padapter, unsigned char *da, unsig
 		else
 			rtw_hal_macid_wakeup(padapter, psta->cmn.mac_id);
 	} else {
-		RTW_INFO(FUNC_ADPT_FMT ": Can't find sta info for " MAC_FMT ", skip macid %s!!\n",
+		RTW_DBG(FUNC_ADPT_FMT ": Can't find sta info for " MAC_FMT ", skip macid %s!!\n",
 			FUNC_ADPT_ARG(padapter), MAC_ARG(da), power_mode ? "sleep" : "wakeup");
 		rtw_warn_on(1);
 	}
@@ -397,11 +397,11 @@ int issue_nulldata_to_TDLS_peer_STA(_adapter *padapter, unsigned char *da, unsig
 
 	if (try_cnt && wait_ms) {
 		if (da)
-			RTW_INFO(FUNC_ADPT_FMT" to "MAC_FMT", ch:%u%s, %d/%d in %u ms\n",
+			RTW_DBG(FUNC_ADPT_FMT" to "MAC_FMT", ch:%u%s, %d/%d in %u ms\n",
 				FUNC_ADPT_ARG(padapter), MAC_ARG(da), rtw_get_oper_ch(padapter),
 				ret == _SUCCESS ? ", acked" : "", i, try_cnt, rtw_get_passing_time_ms(start));
 		else
-			RTW_INFO(FUNC_ADPT_FMT", ch:%u%s, %d/%d in %u ms\n",
+			RTW_DBG(FUNC_ADPT_FMT", ch:%u%s, %d/%d in %u ms\n",
 				FUNC_ADPT_ARG(padapter), rtw_get_oper_ch(padapter),
 				ret == _SUCCESS ? ", acked" : "", i, try_cnt, rtw_get_passing_time_ms(start));
 	}
@@ -485,14 +485,14 @@ void rtw_tdls_process_ht_cap(_adapter *padapter, struct sta_info *ptdls_sta, u8 
 		/* Config LDPC Coding Capability */
 		if (TEST_FLAG(phtpriv->ldpc_cap, LDPC_HT_ENABLE_TX) && GET_HT_CAP_ELE_LDPC_CAP(data)) {
 			SET_FLAG(cur_ldpc_cap, (LDPC_HT_ENABLE_TX | LDPC_HT_CAP_TX));
-			RTW_INFO("Enable HT Tx LDPC!\n");
+			RTW_DBG("Enable HT Tx LDPC!\n");
 		}
 		ptdls_sta->htpriv.ldpc_cap = cur_ldpc_cap;
 
 		/* Config STBC setting */
 		if (TEST_FLAG(phtpriv->stbc_cap, STBC_HT_ENABLE_TX) && GET_HT_CAP_ELE_RX_STBC(data)) {
 			SET_FLAG(cur_stbc_cap, (STBC_HT_ENABLE_TX | STBC_HT_CAP_TX));
-			RTW_INFO("Enable HT Tx STBC!\n");
+			RTW_DBG("Enable HT Tx STBC!\n");
 		}
 		ptdls_sta->htpriv.stbc_cap = cur_stbc_cap;
 
@@ -507,7 +507,7 @@ void rtw_tdls_process_ht_cap(_adapter *padapter, struct sta_info *ptdls_sta, u8 
 			SET_FLAG(cur_beamform_cap, BEAMFORMING_HT_BEAMFORMEE_ENABLE);
 		ptdls_sta->htpriv.beamform_cap = cur_beamform_cap;
 		if (cur_beamform_cap)
-			RTW_INFO("Client HT Beamforming Cap = 0x%02X\n", cur_beamform_cap);
+			RTW_DBG("Client HT Beamforming Cap = 0x%02X\n", cur_beamform_cap);
 #endif /* CONFIG_BEAMFORMING */
 	}
 
@@ -570,7 +570,7 @@ void rtw_tdls_process_vht_cap(_adapter *padapter, struct sta_info *ptdls_sta, u8
 	if (TEST_FLAG(pvhtpriv->ldpc_cap, LDPC_VHT_ENABLE_TX) &&
 	    GET_VHT_CAPABILITY_ELE_RX_LDPC(data)) {
 		SET_FLAG(cur_ldpc_cap, (LDPC_VHT_ENABLE_TX | LDPC_VHT_CAP_TX));
-		RTW_INFO("Current VHT LDPC Setting = %02X\n", cur_ldpc_cap);
+		RTW_DBG("Current VHT LDPC Setting = %02X\n", cur_ldpc_cap);
 	}
 	ptdls_sta->vhtpriv.ldpc_cap = cur_ldpc_cap;
 
@@ -581,7 +581,7 @@ void rtw_tdls_process_vht_cap(_adapter *padapter, struct sta_info *ptdls_sta, u8
 	if (TEST_FLAG(pvhtpriv->stbc_cap, STBC_VHT_ENABLE_TX) &&
 	    GET_VHT_CAPABILITY_ELE_RX_STBC(data)) {
 		SET_FLAG(cur_stbc_cap, (STBC_VHT_ENABLE_TX | STBC_VHT_CAP_TX));
-		RTW_INFO("Current VHT STBC Setting = %02X\n", cur_stbc_cap);
+		RTW_DBG("Current VHT STBC Setting = %02X\n", cur_stbc_cap);
 	}
 	ptdls_sta->vhtpriv.stbc_cap = cur_stbc_cap;
 
@@ -945,7 +945,7 @@ void rtw_tdls_set_ch_sw_oper_control(_adapter *padapter, u8 enable)
 		ATOMIC_SET(&padapter->tdlsinfo.chsw_info.chsw_on, enable);
 
 	rtw_hal_set_hwreg(padapter, HW_VAR_TDLS_BCN_EARLY_C2H_RPT, &enable);
-	RTW_INFO("[TDLS] %s Bcn Early C2H Report\n", (enable == _TRUE) ? "Start" : "Stop");
+	RTW_DBG("[TDLS] %s Bcn Early C2H Report\n", (enable == _TRUE) ? "Start" : "Stop");
 }
 
 void rtw_tdls_ch_sw_back_to_base_chnl(_adapter *padapter)
@@ -1036,7 +1036,7 @@ s32 rtw_tdls_do_ch_sw(_adapter *padapter, struct sta_info *ptdls_sta, u8 chnl_ty
 
 			ret = _SUCCESS;
 		} else
-			RTW_INFO("[TDLS] chsw oper wait fail !!\n");
+			RTW_DBG("[TDLS] chsw oper wait fail !!\n");
 	}
 #endif
 
@@ -1095,17 +1095,17 @@ void rtw_tdls_process_wfd_ie(struct tdls_info *ptdlsinfo, u8 *ptr, u8 length)
 		u32	attr_contentlen = 0;
 		int	i;
 
-		RTW_INFO("[%s] WFD IE Found!!\n", __FUNCTION__);
+		RTW_DBG("[%s] WFD IE Found!!\n", __FUNCTION__);
 		attr_content = rtw_get_wfd_attr_content(wfd_ie, wfd_ielen, WFD_ATTR_DEVICE_INFO, NULL, &attr_contentlen);
 		if (attr_content && attr_contentlen) {
 			ptdlsinfo->wfd_info->peer_rtsp_ctrlport = RTW_GET_BE16(attr_content + 2);
-			RTW_INFO("[%s] Peer PORT NUM = %d\n", __FUNCTION__, ptdlsinfo->wfd_info->peer_rtsp_ctrlport);
+			RTW_DBG("[%s] Peer PORT NUM = %d\n", __FUNCTION__, ptdlsinfo->wfd_info->peer_rtsp_ctrlport);
 		}
 
 		attr_content = rtw_get_wfd_attr_content(wfd_ie, wfd_ielen, WFD_ATTR_LOCAL_IP_ADDR, NULL, &attr_contentlen);
 		if (attr_content && attr_contentlen) {
 			_rtw_memcpy(ptdlsinfo->wfd_info->peer_ip_address, (attr_content + 1), 4);
-			RTW_INFO("[%s] Peer IP = %02u.%02u.%02u.%02u\n", __FUNCTION__,
+			RTW_DBG("[%s] Peer IP = %02u.%02u.%02u.%02u\n", __FUNCTION__,
 				ptdlsinfo->wfd_info->peer_ip_address[0], ptdlsinfo->wfd_info->peer_ip_address[1],
 				ptdlsinfo->wfd_info->peer_ip_address[2], ptdlsinfo->wfd_info->peer_ip_address[3]);
 		}
@@ -1124,7 +1124,7 @@ int issue_tunneled_probe_req(_adapter *padapter)
 	struct tdls_txmgmt txmgmt;
 	int ret = _FAIL;
 
-	RTW_INFO("[%s]\n", __FUNCTION__);
+	RTW_DBG("[%s]\n", __FUNCTION__);
 
 	_rtw_memset(&txmgmt, 0x00, sizeof(struct tdls_txmgmt));
 	txmgmt.action_code = TUNNELED_PROBE_REQ;
@@ -1166,7 +1166,7 @@ int issue_tunneled_probe_rsp(_adapter *padapter, union recv_frame *precv_frame)
 	struct tdls_txmgmt txmgmt;
 	int ret = _FAIL;
 
-	RTW_INFO("[%s]\n", __FUNCTION__);
+	RTW_DBG("[%s]\n", __FUNCTION__);
 
 	_rtw_memset(&txmgmt, 0x00, sizeof(struct tdls_txmgmt));
 	txmgmt.action_code = TUNNELED_PROBE_RSP;
@@ -1214,7 +1214,7 @@ int issue_tdls_setup_req(_adapter *padapter, struct tdls_txmgmt *ptxmgmt, int wa
 	/* Retry timer should be set at least 301 sec, using TPK_count counting 301 times. */
 	u32 timeout_interval = TDLS_TPK_RESEND_COUNT;
 
-	RTW_INFO("[TDLS] %s\n", __FUNCTION__);
+	RTW_DBG("[TDLS] %s\n", __FUNCTION__);
 
 	if (rtw_tdls_is_setup_allowed(padapter) == _FALSE)
 		goto exit;
@@ -1298,7 +1298,7 @@ int _issue_tdls_teardown(_adapter *padapter, struct tdls_txmgmt *ptxmgmt, struct
 	_irqL irqL;
 	int ret = _FAIL;
 
-	RTW_INFO("[TDLS] %s\n", __FUNCTION__);
+	RTW_DBG("[TDLS] %s\n", __FUNCTION__);
 
 	ptxmgmt->action_code = TDLS_TEARDOWN;
 
@@ -1384,7 +1384,7 @@ int issue_tdls_dis_req(_adapter *padapter, struct tdls_txmgmt *ptxmgmt)
 	struct xmit_priv			*pxmitpriv = &(padapter->xmitpriv);
 	int ret = _FAIL;
 
-	RTW_INFO("[TDLS] %s\n", __FUNCTION__);
+	RTW_DBG("[TDLS] %s\n", __FUNCTION__);
 
 	ptxmgmt->action_code = TDLS_DISCOVERY_REQUEST;
 	pmgntframe = alloc_mgtxmitframe(pxmitpriv);
@@ -1408,7 +1408,7 @@ int issue_tdls_dis_req(_adapter *padapter, struct tdls_txmgmt *ptxmgmt)
 		goto exit;
 	}
 	dump_mgntframe(padapter, pmgntframe);
-	RTW_INFO("issue tdls dis req\n");
+	RTW_DBG("issue tdls dis req\n");
 
 	ret = _SUCCESS;
 exit:
@@ -1423,7 +1423,7 @@ int issue_tdls_setup_rsp(_adapter *padapter, struct tdls_txmgmt *ptxmgmt)
 	struct xmit_priv			*pxmitpriv = &(padapter->xmitpriv);
 	int ret = _FAIL;
 
-	RTW_INFO("[TDLS] %s\n", __FUNCTION__);
+	RTW_DBG("[TDLS] %s\n", __FUNCTION__);
 
 	ptxmgmt->action_code = TDLS_SETUP_RESPONSE;
 	pmgntframe = alloc_mgtxmitframe(pxmitpriv);
@@ -1464,7 +1464,7 @@ int issue_tdls_setup_cfm(_adapter *padapter, struct tdls_txmgmt *ptxmgmt)
 	struct xmit_priv			*pxmitpriv = &(padapter->xmitpriv);
 	int ret = _FAIL;
 
-	RTW_INFO("[TDLS] %s\n", __FUNCTION__);
+	RTW_DBG("[TDLS] %s\n", __FUNCTION__);
 
 	ptxmgmt->action_code = TDLS_SETUP_CONFIRM;
 	pmgntframe = alloc_mgtxmitframe(pxmitpriv);
@@ -1509,7 +1509,7 @@ int issue_tdls_dis_rsp(_adapter *padapter, struct tdls_txmgmt *ptxmgmt, u8 priva
 	struct mlme_ext_priv	*pmlmeext = &(padapter->mlmeextpriv);
 	int ret = _FAIL;
 
-	RTW_INFO("[TDLS] %s\n", __FUNCTION__);
+	RTW_DBG("[TDLS] %s\n", __FUNCTION__);
 
 	pmgntframe = alloc_mgtxmitframe(pxmitpriv);
 	if (pmgntframe == NULL)
@@ -1561,7 +1561,7 @@ int issue_tdls_peer_traffic_rsp(_adapter *padapter, struct sta_info *ptdls_sta, 
 	struct xmit_priv	*pxmitpriv = &(padapter->xmitpriv);
 	int ret = _FAIL;
 
-	RTW_INFO("[TDLS] %s\n", __FUNCTION__);
+	RTW_DBG("[TDLS] %s\n", __FUNCTION__);
 
 	ptxmgmt->action_code = TDLS_PEER_TRAFFIC_RESPONSE;
 
@@ -1605,7 +1605,7 @@ int issue_tdls_peer_traffic_indication(_adapter *padapter, struct sta_info *ptdl
 	struct tdls_txmgmt txmgmt;
 	int ret = _FAIL;
 
-	RTW_INFO("[TDLS] %s\n", __FUNCTION__);
+	RTW_DBG("[TDLS] %s\n", __FUNCTION__);
 
 	_rtw_memset(&txmgmt, 0x00, sizeof(struct tdls_txmgmt));
 	txmgmt.action_code = TDLS_PEER_TRAFFIC_INDICATION;
@@ -1653,10 +1653,10 @@ int issue_tdls_ch_switch_req(_adapter *padapter, struct sta_info *ptdls_sta)
 	struct tdls_txmgmt txmgmt;
 	int ret = _FAIL;
 
-	RTW_INFO("[TDLS] %s\n", __FUNCTION__);
+	RTW_DBG("[TDLS] %s\n", __FUNCTION__);
 
 	if (rtw_tdls_is_chsw_allowed(padapter) == _FALSE) {
-		RTW_INFO("[TDLS] Ignore %s since channel switch is not allowed\n", __func__);
+		RTW_DBG("[TDLS] Ignore %s since channel switch is not allowed\n", __func__);
 		goto exit;
 	}
 
@@ -1700,10 +1700,10 @@ int issue_tdls_ch_switch_rsp(_adapter *padapter, struct tdls_txmgmt *ptxmgmt, in
 	struct xmit_priv	*pxmitpriv = &(padapter->xmitpriv);
 	int ret = _FAIL;
 
-	RTW_INFO("[TDLS] %s\n", __FUNCTION__);
+	RTW_DBG("[TDLS] %s\n", __FUNCTION__);
 
 	if (rtw_tdls_is_chsw_allowed(padapter) == _FALSE) {
-		RTW_INFO("[TDLS] Ignore %s since channel switch is not allowed\n", __func__);
+		RTW_DBG("[TDLS] Ignore %s since channel switch is not allowed\n", __func__);
 		goto exit;
 	}
 
@@ -1876,17 +1876,17 @@ sint On_TDLS_Setup_Req(_adapter *padapter, union recv_frame *precv_frame, struct
 		if (ptdls_sta->tdls_sta_state & TDLS_LINKED_STATE) {
 			/* If the direct link is already set up */
 			/* Process as re-setup after tear down */
-			RTW_INFO("re-setup a direct link\n");
+			RTW_DBG("re-setup a direct link\n");
 		}
 		/* Already receiving TDLS setup request */
 		else if (ptdls_sta->tdls_sta_state & TDLS_INITIATOR_STATE) {
-			RTW_INFO("receive duplicated TDLS setup request frame in handshaking\n");
+			RTW_DBG("receive duplicated TDLS setup request frame in handshaking\n");
 			goto exit;
 		}
 		/* When receiving and sending setup_req to the same link at the same time */
 		/* STA with higher MAC_addr would be initiator */
 		else if (ptdls_sta->tdls_sta_state & TDLS_RESPONDER_STATE) {
-			RTW_INFO("receive setup_req after sending setup_req\n");
+			RTW_DBG("receive setup_req after sending setup_req\n");
 			for (i = 0; i < 6; i++) {
 				if (*(pmyid + i) == *(psa + i)) {
 				} else if (*(pmyid + i) > *(psa + i)) {
@@ -2076,7 +2076,7 @@ int On_TDLS_Setup_Rsp(_adapter *padapter, union recv_frame *precv_frame, struct 
 	_rtw_memcpy(&status_code, ptr + 2, 2);
 
 	if (status_code != 0) {
-		RTW_INFO("[TDLS] %s status_code = %d, free_tdls_sta\n", __FUNCTION__, status_code);
+		RTW_DBG("[TDLS] %s status_code = %d, free_tdls_sta\n", __FUNCTION__, status_code);
 		rtw_tdls_teardown_pre_hdl(padapter, ptdls_sta);
 		rtw_tdls_cmd(padapter, ptdls_sta->cmn.mac_addr, TDLS_TEARDOWN_STA_LOCALLY_POST);
 		ret = _FAIL;
@@ -2247,7 +2247,7 @@ int On_TDLS_Setup_Cfm(_adapter *padapter, union recv_frame *precv_frame, struct 
 	_rtw_memcpy(&status_code, ptr + 2, 2);
 
 	if (status_code != 0) {
-		RTW_INFO("[%s] status_code = %d\n, free_tdls_sta", __FUNCTION__, status_code);
+		RTW_DBG("[%s] status_code = %d\n, free_tdls_sta", __FUNCTION__, status_code);
 		rtw_tdls_teardown_pre_hdl(padapter, ptdls_sta);
 		rtw_tdls_cmd(padapter, ptdls_sta->cmn.mac_addr, TDLS_TEARDOWN_STA_LOCALLY_POST);
 		ret = _FAIL;
@@ -2403,7 +2403,7 @@ int On_TDLS_Teardown(_adapter *padapter, union recv_frame *precv_frame, struct s
 	u8 reason;
 
 	reason = *(ptr + prx_pkt_attrib->hdrlen + prx_pkt_attrib->iv_len + LLC_HEADER_SIZE + ETH_TYPE_LEN + PAYLOAD_TYPE_LEN + 2);
-	RTW_INFO("[TDLS] %s Reason code(%d)\n", __FUNCTION__, reason);
+	RTW_DBG("[TDLS] %s Reason code(%d)\n", __FUNCTION__, reason);
 
 	if (rtw_tdls_is_driver_setup(padapter)) {
 		rtw_tdls_teardown_pre_hdl(padapter, ptdls_sta);
@@ -2496,9 +2496,9 @@ int On_TDLS_Peer_Traffic_Rsp(_adapter *padapter, union recv_frame *precv_frame, 
 			}
 
 			if (ptdls_sta->sleepq_len == 0)
-				RTW_INFO("no buffered packets for tdls to xmit\n");
+				RTW_DBG("no buffered packets for tdls to xmit\n");
 			else {
-				RTW_INFO("error!psta->sleepq_len=%d\n", ptdls_sta->sleepq_len);
+				RTW_ERR("error!psta->sleepq_len=%d\n", ptdls_sta->sleepq_len);
 				ptdls_sta->sleepq_len = 0;
 			}
 
@@ -2528,7 +2528,7 @@ sint On_TDLS_Ch_Switch_Req(_adapter *padapter, union recv_frame *precv_frame, st
 	u8 take_care_iqk;
 
 	if (rtw_tdls_is_chsw_allowed(padapter) == _FALSE) {
-		RTW_INFO("[TDLS] Ignore %s since channel switch is not allowed\n", __func__);
+		RTW_DBG("[TDLS] Ignore %s since channel switch is not allowed\n", __func__);
 		return _FAIL;
 	}
 
@@ -2579,7 +2579,7 @@ sint On_TDLS_Ch_Switch_Req(_adapter *padapter, union recv_frame *precv_frame, st
 				RTW_GET_LE16(pIE->data) : TDLS_CH_SWITCH_TIME * 1000;
 			ptdls_sta->ch_switch_timeout = (RTW_GET_LE16(pIE->data + 2) >= TDLS_CH_SWITCH_TIMEOUT * 1000) ?
 				RTW_GET_LE16(pIE->data + 2) : TDLS_CH_SWITCH_TIMEOUT * 1000;
-			RTW_INFO("[TDLS] %s ch_switch_time:%d, ch_switch_timeout:%d\n"
+			RTW_DBG("[TDLS] %s ch_switch_time:%d, ch_switch_timeout:%d\n"
 				, __FUNCTION__, RTW_GET_LE16(pIE->data), RTW_GET_LE16(pIE->data + 2));
 		default:
 			break;
@@ -2632,7 +2632,7 @@ sint On_TDLS_Ch_Switch_Rsp(_adapter *padapter, union recv_frame *precv_frame, st
 	int ret = _SUCCESS;
 
 	if (rtw_tdls_is_chsw_allowed(padapter) == _FALSE) {
-		RTW_INFO("[TDLS] Ignore %s since channel switch is not allowed\n", __func__);
+		RTW_DBG("[TDLS] Ignore %s since channel switch is not allowed\n", __func__);
 		return _SUCCESS;
 	}
 
@@ -2640,7 +2640,7 @@ sint On_TDLS_Ch_Switch_Rsp(_adapter *padapter, union recv_frame *precv_frame, st
 	/* we will go back to base channel and terminate this channel switch procedure */
 	if (ATOMIC_READ(&pchsw_info->chsw_on) == _TRUE) {
 		if (pmlmeext->cur_channel != rtw_get_oper_ch(padapter)) {
-			RTW_INFO("[TDLS] Rx unsolicited channel switch response\n");
+			RTW_DBG("[TDLS] Rx unsolicited channel switch response\n");
 			rtw_tdls_cmd(padapter, ptdls_sta->cmn.mac_addr, TDLS_CH_SW_TO_BASE_CHNL);
 			goto exit;
 		}
@@ -2658,7 +2658,7 @@ sint On_TDLS_Ch_Switch_Rsp(_adapter *padapter, union recv_frame *precv_frame, st
 	_rtw_memcpy(&status_code, ptr + 2, 2);
 
 	if (status_code != 0) {
-		RTW_INFO("[TDLS] %s status_code:%d\n", __func__, status_code);
+		RTW_DBG("[TDLS] %s status_code:%d\n", __func__, status_code);
 		pchsw_info->ch_sw_state &= ~(TDLS_CH_SW_INITIATOR_STATE);
 		rtw_tdls_cmd(padapter, ptdls_sta->cmn.mac_addr, TDLS_CH_SW_END);
 		ret = _FAIL;
@@ -2894,7 +2894,7 @@ void rtw_build_tdls_setup_rsp_ies(_adapter *padapter, struct xmit_frame *pxmitfr
 	pframe = rtw_tdls_set_status_code(pframe, pattrib, ptxmgmt);
 
 	if (ptxmgmt->status_code != 0) {
-		RTW_INFO("[%s] status_code:%04x\n", __FUNCTION__, ptxmgmt->status_code);
+		RTW_DBG("[%s] status_code:%04x\n", __FUNCTION__, ptxmgmt->status_code);
 		return;
 	}
 
@@ -3310,7 +3310,7 @@ void _tdls_ch_switch_timer_hdl(void *FunctionContext)
 	struct tdls_ch_switch *pchsw_info = &padapter->tdlsinfo.chsw_info;
 
 	rtw_tdls_cmd(padapter, ptdls_sta->cmn.mac_addr, TDLS_CH_SW_END_TO_BASE_CHNL);
-	RTW_INFO("[TDLS] %s, can't get traffic from op_ch:%d\n", __func__, rtw_get_oper_ch(padapter));
+	RTW_DBG("[TDLS] %s, can't get traffic from op_ch:%d\n", __func__, rtw_get_oper_ch(padapter));
 }
 
 void _tdls_delay_timer_hdl(void *FunctionContext)
@@ -3319,7 +3319,7 @@ void _tdls_delay_timer_hdl(void *FunctionContext)
 	_adapter *padapter = ptdls_sta->padapter;
 	struct tdls_ch_switch *pchsw_info = &padapter->tdlsinfo.chsw_info;
 
-	RTW_INFO("[TDLS] %s, op_ch:%d, tdls_state:0x%08x\n", __func__, rtw_get_oper_ch(padapter), ptdls_sta->tdls_sta_state);
+	RTW_DBG("[TDLS] %s, op_ch:%d, tdls_state:0x%08x\n", __func__, rtw_get_oper_ch(padapter), ptdls_sta->tdls_sta_state);
 	pchsw_info->delay_switch_back = _TRUE;
 }
 
@@ -3342,7 +3342,7 @@ void _tdls_ch_switch_monitor_timer_hdl(void *FunctionContext)
 	struct tdls_ch_switch *pchsw_info = &padapter->tdlsinfo.chsw_info;
 
 	rtw_tdls_cmd(padapter, ptdls_sta->cmn.mac_addr, TDLS_CH_SW_END);
-	RTW_INFO("[TDLS] %s, does not receive ch sw req\n", __func__);
+	RTW_DBG("[TDLS] %s, does not receive ch sw req\n", __func__);
 }
 
 #endif
@@ -3382,7 +3382,7 @@ void _tdls_pti_timer_hdl(void *FunctionContext)
 		padapter = ptdls_sta->padapter;
 
 		if (ptdls_sta->tdls_sta_state & TDLS_WAIT_PTR_STATE) {
-			RTW_INFO("[TDLS] Doesn't receive PTR from peer dev:"MAC_FMT"; "
+			RTW_DBG("[TDLS] Doesn't receive PTR from peer dev:"MAC_FMT"; "
 				"Send TDLS Tear Down\n", MAC_ARG(ptdls_sta->cmn.mac_addr));
 			rtw_tdls_cmd(padapter, ptdls_sta->cmn.mac_addr, TDLS_TEARDOWN_STA);
 		}

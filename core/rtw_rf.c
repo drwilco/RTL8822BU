@@ -1696,11 +1696,11 @@ s8 rtw_rf_get_kfree_tx_gain_offset(_adapter *padapter, u8 path, u8 ch)
 	if (kfree_data->flag & KFREE_FLAG_ON) {
 		kfree_offset = kfree_data->bb_gain[bb_gain_sel][path];
 		if (IS_HARDWARE_TYPE_8723D(padapter))
-			RTW_INFO("%s path:%s, ch:%u, bb_gain_sel:%d, kfree_offset:%d\n"
+			RTW_DBG("%s path:%s, ch:%u, bb_gain_sel:%d, kfree_offset:%d\n"
 				, __func__, (path == 0)?"S1":"S0", 
 				ch, bb_gain_sel, kfree_offset);
 		else
-			RTW_INFO("%s path:%u, ch:%u, bb_gain_sel:%d, kfree_offset:%d\n"
+			RTW_DBG("%s path:%u, ch:%u, bb_gain_sel:%d, kfree_offset:%d\n"
 				, __func__, path, ch, bb_gain_sel, kfree_offset);
 	}
 exit:
@@ -1717,14 +1717,14 @@ void rtw_rf_set_tx_gain_offset(_adapter *adapter, u8 path, s8 offset)
 	if (IS_HARDWARE_TYPE_8723D(adapter)) {
 		target_path = RF_PATH_A; /*in 8723D case path means S0/S1*/
 		if (path == PPG_8723D_S1)
-			RTW_INFO("kfree gain_offset 0x55:0x%x ",
+			RTW_DBG("kfree gain_offset 0x55:0x%x ",
 			rtw_hal_read_rfreg(adapter, target_path, 0x55, 0xffffffff));
 		else if (path == PPG_8723D_S0)
-			RTW_INFO("kfree gain_offset 0x65:0x%x ",
+			RTW_DBG("kfree gain_offset 0x65:0x%x ",
 			rtw_hal_read_rfreg(adapter, target_path, 0x65, 0xffffffff));
 	} else {
 		target_path = path;
-		RTW_INFO("kfree gain_offset 0x55:0x%x ", rtw_hal_read_rfreg(adapter, target_path, 0x55, 0xffffffff));
+		RTW_DBG("kfree gain_offset 0x55:0x%x ", rtw_hal_read_rfreg(adapter, target_path, 0x55, 0xffffffff));
 	}
 	
 	switch (rtw_get_chip_type(adapter)) {
@@ -1766,7 +1766,7 @@ void rtw_rf_set_tx_gain_offset(_adapter *adapter, u8 path, s8 offset)
 	case RTL8814A:
 	case RTL8822B:
 	case RTL8821C:
-		RTW_INFO("\nkfree by PhyDM on the sw CH. path %d\n", path);
+		RTW_DBG("\nkfree by PhyDM on the sw CH. path %d\n", path);
 		break;
 #endif /* CONFIG_RTL8814A || CONFIG_RTL8822B || CONFIG_RTL8821C */
 
@@ -1783,7 +1783,7 @@ void rtw_rf_set_tx_gain_offset(_adapter *adapter, u8 path, s8 offset)
 	} else {
 		val32 = rtw_hal_read_rfreg(adapter, target_path, 0x55, 0xffffffff);
 	}
-	RTW_INFO(" after :0x%x\n", val32);
+	RTW_DBG(" after :0x%x\n", val32);
 }
 
 void rtw_rf_apply_tx_gain_offset(_adapter *adapter, u8 ch)

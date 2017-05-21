@@ -387,7 +387,7 @@ u32 rtw_free_uc_swdec_pending_queue(_adapter *adapter)
 	}
 
 	if (cnt)
-		RTW_INFO(FUNC_ADPT_FMT" dequeue %d\n", FUNC_ADPT_ARG(adapter), cnt);
+		RTW_DBG(FUNC_ADPT_FMT" dequeue %d\n", FUNC_ADPT_ARG(adapter), cnt);
 
 	return cnt;
 }
@@ -493,12 +493,12 @@ sint recvframe_chkmic(_adapter *adapter,  union recv_frame *precvframe)
 				/* rxdata_key_idx =( ((iv[3])>>6)&0x3) ; */
 				mickey = &psecuritypriv->dot118021XGrprxmickey[prxattrib->key_index].skey[0];
 
-				/* RTW_INFO("\n recvframe_chkmic: bcmc key psecuritypriv->dot118021XGrpKeyid(%d),pmlmeinfo->key_index(%d) ,recv key_id(%d)\n", */
+				/* RTW_DBG("\n recvframe_chkmic: bcmc key psecuritypriv->dot118021XGrpKeyid(%d),pmlmeinfo->key_index(%d) ,recv key_id(%d)\n", */
 				/*								psecuritypriv->dot118021XGrpKeyid,pmlmeinfo->key_index,rxdata_key_idx); */
 
 				if (psecuritypriv->binstallGrpkey == _FALSE) {
 					res = _FAIL;
-					RTW_INFO("\n recvframe_chkmic:didn't install group key!!!!!!!!!!\n");
+					RTW_DBG("\n recvframe_chkmic:didn't install group key!!!!!!!!!!\n");
 					goto exit;
 				}
 			} else {
@@ -536,9 +536,9 @@ sint recvframe_chkmic(_adapter *adapter,  union recv_frame *precvframe)
 
 				if ((prxattrib->bdecrypted == _TRUE) && (brpt_micerror == _TRUE)) {
 					rtw_handle_tkip_mic_err(adapter, stainfo, (u8)IS_MCAST(prxattrib->ra));
-					RTW_INFO(" mic error :prxattrib->bdecrypted=%d\n", prxattrib->bdecrypted);
+					RTW_ERR(" mic error :prxattrib->bdecrypted=%d\n", prxattrib->bdecrypted);
 				} else {
-					RTW_INFO(" mic error :prxattrib->bdecrypted=%d\n", prxattrib->bdecrypted);
+					RTW_ERR(" mic error :prxattrib->bdecrypted=%d\n", prxattrib->bdecrypted);
 				}
 
 				res = _FAIL;
@@ -584,7 +584,7 @@ union recv_frame *decryptor(_adapter *padapter, union recv_frame *precv_frame)
 		prxattrib->key_index = (((iv[3]) >> 6) & 0x3) ;
 
 		if (prxattrib->key_index > WEP_KEYS) {
-			RTW_INFO("prxattrib->key_index(%d) > WEP_KEYS\n", prxattrib->key_index);
+			RTW_DBG("prxattrib->key_index(%d) > WEP_KEYS\n", prxattrib->key_index);
 
 			switch (prxattrib->encrypt) {
 			case _WEP40_:
@@ -609,12 +609,12 @@ union recv_frame *decryptor(_adapter *padapter, union recv_frame *precv_frame)
 			psecuritypriv->hw_decrypted = _FALSE;
 
 #ifdef DBG_RX_SW_DECRYPTOR
-		RTW_INFO(ADPT_FMT" - sec_type:%s DO SW decryption\n",
+		RTW_DBG(ADPT_FMT" - sec_type:%s DO SW decryption\n",
 			ADPT_ARG(padapter), security_type_str(prxattrib->encrypt));
 #endif
 
 #ifdef DBG_RX_DECRYPTOR
-		RTW_INFO("[%s] %d:prxstat->bdecrypted:%d,  prxattrib->encrypt:%d,  Setting psecuritypriv->hw_decrypted = %d\n",
+		RTW_DBG("[%s] %d:prxstat->bdecrypted:%d,  prxattrib->encrypt:%d,  Setting psecuritypriv->hw_decrypted = %d\n",
 			 __FUNCTION__,
 			 __LINE__,
 			 prxattrib->bdecrypted,
@@ -665,7 +665,7 @@ union recv_frame *decryptor(_adapter *padapter, union recv_frame *precv_frame)
 
 			psecuritypriv->hw_decrypted = _TRUE;
 #ifdef DBG_RX_DECRYPTOR
-			RTW_INFO("[%s] %d:prxstat->bdecrypted:%d,  prxattrib->encrypt:%d,  Setting psecuritypriv->hw_decrypted = %d\n",
+			RTW_DBG("[%s] %d:prxstat->bdecrypted:%d,  prxattrib->encrypt:%d,  Setting psecuritypriv->hw_decrypted = %d\n",
 				 __FUNCTION__,
 				 __LINE__,
 				 prxattrib->bdecrypted,
@@ -677,7 +677,7 @@ union recv_frame *decryptor(_adapter *padapter, union recv_frame *precv_frame)
 	} else {
 		DBG_COUNTER(padapter->rx_logs.core_rx_post_decrypt_unknown);
 #ifdef DBG_RX_DECRYPTOR
-		RTW_INFO("[%s] %d:prxstat->bdecrypted:%d,  prxattrib->encrypt:%d,  Setting psecuritypriv->hw_decrypted = %d\n",
+		RTW_DBG("[%s] %d:prxstat->bdecrypted:%d,  prxattrib->encrypt:%d,  Setting psecuritypriv->hw_decrypted = %d\n",
 			 __FUNCTION__,
 			 __LINE__,
 			 prxattrib->bdecrypted,
@@ -902,7 +902,7 @@ void process_pwrbit_data(_adapter *padapter, union recv_frame *precv_frame, stru
 			/* rtw_tim_map_clear(padapter, pstapriv->sta_dz_bitmap, BIT(psta->cmn.aid)); */
 
 			wakeup_sta_to_xmit(padapter, psta);
-			/* RTW_INFO_DUMP("to wakeup, sta_dz_bitmap=", pstapriv->sta_dz_bitmap, pstapriv->aid_bmp_len); */
+			RTW_DBG_DUMP("to wakeup, sta_dz_bitmap=", pstapriv->sta_dz_bitmap, pstapriv->aid_bmp_len);
 		}
 	}
 #endif
@@ -991,16 +991,16 @@ sint OnTDLS(_adapter *adapter, union recv_frame *precv_frame)
 		   + PAYLOAD_TYPE_LEN
 		   + category_field;
 
-	RTW_INFO("[TDLS] Recv %s from "MAC_FMT" with SeqNum = %d\n", rtw_tdls_action_txt(*paction), MAC_ARG(pattrib->src), GetSequence(get_recvframe_data(precv_frame)));
+	RTW_DBG("[TDLS] Recv %s from "MAC_FMT" with SeqNum = %d\n", rtw_tdls_action_txt(*paction), MAC_ARG(pattrib->src), GetSequence(get_recvframe_data(precv_frame)));
 
 	if (hal_chk_wl_func(adapter, WL_FUNC_TDLS) == _FALSE) {
-		RTW_INFO("Ignore tdls frame since hal doesn't support tdls\n");
+		RTW_DBG("Ignore tdls frame since hal doesn't support tdls\n");
 		ret = _FAIL;
 		return ret;
 	}
 
 	if (rtw_is_tdls_enabled(adapter) == _FALSE) {
-		RTW_INFO("recv tdls frame, "
+		RTW_DBG("recv tdls frame, "
 			 "but tdls haven't enabled\n");
 		ret = _FAIL;
 		return ret;
@@ -1057,20 +1057,20 @@ sint OnTDLS(_adapter *adapter, union recv_frame *precv_frame)
 			if (*(paction + 3) == 0x04) {
 				/* WFDTDLS: for sigma test, do not setup direct link automatically */
 				ptdlsinfo->dev_discovered = _TRUE;
-				RTW_INFO("recv tunneled probe request frame\n");
+				RTW_DBG("recv tunneled probe request frame\n");
 				issue_tunneled_probe_rsp(adapter, precv_frame);
 			}
 			/* Probe response frame */
 			if (*(paction + 3) == 0x05) {
 				/* WFDTDLS: for sigma test, do not setup direct link automatically */
 				ptdlsinfo->dev_discovered = _TRUE;
-				RTW_INFO("recv tunneled probe response frame\n");
+				RTW_DBG("recv tunneled probe response frame\n");
 			}
 		}
 		break;
 #endif /* CONFIG_WFD */
 	default:
-		RTW_INFO("receive TDLS frame %d but not support\n", *paction);
+		RTW_DBG("receive TDLS frame %d but not support\n", *paction);
 		ret = _FAIL;
 		break;
 	}
@@ -1164,7 +1164,7 @@ sint sta2sta_data_frame(
 #endif
 
 
-	/* RTW_INFO("[%s] %d, seqnum:%d\n", __FUNCTION__, __LINE__, pattrib->seq_num); */
+	/* RTW_DBG("[%s] %d, seqnum:%d\n", __FUNCTION__, __LINE__, pattrib->seq_num); */
 
 	if ((check_fwstate(pmlmepriv, WIFI_ADHOC_STATE) == _TRUE) ||
 	    (check_fwstate(pmlmepriv, WIFI_ADHOC_MASTER_STATE) == _TRUE)) {
@@ -1235,12 +1235,12 @@ sint sta2sta_data_frame(
 					if (GetPwrMgt(ptr)) {
 						/* it would be triggered when we are off channel and receiving NULL DATA */
 						/* we can confirm that peer STA is at off channel */
-						RTW_INFO("TDLS: recv peer null frame with pwr bit 1\n");
+						RTW_DBG("TDLS: recv peer null frame with pwr bit 1\n");
 						/* ptdls_sta->tdls_sta_state|=TDLS_PEER_SLEEP_STATE; */
 					}
 
 					/* TODO: Updated BSSID's seq. */
-					/* RTW_INFO("drop Null Data\n"); */
+					/* RTW_DBG("drop Null Data\n"); */
 					ptdls_sta->tdls_sta_state &= ~(TDLS_WAIT_PTR_STATE);
 					ret = _FAIL;
 					goto exit;
@@ -1338,7 +1338,7 @@ sint ap2sta_data_frame(
 		/* filter packets that SA is myself or multicast or broadcast */
 		if (_rtw_memcmp(myhwaddr, pattrib->src, ETH_ALEN)) {
 			#ifdef DBG_RX_DROP_FRAME
-			RTW_INFO("DBG_RX_DROP_FRAME "FUNC_ADPT_FMT" SA="MAC_FMT", myhwaddr="MAC_FMT"\n"
+			RTW_DBG("DBG_RX_DROP_FRAME "FUNC_ADPT_FMT" SA="MAC_FMT", myhwaddr="MAC_FMT"\n"
 				, FUNC_ADPT_ARG(adapter), MAC_ARG(pattrib->src), MAC_ARG(myhwaddr));
 			#endif
 			ret = _FAIL;
@@ -1348,7 +1348,7 @@ sint ap2sta_data_frame(
 		/* da should be for me */
 		if ((!_rtw_memcmp(myhwaddr, pattrib->dst, ETH_ALEN)) && (!bmcast)) {
 			#ifdef DBG_RX_DROP_FRAME
-			RTW_INFO("DBG_RX_DROP_FRAME "FUNC_ADPT_FMT" DA="MAC_FMT"\n"
+			RTW_DBG("DBG_RX_DROP_FRAME "FUNC_ADPT_FMT" DA="MAC_FMT"\n"
 				, FUNC_ADPT_ARG(adapter), MAC_ARG(pattrib->dst));
 			#endif
 			ret = _FAIL;
@@ -1361,12 +1361,12 @@ sint ap2sta_data_frame(
 		    _rtw_memcmp(mybssid, "\x0\x0\x0\x0\x0\x0", ETH_ALEN) ||
 		    (!_rtw_memcmp(pattrib->bssid, mybssid, ETH_ALEN))) {
 			#ifdef DBG_RX_DROP_FRAME
-			RTW_INFO("DBG_RX_DROP_FRAME "FUNC_ADPT_FMT" BSSID="MAC_FMT", mybssid="MAC_FMT"\n"
+			RTW_DBG("DBG_RX_DROP_FRAME "FUNC_ADPT_FMT" BSSID="MAC_FMT", mybssid="MAC_FMT"\n"
 				, FUNC_ADPT_ARG(adapter), MAC_ARG(pattrib->bssid), MAC_ARG(mybssid));
 			#endif
 
 			if (!bmcast) {
-				RTW_INFO(ADPT_FMT" -issue_deauth to the nonassociated ap=" MAC_FMT " for the reason(7)\n", ADPT_ARG(adapter), MAC_ARG(pattrib->bssid));
+				RTW_DBG(ADPT_FMT" -issue_deauth to the nonassociated ap=" MAC_FMT " for the reason(7)\n", ADPT_ARG(adapter), MAC_ARG(pattrib->bssid));
 				issue_deauth(adapter, pattrib->bssid, WLAN_REASON_CLASS3_FRAME_FROM_NONASSOC_STA);
 			}
 
@@ -1377,7 +1377,7 @@ sint ap2sta_data_frame(
 		*psta = rtw_get_stainfo(pstapriv, pattrib->ta);
 		if (*psta == NULL) {
 			#ifdef DBG_RX_DROP_FRAME
-			RTW_INFO("DBG_RX_DROP_FRAME "FUNC_ADPT_FMT" can't get psta under STATION_MODE ; drop pkt\n"
+			RTW_DBG("DBG_RX_DROP_FRAME "FUNC_ADPT_FMT" can't get psta under STATION_MODE ; drop pkt\n"
 				, FUNC_ADPT_ARG(adapter));
 			#endif
 			ret = _FAIL;
@@ -1407,7 +1407,7 @@ sint ap2sta_data_frame(
 		*psta = rtw_get_stainfo(pstapriv, pattrib->bssid); /* get sta_info */
 		if (*psta == NULL) {
 			#ifdef DBG_RX_DROP_FRAME
-			RTW_INFO("DBG_RX_DROP_FRAME "FUNC_ADPT_FMT" can't get psta under WIFI_MP_STATE ; drop pkt\n"
+			RTW_DBG("DBG_RX_DROP_FRAME "FUNC_ADPT_FMT" can't get psta under WIFI_MP_STATE ; drop pkt\n"
 				, FUNC_ADPT_ARG(adapter));
 			#endif
 			ret = _FAIL;
@@ -1427,12 +1427,12 @@ sint ap2sta_data_frame(
 				/* for AP multicast issue , modify by yiwei */
 				static systime send_issue_deauth_time = 0;
 
-				/* RTW_INFO("After send deauth , %u ms has elapsed.\n", rtw_get_passing_time_ms(send_issue_deauth_time)); */
+				/* RTW_DBG("After send deauth , %u ms has elapsed.\n", rtw_get_passing_time_ms(send_issue_deauth_time)); */
 
 				if (rtw_get_passing_time_ms(send_issue_deauth_time) > 10000 || send_issue_deauth_time == 0) {
 					send_issue_deauth_time = rtw_get_current_time();
 
-					RTW_INFO("issue_deauth to the ap=" MAC_FMT " for the reason(7)\n", MAC_ARG(pattrib->bssid));
+					RTW_DBG("issue_deauth to the ap=" MAC_FMT " for the reason(7)\n", MAC_ARG(pattrib->bssid));
 
 					issue_deauth(adapter, pattrib->bssid, WLAN_REASON_CLASS3_FRAME_FROM_NONASSOC_STA);
 				}
@@ -1441,7 +1441,7 @@ sint ap2sta_data_frame(
 
 		ret = _FAIL;
 		#ifdef DBG_RX_DROP_FRAME
-		RTW_INFO("DBG_RX_DROP_FRAME "FUNC_ADPT_FMT" fw_state:0x%x\n"
+		RTW_DBG("DBG_RX_DROP_FRAME "FUNC_ADPT_FMT" fw_state:0x%x\n"
 			, FUNC_ADPT_ARG(adapter), get_fwstate(pmlmepriv));
 		#endif
 	}
@@ -1483,7 +1483,7 @@ sint sta2ap_data_frame(
 				goto bypass_deauth7;
 			#endif
 
-			RTW_INFO("issue_deauth to sta=" MAC_FMT " for the reason(7)\n", MAC_ARG(pattrib->src));
+			RTW_DBG("issue_deauth to sta=" MAC_FMT " for the reason(7)\n", MAC_ARG(pattrib->src));
 
 			issue_deauth(adapter, pattrib->src, WLAN_REASON_CLASS3_FRAME_FROM_NONASSOC_STA);
 
@@ -1507,7 +1507,7 @@ bypass_deauth7:
 		}
 	} else if ((check_fwstate(pmlmepriv, WIFI_MP_STATE) == _TRUE) &&
 		   (check_fwstate(pmlmepriv, _FW_LINKED) == _TRUE)) {
-		/* RTW_INFO("%s ,in WIFI_MP_STATE\n",__func__); */
+		/* RTW_DBG("%s ,in WIFI_MP_STATE\n",__func__); */
 		_rtw_memcpy(pattrib->dst, GetAddr1Ptr(ptr), ETH_ALEN);
 		_rtw_memcpy(pattrib->src, get_addr2_ptr(ptr), ETH_ALEN);
 		_rtw_memcpy(pattrib->bssid, GetAddr3Ptr(ptr), ETH_ALEN);
@@ -1518,7 +1518,7 @@ bypass_deauth7:
 		*psta = rtw_get_stainfo(pstapriv, pattrib->bssid); /* get sta_info */
 		if (*psta == NULL) {
 			#ifdef DBG_RX_DROP_FRAME
-			RTW_INFO("DBG_RX_DROP_FRAME "FUNC_ADPT_FMT" can't get psta under WIFI_MP_STATE ; drop pkt\n"
+			RTW_DBG("DBG_RX_DROP_FRAME "FUNC_ADPT_FMT" can't get psta under WIFI_MP_STATE ; drop pkt\n"
 				, FUNC_ADPT_ARG(adapter));
 			#endif
 			ret = _FAIL;
@@ -1531,7 +1531,7 @@ bypass_deauth7:
 			ret = RTW_RX_HANDLED;
 			goto exit;
 		}
-		RTW_INFO("issue_deauth to sta=" MAC_FMT " for the reason(7)\n", MAC_ARG(pattrib->src));
+		RTW_DBG("issue_deauth to sta=" MAC_FMT " for the reason(7)\n", MAC_ARG(pattrib->src));
 		issue_deauth(adapter, pattrib->src, WLAN_REASON_CLASS3_FRAME_FROM_NONASSOC_STA);
 		ret = RTW_RX_HANDLED;
 		goto exit;
@@ -1553,7 +1553,7 @@ sint validate_recv_ctrl_frame(_adapter *padapter, union recv_frame *precv_frame)
 	struct sta_info *psta = NULL;
 	/* uint len = precv_frame->u.hdr.len; */
 
-	/* RTW_INFO("+validate_recv_ctrl_frame\n"); */
+	/* RTW_DBG("+validate_recv_ctrl_frame\n"); */
 
 	if (GetFrameType(pframe) != WIFI_CTRL_TYPE)
 		return _FAIL;
@@ -1604,7 +1604,7 @@ sint validate_recv_ctrl_frame(_adapter *padapter, union recv_frame *precv_frame)
 			return _FAIL;
 
 		if (psta->state & WIFI_STA_ALIVE_CHK_STATE) {
-			RTW_INFO("%s alive check-rx ps-poll\n", __func__);
+			RTW_DBG("%s alive check-rx ps-poll\n", __func__);
 			psta->expire_to = pstapriv->expire_to;
 			psta->state ^= WIFI_STA_ALIVE_CHK_STATE;
 		}
@@ -1637,8 +1637,8 @@ sint validate_recv_ctrl_frame(_adapter *padapter, union recv_frame *precv_frame)
 
 				pxmitframe->attrib.triggered = 1;
 
-				/* RTW_INFO("handling ps-poll, q_len=%d\n", psta->sleepq_len); */
-				/* RTW_INFO_DUMP("handling, tim=", pstapriv->tim_bitmap, pstapriv->aid_bmp_len); */
+				RTW_DBG("handling ps-poll, q_len=%d\n", psta->sleepq_len);
+				RTW_DBG_DUMP("handling, tim=", pstapriv->tim_bitmap, pstapriv->aid_bmp_len);
 
 #if 0
 				_exit_critical_bh(&psta->sleep_q.lock, &irqL);
@@ -1651,8 +1651,8 @@ sint validate_recv_ctrl_frame(_adapter *padapter, union recv_frame *precv_frame)
 				if (psta->sleepq_len == 0) {
 					rtw_tim_map_clear(padapter, pstapriv->tim_bitmap, psta->cmn.aid);
 
-					/* RTW_INFO("after handling ps-poll\n"); */
-					/* RTW_INFO_DUMP("after handling, tim=", pstapriv->tim_bitmap, pstapriv->aid_bmp_len); */
+					RTW_DBG("after handling ps-poll\n");
+					RTW_DBG_DUMP("after handling, tim=", pstapriv->tim_bitmap, pstapriv->aid_bmp_len);
 
 					/* upate BCN for TIM IE */
 					/* update_BCNTIM(padapter);		 */
@@ -1666,15 +1666,15 @@ sint validate_recv_ctrl_frame(_adapter *padapter, union recv_frame *precv_frame)
 				/* _exit_critical_bh(&psta->sleep_q.lock, &irqL); */
 				_exit_critical_bh(&pxmitpriv->lock, &irqL);
 
-				/* RTW_INFO("no buffered packets to xmit\n"); */
+				/* RTW_DBG("no buffered packets to xmit\n"); */
 				if (rtw_tim_map_is_set(padapter, pstapriv->tim_bitmap, psta->cmn.aid)) {
 					if (psta->sleepq_len == 0) {
-						RTW_INFO("no buffered packets to xmit\n");
+						RTW_DBG("no buffered packets to xmit\n");
 
 						/* issue nulldata with More data bit = 0 to indicate we have no buffered packets */
 						issue_nulldata(padapter, psta->cmn.mac_addr, 0, 0, 0);
 					} else {
-						RTW_INFO("error!psta->sleepq_len=%d\n", psta->sleepq_len);
+						RTW_ERR("error!psta->sleepq_len=%d\n", psta->sleepq_len);
 						psta->sleepq_len = 0;
 					}
 
@@ -2086,7 +2086,7 @@ sint validate_recv_data_frame(_adapter *adapter, union recv_frame *precv_frame)
 pre_validate_status_chk:
 	if (ret == _FAIL) {
 		#ifdef DBG_RX_DROP_FRAME
-		RTW_INFO("DBG_RX_DROP_FRAME "FUNC_ADPT_FMT" case:%d, res:%d, ra="MAC_FMT", ta="MAC_FMT"\n"
+		RTW_DBG("DBG_RX_DROP_FRAME "FUNC_ADPT_FMT" case:%d, res:%d, ra="MAC_FMT", ta="MAC_FMT"\n"
 			, FUNC_ADPT_ARG(adapter), pattrib->to_fr_ds, ret, MAC_ARG(GetAddr1Ptr(ptr)), MAC_ARG(get_addr2_ptr(ptr)));
 		#endif
 		goto exit;
@@ -2096,7 +2096,7 @@ pre_validate_status_chk:
 
 	if (psta == NULL) {
 		#ifdef DBG_RX_DROP_FRAME
-		RTW_INFO("DBG_RX_DROP_FRAME "FUNC_ADPT_FMT" psta == NULL, ra="MAC_FMT", ta="MAC_FMT"\n"
+		RTW_DBG("DBG_RX_DROP_FRAME "FUNC_ADPT_FMT" psta == NULL, ra="MAC_FMT", ta="MAC_FMT"\n"
 			, FUNC_ADPT_ARG(adapter), MAC_ARG(GetAddr1Ptr(ptr)), MAC_ARG(get_addr2_ptr(ptr)));
 		#endif
 		ret = _FAIL;
@@ -2130,7 +2130,7 @@ pre_validate_status_chk:
 		precv_frame->u.hdr.preorder_ctrl = &psta->recvreorder_ctrl[pattrib->priority];
 		if (recv_decache(precv_frame, psta->sta_recvpriv.rxcache.tid_rxseq) == _FAIL) {
 			#ifdef DBG_RX_DROP_FRAME
-			RTW_INFO("DBG_RX_DROP_FRAME "FUNC_ADPT_FMT" recv_decache uc return _FAIL for sta="MAC_FMT"\n"
+			RTW_DBG("DBG_RX_DROP_FRAME "FUNC_ADPT_FMT" recv_decache uc return _FAIL for sta="MAC_FMT"\n"
 				, FUNC_ADPT_ARG(adapter), MAC_ARG(psta->cmn.mac_addr));
 			#endif
 			ret = _FAIL;
@@ -2138,7 +2138,7 @@ pre_validate_status_chk:
 		}
 		if (recv_ucast_pn_decache(precv_frame) == _FAIL) {
 			#ifdef DBG_RX_DROP_FRAME
-			RTW_INFO("DBG_RX_DROP_FRAME "FUNC_ADPT_FMT" recv_ucast_pn_decache return _FAIL for sta="MAC_FMT"\n"
+			RTW_DBG("DBG_RX_DROP_FRAME "FUNC_ADPT_FMT" recv_ucast_pn_decache return _FAIL for sta="MAC_FMT"\n"
 				, FUNC_ADPT_ARG(adapter), MAC_ARG(psta->cmn.mac_addr));
 			#endif
 			ret = _FAIL;
@@ -2148,7 +2148,7 @@ pre_validate_status_chk:
 		precv_frame->u.hdr.preorder_ctrl = NULL;
 		if (recv_decache(precv_frame, psta->sta_recvpriv.bmc_tid_rxseq) == _FAIL) {
 			#ifdef DBG_RX_DROP_FRAME
-			RTW_INFO("DBG_RX_DROP_FRAME "FUNC_ADPT_FMT" recv_decache bmc return _FAIL for sta="MAC_FMT"\n"
+			RTW_DBG("DBG_RX_DROP_FRAME "FUNC_ADPT_FMT" recv_decache bmc return _FAIL for sta="MAC_FMT"\n"
 				, FUNC_ADPT_ARG(adapter), MAC_ARG(psta->cmn.mac_addr));
 			#endif
 			ret = _FAIL;
@@ -2156,7 +2156,7 @@ pre_validate_status_chk:
 		}
 		if (recv_bcast_pn_decache(precv_frame) == _FAIL) {
 			#ifdef DBG_RX_DROP_FRAME
-			RTW_INFO("DBG_RX_DROP_FRAME "FUNC_ADPT_FMT" recv_bcast_pn_decache return _FAIL for sta="MAC_FMT"\n"
+			RTW_DBG("DBG_RX_DROP_FRAME "FUNC_ADPT_FMT" recv_bcast_pn_decache return _FAIL for sta="MAC_FMT"\n"
 				, FUNC_ADPT_ARG(adapter), MAC_ARG(psta->cmn.mac_addr));
 			#endif
 			ret = _FAIL;
@@ -2194,11 +2194,11 @@ static inline void dump_rx_packet(u8 *ptr)
 {
 	int i;
 
-	RTW_INFO("#############################\n");
+	RTW_DBG("#############################\n");
 	for (i = 0; i < 64; i = i + 8)
-		RTW_INFO("%02X:%02X:%02X:%02X:%02X:%02X:%02X:%02X:\n", *(ptr + i),
+		RTW_DBG("%02X:%02X:%02X:%02X:%02X:%02X:%02X:%02X:\n", *(ptr + i),
 			*(ptr + i + 1), *(ptr + i + 2) , *(ptr + i + 3) , *(ptr + i + 4), *(ptr + i + 5), *(ptr + i + 6), *(ptr + i + 7));
-	RTW_INFO("#############################\n");
+	RTW_DBG("#############################\n");
 }
 
 sint validate_recv_frame(_adapter *adapter, union recv_frame *precv_frame);
@@ -2371,7 +2371,7 @@ sint validate_recv_frame(_adapter *adapter, union recv_frame *precv_frame)
 	default:
 		DBG_COUNTER(adapter->rx_logs.core_rx_pre_unknown);
 		#ifdef DBG_RX_DROP_FRAME
-		RTW_INFO("DBG_RX_DROP_FRAME "FUNC_ADPT_FMT" fail! type=0x%x\n"
+		RTW_DBG("DBG_RX_DROP_FRAME "FUNC_ADPT_FMT" fail! type=0x%x\n"
 			, FUNC_ADPT_ARG(adapter), type);
 		#endif
 		retval = _FAIL;
@@ -3004,7 +3004,7 @@ int amsdu_to_msdu(_adapter *padapter, union recv_frame *prframe)
 		/* Offset 12 denote 2 mac address */
 		nSubframe_Length = RTW_GET_BE16(pdata + 12);
 		if (a_len < (ETHERNET_HEADER_SIZE + nSubframe_Length)) {
-			RTW_INFO("nRemain_Length is %d and nSubframe_Length is : %d\n", a_len, nSubframe_Length);
+			RTW_DBG("nRemain_Length is %d and nSubframe_Length is : %d\n", a_len, nSubframe_Length);
 			break;
 		}
 
@@ -3041,12 +3041,12 @@ int amsdu_to_msdu(_adapter *padapter, union recv_frame *prframe)
 		if (sub_pkt == NULL) {
 			if (act & RTW_RX_MSDU_ACT_INDICATE) {
 				#ifdef DBG_RX_DROP_FRAME
-				RTW_INFO("DBG_RX_DROP_FRAME %s rtw_os_alloc_msdu_pkt fail\n", __func__);
+				RTW_DBG("DBG_RX_DROP_FRAME %s rtw_os_alloc_msdu_pkt fail\n", __func__);
 				#endif
 			}
 			if (act & RTW_RX_MSDU_ACT_FORWARD) {
 				#ifdef DBG_TX_DROP_FRAME
-				RTW_INFO("DBG_TX_DROP_FRAME %s rtw_os_alloc_msdu_pkt fail\n", __func__);
+				RTW_DBG("DBG_TX_DROP_FRAME %s rtw_os_alloc_msdu_pkt fail\n", __func__);
 				#endif
 				recv_free_fwd_resource(padapter, fwd_frame, &b2u_list);
 			}
@@ -3084,7 +3084,7 @@ move_to_next:
 				padding_len = 0;
 
 			if (a_len < padding_len) {
-				RTW_INFO("ParseSubframe(): a_len < padding_len !\n");
+				RTW_DBG("ParseSubframe(): a_len < padding_len !\n");
 				break;
 			}
 			pdata += padding_len;
@@ -3220,7 +3220,7 @@ static int check_indicate_seq(struct recv_reorder_ctrl *preorder_ctrl, u16 seq_n
 	if (preorder_ctrl->indicate_seq == 0xFFFF) {
 		preorder_ctrl->indicate_seq = seq_num;
 		#ifdef DBG_RX_SEQ
-		RTW_INFO("DBG_RX_SEQ "FUNC_ADPT_FMT" tid:%u SN_INIT indicate_seq:%d, seq_num:%d\n"
+		RTW_DBG("DBG_RX_SEQ "FUNC_ADPT_FMT" tid:%u SN_INIT indicate_seq:%d, seq_num:%d\n"
 			, FUNC_ADPT_ARG(padapter), preorder_ctrl->tid, preorder_ctrl->indicate_seq, seq_num);
 		#endif
 	}
@@ -3228,7 +3228,7 @@ static int check_indicate_seq(struct recv_reorder_ctrl *preorder_ctrl, u16 seq_n
 	/* Drop out the packet which SeqNum is smaller than WinStart */
 	if (SN_LESS(seq_num, preorder_ctrl->indicate_seq)) {
 		#ifdef DBG_RX_DROP_FRAME
-		RTW_INFO(FUNC_ADPT_FMT" tid:%u indicate_seq:%d > seq_num:%d\n"
+		RTW_DBG(FUNC_ADPT_FMT" tid:%u indicate_seq:%d > seq_num:%d\n"
 			, FUNC_ADPT_ARG(padapter), preorder_ctrl->tid, preorder_ctrl->indicate_seq, seq_num);
 		#endif
 		return _FALSE;
@@ -3255,7 +3255,7 @@ static int check_indicate_seq(struct recv_reorder_ctrl *preorder_ctrl, u16 seq_n
 
 		precvpriv->dbg_rx_ampdu_window_shift_cnt++;
 		#ifdef DBG_RX_SEQ
-		RTW_INFO("DBG_RX_SEQ "FUNC_ADPT_FMT" tid:%u SN_LESS(wend, seq_num) indicate_seq:%d, seq_num:%d\n"
+		RTW_DBG("DBG_RX_SEQ "FUNC_ADPT_FMT" tid:%u SN_LESS(wend, seq_num) indicate_seq:%d, seq_num:%d\n"
 			, FUNC_ADPT_ARG(padapter), preorder_ctrl->tid, preorder_ctrl->indicate_seq, seq_num);
 		#endif
 	}
@@ -3368,7 +3368,7 @@ static int recv_indicatepkts_in_order(_adapter *padapter, struct recv_reorder_ct
 		pattrib = &prframe->u.hdr.attrib;
 
 		#ifdef DBG_RX_SEQ
-		RTW_INFO("DBG_RX_SEQ "FUNC_ADPT_FMT" tid:%u FORCE indicate_seq:%d, seq_num:%d\n"
+		RTW_DBG("DBG_RX_SEQ "FUNC_ADPT_FMT" tid:%u FORCE indicate_seq:%d, seq_num:%d\n"
 			, FUNC_ADPT_ARG(padapter), preorder_ctrl->tid, preorder_ctrl->indicate_seq, pattrib->seq_num);
 		#endif
 		recv_indicatepkts_pkt_loss_cnt(padapter, preorder_ctrl->indicate_seq, pattrib->seq_num);
@@ -3399,7 +3399,7 @@ static int recv_indicatepkts_in_order(_adapter *padapter, struct recv_reorder_ct
 			if (SN_EQUAL(preorder_ctrl->indicate_seq, pattrib->seq_num)) {
 				preorder_ctrl->indicate_seq = (preorder_ctrl->indicate_seq + 1) & 0xFFF;
 				#ifdef DBG_RX_SEQ
-				RTW_INFO("DBG_RX_SEQ "FUNC_ADPT_FMT" tid:%u SN_EQUAL indicate_seq:%d, seq_num:%d\n"
+				RTW_DBG("DBG_RX_SEQ "FUNC_ADPT_FMT" tid:%u SN_EQUAL indicate_seq:%d, seq_num:%d\n"
 					, FUNC_ADPT_ARG(padapter), preorder_ctrl->tid, preorder_ctrl->indicate_seq, pattrib->seq_num);
 				#endif
 			}
@@ -3410,7 +3410,7 @@ static int recv_indicatepkts_in_order(_adapter *padapter, struct recv_reorder_ct
 				/* Cancel previous pending timer. */
 				/* PlatformCancelTimer(Adapter, &pTS->RxPktPendingTimer); */
 				if (bforced != _TRUE) {
-					/* RTW_INFO("_cancel_timer_ex(&preorder_ctrl->reordering_ctrl_timer);\n"); */
+					RTW_DBG("_cancel_timer_ex(&preorder_ctrl->reordering_ctrl_timer);\n");
 					_cancel_timer_ex(&preorder_ctrl->reordering_ctrl_timer);
 				}
 			}
@@ -3487,7 +3487,7 @@ static int recv_indicatepkt_reorder(_adapter *padapter, union recv_frame *prfram
 		/* return _FAIL; */
 
 		#ifdef DBG_RX_DROP_FRAME
-		RTW_INFO("DBG_RX_DROP_FRAME "FUNC_ADPT_FMT" check_indicate_seq fail\n"
+		RTW_DBG("DBG_RX_DROP_FRAME "FUNC_ADPT_FMT" check_indicate_seq fail\n"
 			, FUNC_ADPT_ARG(padapter));
 		#endif
 #if 0
@@ -3508,7 +3508,7 @@ static int recv_indicatepkt_reorder(_adapter *padapter, union recv_frame *prfram
 		/* _exit_critical_ex(&ppending_recvframe_queue->lock, &irql); */
 		/* return _FAIL; */
 		#ifdef DBG_RX_DROP_FRAME
-		RTW_INFO("DBG_RX_DROP_FRAME "FUNC_ADPT_FMT" enqueue_reorder_recvframe fail\n"
+		RTW_DBG("DBG_RX_DROP_FRAME "FUNC_ADPT_FMT" enqueue_reorder_recvframe fail\n"
 			, FUNC_ADPT_ARG(padapter));
 		#endif
 		goto _err_exit;
@@ -3563,7 +3563,7 @@ void rtw_reordering_ctrl_timeout_handler(void *pcontext)
 	if (RTW_CANNOT_RUN(padapter))
 		return;
 
-	/* RTW_INFO("+rtw_reordering_ctrl_timeout_handler()=>\n"); */
+	/* RTW_DBG("+rtw_reordering_ctrl_timeout_handler()=>\n"); */
 
 	_enter_critical_bh(&ppending_recvframe_queue->lock, &irql);
 
@@ -3586,7 +3586,7 @@ static void recv_set_iseq_before_mpdu_process(union recv_frame *rframe, u16 seq_
 	if (reorder_ctrl) {
 		reorder_ctrl->indicate_seq = seq_num;
 		#ifdef DBG_RX_SEQ
-		RTW_INFO("DBG_RX_SEQ %s("ADPT_FMT")-B tid:%u indicate_seq:%d, seq_num:%d\n"
+		RTW_DBG("DBG_RX_SEQ %s("ADPT_FMT")-B tid:%u indicate_seq:%d, seq_num:%d\n"
 			, caller, ADPT_ARG(reorder_ctrl->padapter)
 			, reorder_ctrl->tid, reorder_ctrl->indicate_seq, seq_num);
 		#endif
@@ -3631,18 +3631,18 @@ int validate_mp_recv_frame(_adapter *adapter, union recv_frame *precv_frame)
 		rtw_hal_get_def_var(adapter, HAL_DEF_DBG_DUMP_RXPKT, &(bDumpRxPkt));
 		if (bDumpRxPkt == 1) { /* dump all rx packets */
 			int i;
-			RTW_INFO("############ type:0x%02x subtype:0x%02x #################\n", type, subtype);
+			RTW_DBG("############ type:0x%02x subtype:0x%02x #################\n", type, subtype);
 
 			for (i = 0; i < 64; i = i + 8)
-				RTW_INFO("%02X:%02X:%02X:%02X:%02X:%02X:%02X:%02X:\n", *(ptr + i),
+				RTW_DBG("%02X:%02X:%02X:%02X:%02X:%02X:%02X:%02X:\n", *(ptr + i),
 					*(ptr + i + 1), *(ptr + i + 2) , *(ptr + i + 3) , *(ptr + i + 4), *(ptr + i + 5), *(ptr + i + 6), *(ptr + i + 7));
-			RTW_INFO("#############################\n");
+			RTW_DBG("#############################\n");
 		}
 	}
 #endif
 	if (pmppriv->bloopback) {
 		if (_rtw_memcmp(ptr + 24, pmptx->buf + 24, precv_frame->u.hdr.len - 24) == _FALSE) {
-			RTW_INFO("Compare payload content Fail !!!\n");
+			RTW_DBG("Compare payload content Fail !!!\n");
 			ret = _FAIL;
 		}
 	}
@@ -3731,7 +3731,7 @@ static sint MPwlanhdr_to_ethhdr(union recv_frame *precvframe)
 
 
 	len = htons(pattrib->seq_num);
-	/* RTW_INFO("wlan seq = %d ,seq_num =%x\n",len,pattrib->seq_num); */
+	/* RTW_DBG("wlan seq = %d ,seq_num =%x\n",len,pattrib->seq_num); */
 	_rtw_memcpy(ptr + 12, &len, 2);
 	if (adapter->mppriv.bRTWSmbCfg == _TRUE) {
 		/* if(_rtw_memcmp(mcastheadermac, pattrib->dst, 3) == _TRUE) */ /* SimpleConfig Dest. */
@@ -3834,7 +3834,7 @@ int mp_recv_frame(_adapter *padapter, union recv_frame *rframe)
 
 				if (ret != _SUCCESS) {
 					#ifdef DBG_RX_DROP_FRAME
-					RTW_INFO("DBG_RX_DROP_FRAME "FUNC_ADPT_FMT" wlanhdr_to_ethhdr: drop pkt\n"
+					RTW_DBG("DBG_RX_DROP_FRAME "FUNC_ADPT_FMT" wlanhdr_to_ethhdr: drop pkt\n"
 						, FUNC_ADPT_ARG(padapter));
 					#endif
 					rtw_free_recvframe(rframe, pfree_recv_queue);/* free this recv_frame */
@@ -3846,7 +3846,7 @@ int mp_recv_frame(_adapter *padapter, union recv_frame *rframe)
 					ret = rtw_recv_indicatepkt(padapter, rframe);
 					if (ret != _SUCCESS) {
 						#ifdef DBG_RX_DROP_FRAME
-						RTW_INFO("DBG_RX_DROP_FRAME "FUNC_ADPT_FMT" rtw_recv_indicatepkt fail!\n"
+						RTW_DBG("DBG_RX_DROP_FRAME "FUNC_ADPT_FMT" rtw_recv_indicatepkt fail!\n"
 							, FUNC_ADPT_ARG(padapter));
 						#endif
 						rtw_free_recvframe(rframe, pfree_recv_queue);/* free this recv_frame */
@@ -3856,7 +3856,7 @@ int mp_recv_frame(_adapter *padapter, union recv_frame *rframe)
 					}
 				} else {
 					#ifdef DBG_RX_DROP_FRAME
-					RTW_INFO("DBG_RX_DROP_FRAME "FUNC_ADPT_FMT" bDriverStopped(%s) OR bSurpriseRemoved(%s)\n"
+					RTW_DBG("DBG_RX_DROP_FRAME "FUNC_ADPT_FMT" bDriverStopped(%s) OR bSurpriseRemoved(%s)\n"
 						, FUNC_ADPT_ARG(padapter)
 						, rtw_is_drv_stopped(padapter) ? "True" : "False"
 						, rtw_is_surprise_removed(padapter) ? "True" : "False");
@@ -4172,7 +4172,7 @@ static sint fill_radiotap_hdr(_adapter *padapter, union recv_frame *precvframe, 
 	/* push to skb */
 	pskb = (_pkt *)buf;
 	if (skb_headroom(pskb) < rt_len) {
-		RTW_INFO("%s:%d %s headroom is too small.\n", __FILE__, __LINE__, __func__);
+		RTW_DBG("%s:%d %s headroom is too small.\n", __FILE__, __LINE__, __func__);
 		ret = _FAIL;
 		return ret;
 	}
@@ -4287,7 +4287,7 @@ int recv_func_posthandle(_adapter *padapter, union recv_frame *prframe)
 	prframe = decryptor(padapter, prframe);
 	if (prframe == NULL) {
 		#ifdef DBG_RX_DROP_FRAME
-		RTW_INFO("DBG_RX_DROP_FRAME "FUNC_ADPT_FMT" decryptor: drop pkt\n"
+		RTW_DBG("DBG_RX_DROP_FRAME "FUNC_ADPT_FMT" decryptor: drop pkt\n"
 			, FUNC_ADPT_ARG(padapter));
 		#endif
 		ret = _FAIL;
@@ -4297,21 +4297,21 @@ int recv_func_posthandle(_adapter *padapter, union recv_frame *prframe)
 
 #ifdef DBG_RX_BMC_FRAME
 	if (IS_MCAST(pattrib->ra))
-		RTW_INFO("%s =>"ADPT_FMT" Rx BC/MC from "MAC_FMT"\n", __func__, ADPT_ARG(padapter), MAC_ARG(pattrib->ta));
+		RTW_DBG("%s =>"ADPT_FMT" Rx BC/MC from "MAC_FMT"\n", __func__, ADPT_ARG(padapter), MAC_ARG(pattrib->ta));
 #endif
 
 #if 0
 	if (is_primary_adapter(padapter)) {
-		RTW_INFO("+++\n");
+		RTW_DBG("+++\n");
 		{
 			int i;
 			u8	*ptr = get_recvframe_data(prframe);
 			for (i = 0; i < 140; i = i + 8)
-				RTW_INFO("%02X:%02X:%02X:%02X:%02X:%02X:%02X:%02X:", *(ptr + i),
+				RTW_DBG("%02X:%02X:%02X:%02X:%02X:%02X:%02X:%02X:", *(ptr + i),
 					*(ptr + i + 1), *(ptr + i + 2) , *(ptr + i + 3) , *(ptr + i + 4), *(ptr + i + 5), *(ptr + i + 6), *(ptr + i + 7));
 
 		}
-		RTW_INFO("---\n");
+		RTW_DBG("---\n");
 	}
 #endif
 
@@ -4331,7 +4331,7 @@ int recv_func_posthandle(_adapter *padapter, union recv_frame *prframe)
 	prframe = recvframe_chk_defrag(padapter, prframe);
 	if (prframe == NULL)	{
 		#ifdef DBG_RX_DROP_FRAME
-		RTW_INFO("DBG_RX_DROP_FRAME "FUNC_ADPT_FMT" recvframe_chk_defrag: drop pkt\n"
+		RTW_DBG("DBG_RX_DROP_FRAME "FUNC_ADPT_FMT" recvframe_chk_defrag: drop pkt\n"
 			, FUNC_ADPT_ARG(padapter));
 		#endif
 		DBG_COUNTER(padapter->rx_logs.core_rx_post_defrag_err);
@@ -4341,7 +4341,7 @@ int recv_func_posthandle(_adapter *padapter, union recv_frame *prframe)
 	prframe = portctrl(padapter, prframe);
 	if (prframe == NULL) {
 		#ifdef DBG_RX_DROP_FRAME
-		RTW_INFO("DBG_RX_DROP_FRAME "FUNC_ADPT_FMT" portctrl: drop pkt\n"
+		RTW_DBG("DBG_RX_DROP_FRAME "FUNC_ADPT_FMT" portctrl: drop pkt\n"
 			, FUNC_ADPT_ARG(padapter));
 		#endif
 		ret = _FAIL;
@@ -4408,7 +4408,7 @@ int recv_func(_adapter *padapter, union recv_frame *rframe)
 			}
 
 			if (cnt)
-				RTW_INFO(FUNC_ADPT_FMT" dequeue %d from uc_swdec_pending_queue\n",
+				RTW_DBG(FUNC_ADPT_FMT" dequeue %d from uc_swdec_pending_queue\n",
 					 FUNC_ADPT_ARG(padapter), cnt);
 		}
 
@@ -4425,7 +4425,7 @@ int recv_func(_adapter *padapter, union recv_frame *rframe)
 		    !psecuritypriv->busetkipkey) {
 			DBG_COUNTER(padapter->rx_logs.core_rx_enqueue);
 			rtw_enqueue_recvframe(rframe, &padapter->recvpriv.uc_swdec_pending_queue);
-			/* RTW_INFO("%s: no key, enqueue uc_swdec_pending_queue\n", __func__); */
+			/* RTW_DBG("%s: no key, enqueue uc_swdec_pending_queue\n", __func__); */
 
 			if (recvpriv->free_recvframe_cnt < NR_RECVFRAME / 4) {
 				/* to prevent from recvframe starvation, get recvframe from uc_swdec_pending_queue to free_recvframe_cnt */
@@ -4560,7 +4560,7 @@ static void rtw_signal_stat_timer_hdl(void *ctx)
 		recvpriv->signal_qual = tmp_q;
 
 #if defined(DBG_RX_SIGNAL_DISPLAY_PROCESSING) && 1
-		RTW_INFO(FUNC_ADPT_FMT" signal_strength:%3u, rssi:%3d, signal_qual:%3u"
+		RTW_DBG(FUNC_ADPT_FMT" signal_strength:%3u, rssi:%3d, signal_qual:%3u"
 			 ", num_signal_strength:%u, num_signal_qual:%u"
 			 ", on_cur_ch_ms:%d"
 			 "\n"
@@ -4646,7 +4646,7 @@ static void rx_process_link_qual(_adapter *padapter, union recv_frame *prframe)
 	signal_stat = &padapter->recvpriv.signal_qual_data;
 #endif /* CONFIG_NEW_SIGNAL_STAT_PROCESS */
 
-	/* RTW_INFO("process_link_qual=> pattrib->signal_qual(%d)\n ",pattrib->signal_qual); */
+	/* RTW_DBG("process_link_qual=> pattrib->signal_qual(%d)\n ",pattrib->signal_qual); */
 
 #ifdef CONFIG_NEW_SIGNAL_STAT_PROCESS
 	if (signal_stat->update_req) {
@@ -4733,18 +4733,18 @@ void rx_query_phy_status(
 
 #if 0 /*For debug */
 		if (IsFrameTypeCtrl(wlanhdr)) {
-			RTW_INFO("-->Control frame: Y\n");
-			RTW_INFO("-->pkt_len: %d\n", pattrib->pkt_len);
-			RTW_INFO("-->Sub Type = 0x%X\n", get_frame_sub_type(wlanhdr));
+			RTW_DBG("-->Control frame: Y\n");
+			RTW_DBG("-->pkt_len: %d\n", pattrib->pkt_len);
+			RTW_DBG("-->Sub Type = 0x%X\n", get_frame_sub_type(wlanhdr));
 		}
 
 		/* Dump first 40 bytes of header */
 		int i = 0;
 
 		for (i = 0; i < 40; i++)
-			RTW_INFO("%d: %X\n", i, *((u8 *)wlanhdr + i));
+			RTW_DBG("%d: %X\n", i, *((u8 *)wlanhdr + i));
 
-		RTW_INFO("\n");
+		RTW_DBG("\n");
 #endif
 
 		if ((start_time == 0) || (rtw_get_passing_time_ms(start_time) > 5000)) {
@@ -4864,7 +4864,7 @@ s32 pre_recv_entry(union recv_frame *precvframe, u8 *pphy_status)
 	if (ra_is_bmc == _FALSE) { /*unicast packets*/
 		iface = rtw_get_iface_by_macddr(primary_padapter , pda);
 		if (NULL == iface) {
-			RTW_INFO("%s [WARN] Cannot find appropriate adapter - mac_addr : "MAC_FMT"\n", __func__, MAC_ARG(pda));
+			RTW_DBG("%s [WARN] Cannot find appropriate adapter - mac_addr : "MAC_FMT"\n", __func__, MAC_ARG(pda));
 			/*rtw_warn_on(1);*/
 		} else
 			precvframe->u.hdr.adapter = iface;
@@ -4902,7 +4902,7 @@ thread_return rtw_recv_thread(thread_context context)
 #endif /* PLATFORM_LINUX */
 	thread_enter("RTW_RECV_THREAD");
 
-	RTW_INFO(FUNC_ADPT_FMT" enter\n", FUNC_ADPT_ARG(adapter));
+	RTW_DBG(FUNC_ADPT_FMT" enter\n", FUNC_ADPT_ARG(adapter));
 
 	do {
 		err = _rtw_down_sema(&recvpriv->recv_sema);
@@ -4934,7 +4934,7 @@ thread_return rtw_recv_thread(thread_context context)
 
 exit:
 
-	RTW_INFO(FUNC_ADPT_FMT " Exit\n", FUNC_ADPT_ARG(adapter));
+	RTW_DBG(FUNC_ADPT_FMT " Exit\n", FUNC_ADPT_ARG(adapter));
 
 	rtw_thread_wait_stop();
 

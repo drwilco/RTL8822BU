@@ -121,7 +121,7 @@ extern uint rtw_drv_log_level;
 #define RTW_ERR(fmt, arg...)     \
 	do {\
 		if (_DRV_ERR_ <= rtw_drv_log_level) {\
-			_dbgdump(DRIVER_PREFIX"ERROR " fmt, ##arg);\
+			_dbgdump(DRIVER_PREFIX"[ERROR] " fmt, ##arg);\
 		} \
 	} while (0)
 
@@ -130,7 +130,7 @@ extern uint rtw_drv_log_level;
 #define RTW_WARN(fmt, arg...)     \
 	do {\
 		if (_DRV_WARNING_ <= rtw_drv_log_level) {\
-			_dbgdump(DRIVER_PREFIX"WARN " fmt, ##arg);\
+			_dbgdump(DRIVER_PREFIX"[WARNING] " fmt, ##arg);\
 		} \
 	} while (0)
 
@@ -138,7 +138,7 @@ extern uint rtw_drv_log_level;
 #define RTW_INFO(fmt, arg...)     \
 	do {\
 		if (_DRV_INFO_ <= rtw_drv_log_level) {\
-			_dbgdump(DRIVER_PREFIX fmt, ##arg);\
+			_dbgdump(DRIVER_PREFIX"[INFO] " fmt, ##arg);\
 		} \
 	} while (0)
 
@@ -149,7 +149,7 @@ extern uint rtw_drv_log_level;
 #define RTW_DBG(fmt, arg...)     \
 	do {\
 		if (_DRV_DEBUG_ <= rtw_drv_log_level) {\
-			_dbgdump(DRIVER_PREFIX fmt, ##arg);\
+			_dbgdump(DRIVER_PREFIX"[DEBUG] " fmt, ##arg);\
 		} \
 	} while (0)
 

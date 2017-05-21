@@ -686,7 +686,7 @@ void sitesurvey_set_offch_state(_adapter *adapter, u8 scan_state);
 		((mlmeext)->sitesurvey_res.state = (_state)); \
 		((mlmeext)->sitesurvey_res.next_state = (_state)); \
 		rtw_mi_update_iface_status(&((container_of(mlmeext, _adapter, mlmeextpriv)->mlmepriv)), 0); \
-		/* RTW_INFO("set_scan_state:%s\n", scan_state_str(_state)); */ \
+		RTW_DBG("set_scan_state:%s\n", scan_state_str(_state)); \
 		sitesurvey_set_offch_state(container_of(mlmeext, _adapter, mlmeextpriv), _state); \
 	} while (0)
 
@@ -694,7 +694,7 @@ void sitesurvey_set_offch_state(_adapter *adapter, u8 scan_state);
 #define mlmeext_set_scan_next_state(mlmeext, _state) \
 	do { \
 		((mlmeext)->sitesurvey_res.next_state = (_state)); \
-		/* RTW_INFO("set_scan_next_state:%s\n", scan_state_str(_state)); */ \
+		/* RTW_DBG("set_scan_next_state:%s\n", scan_state_str(_state)); */ \
 	} while (0)
 
 #ifdef CONFIG_SCAN_BACKOP
@@ -703,7 +703,7 @@ void sitesurvey_set_offch_state(_adapter *adapter, u8 scan_state);
 #define mlmeext_assign_scan_backop_flags(mlmeext, flags) \
 	do { \
 		((mlmeext)->sitesurvey_res.backop_flags = (flags)); \
-		RTW_INFO("assign_scan_backop_flags:0x%02x\n", (mlmeext)->sitesurvey_res.backop_flags); \
+		RTW_DBG("assign_scan_backop_flags:0x%02x\n", (mlmeext)->sitesurvey_res.backop_flags); \
 	} while (0)
 
 #define mlmeext_scan_backop_flags_sta(mlmeext) ((mlmeext)->sitesurvey_res.backop_flags_sta)
@@ -1077,13 +1077,13 @@ void reassoc_timer_hdl(_adapter *padapter);
 
 #define set_survey_timer(mlmeext, ms) \
 	do { \
-		/*RTW_INFO("%s set_survey_timer(%p, %d)\n", __FUNCTION__, (mlmeext), (ms));*/ \
+		/*RTW_DBG("%s set_survey_timer(%p, %d)\n", __FUNCTION__, (mlmeext), (ms));*/ \
 		_set_timer(&(mlmeext)->survey_timer, (ms)); \
 	} while (0)
 
 #define set_link_timer(mlmeext, ms) \
 	do { \
-		/*RTW_INFO("%s set_link_timer(%p, %d)\n", __FUNCTION__, (mlmeext), (ms));*/ \
+		/*RTW_DBG("%s set_link_timer(%p, %d)\n", __FUNCTION__, (mlmeext), (ms));*/ \
 		_set_timer(&(mlmeext)->link_timer, (ms)); \
 	} while (0)
 

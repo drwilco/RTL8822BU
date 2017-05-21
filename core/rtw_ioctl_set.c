@@ -172,7 +172,7 @@ u8 rtw_do_join(_adapter *padapter)
 				if (pmlmepriv->LinkDetectInfo.bBusyTraffic == _FALSE
 				    || rtw_to_roam(padapter) > 0
 				   ) {
-					/* RTW_INFO("rtw_do_join() when   no desired bss in scanning queue\n"); */
+					/* RTW_DBG("rtw_do_join() when   no desired bss in scanning queue\n"); */
 					ret = rtw_sitesurvey_cmd(padapter, &parm);
 					if (_SUCCESS != ret) {
 						pmlmepriv->to_join = _FALSE;
@@ -278,7 +278,7 @@ u8 rtw_set_802_11_bssid(_adapter *padapter, u8 *bssid)
 	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
 
 
-	RTW_DBG("set bssid:%pM\n", bssid);
+	RTW_INFO("set bssid:%pM\n", bssid);
 
 	if ((bssid[0] == 0x00 && bssid[1] == 0x00 && bssid[2] == 0x00 && bssid[3] == 0x00 && bssid[4] == 0x00 && bssid[5] == 0x00) ||
 	    (bssid[0] == 0xFF && bssid[1] == 0xFF && bssid[2] == 0xFF && bssid[3] == 0xFF && bssid[4] == 0xFF && bssid[5] == 0xFF)) {
@@ -289,7 +289,7 @@ u8 rtw_set_802_11_bssid(_adapter *padapter, u8 *bssid)
 	_enter_critical_bh(&pmlmepriv->lock, &irqL);
 
 
-	RTW_INFO("Set BSSID under fw_state=0x%08x\n", get_fwstate(pmlmepriv));
+	RTW_DBG("Set BSSID under fw_state=0x%08x\n", get_fwstate(pmlmepriv));
 	if (check_fwstate(pmlmepriv, _FW_UNDER_SURVEY) == _TRUE)
 		goto handle_tkip_countermeasure;
 	else if (check_fwstate(pmlmepriv, _FW_UNDER_LINKING) == _TRUE)
@@ -350,7 +350,7 @@ u8 rtw_set_802_11_ssid(_adapter *padapter, NDIS_802_11_SSID *ssid)
 	struct wlan_network *pnetwork = &pmlmepriv->cur_network;
 
 
-	RTW_DBG("set ssid [%s] fw_state=0x%08x\n",
+	RTW_INFO("set ssid [%s] fw_state=0x%08x\n",
 		  ssid->Ssid, get_fwstate(pmlmepriv));
 
 	if (!rtw_is_hw_init_completed(padapter)) {
@@ -360,7 +360,7 @@ u8 rtw_set_802_11_ssid(_adapter *padapter, NDIS_802_11_SSID *ssid)
 
 	_enter_critical_bh(&pmlmepriv->lock, &irqL);
 
-	RTW_INFO("Set SSID under fw_state=0x%08x\n", get_fwstate(pmlmepriv));
+	RTW_DBG("Set SSID under fw_state=0x%08x\n", get_fwstate(pmlmepriv));
 	if (check_fwstate(pmlmepriv, _FW_UNDER_SURVEY) == _TRUE)
 		goto handle_tkip_countermeasure;
 	else if (check_fwstate(pmlmepriv, _FW_UNDER_LINKING) == _TRUE)
@@ -455,7 +455,7 @@ u8 rtw_set_802_11_connect(_adapter *padapter, u8 *bssid, NDIS_802_11_SSID *ssid)
 		bssid_valid = _FALSE;
 
 	if (ssid_valid == _FALSE && bssid_valid == _FALSE) {
-		RTW_INFO(FUNC_ADPT_FMT" ssid:%p, ssid_valid:%d, bssid:%p, bssid_valid:%d\n",
+		RTW_DBG(FUNC_ADPT_FMT" ssid:%p, ssid_valid:%d, bssid:%p, bssid_valid:%d\n",
 			FUNC_ADPT_ARG(padapter), ssid, ssid_valid, bssid, bssid_valid);
 		status = _FAIL;
 		goto exit;
@@ -518,7 +518,7 @@ u8 rtw_set_802_11_infrastructure_mode(_adapter *padapter,
 	u8 ret = _TRUE;
 
 	if (*pold_state != networktype) {
-		/* RTW_INFO("change mode, old_mode=%d, new_mode=%d, fw_state=0x%x\n", *pold_state, networktype, get_fwstate(pmlmepriv)); */
+		/* RTW_DBG("change mode, old_mode=%d, new_mode=%d, fw_state=0x%x\n", *pold_state, networktype, get_fwstate(pmlmepriv)); */
 
 		if (*pold_state == Ndis802_11APMode
 			|| *pold_state == Ndis802_11_mesh
@@ -614,7 +614,7 @@ u8 rtw_set_802_11_disassociate(_adapter *padapter)
 		/* modify for CONFIG_IEEE80211W, none 11w can use it */
 		rtw_free_assoc_resources_cmd(padapter);
 		if (_FAIL == rtw_pwr_wakeup(padapter))
-			RTW_INFO("%s(): rtw_pwr_wakeup fail !!!\n", __FUNCTION__);
+			RTW_DBG("%s(): rtw_pwr_wakeup fail !!!\n", __FUNCTION__);
 	}
 
 	_exit_critical_bh(&pmlmepriv->lock, &irqL);
@@ -663,7 +663,7 @@ u8 rtw_set_802_11_bssid_list_scan(_adapter *padapter, struct sitesurvey_parm *pp
 
 	} else {
 		if (rtw_is_scan_deny(padapter)) {
-			RTW_INFO(FUNC_ADPT_FMT": scan deny\n", FUNC_ADPT_ARG(padapter));
+			RTW_DBG(FUNC_ADPT_FMT": scan deny\n", FUNC_ADPT_ARG(padapter));
 			indicate_wx_scan_complete_event(padapter);
 			return _SUCCESS;
 		}
@@ -884,7 +884,7 @@ int rtw_set_country(_adapter *adapter, const char *country_code)
 int rtw_set_band(_adapter *adapter, u8 band)
 {
 	if (rtw_band_valid(band)) {
-		RTW_INFO(FUNC_ADPT_FMT" band:%d\n", FUNC_ADPT_ARG(adapter), band);
+		RTW_DBG(FUNC_ADPT_FMT" band:%d\n", FUNC_ADPT_ARG(adapter), band);
 		adapter->setband = band;
 		return _SUCCESS;
 	}

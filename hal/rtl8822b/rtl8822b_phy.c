@@ -84,7 +84,7 @@ u8 rtl8822b_phy_init_mac_register(PADAPTER adapter)
 			ret = _TRUE;
 	}
 	if (_FALSE == ret)
-		RTW_INFO("%s: Write MAC Reg Fail!!", __FUNCTION__);
+		RTW_DBG("%s: Write MAC Reg Fail!!", __FUNCTION__);
 
 	return ret;
 }
@@ -111,7 +111,7 @@ static u8 _init_bb_reg(PADAPTER Adapter)
 			ret = _TRUE;
 	}
 	if (_FALSE == ret) {
-		RTW_INFO("%s: Write BB Reg Fail!!", __FUNCTION__);
+		RTW_DBG("%s: Write BB Reg Fail!!", __FUNCTION__);
 		goto exit;
 	}
 
@@ -133,7 +133,7 @@ static u8 _init_bb_reg(PADAPTER Adapter)
 				ret = _TRUE;
 		}
 		if (_FALSE == ret) {
-			RTW_INFO("%s: Write BB Reg MP Fail!!", __FUNCTION__);
+			RTW_DBG("%s: Write BB Reg MP Fail!!", __FUNCTION__);
 			goto exit;
 		}
 	}
@@ -154,7 +154,7 @@ static u8 _init_bb_reg(PADAPTER Adapter)
 			ret = _TRUE;
 	}
 	if (_FALSE == ret) {
-		RTW_INFO("%s: Write AGC Table Fail!\n", __FUNCTION__);
+		RTW_DBG("%s: Write AGC Table Fail!\n", __FUNCTION__);
 		goto exit;
 	}
 
@@ -212,7 +212,7 @@ static u8 _init_rf_reg(PADAPTER adapter)
 			break;
 
 		default:
-			RTW_INFO("%s: [WARN] Unknown path=%d, skip!\n", __FUNCTION__, path);
+			RTW_DBG("%s: [WARN] Unknown path=%d, skip!\n", __FUNCTION__, path);
 			continue;
 		}
 
@@ -242,7 +242,7 @@ static u8 _init_rf_reg(PADAPTER adapter)
 	if (_FALSE == ret) {
 		status = odm_config_rf_with_tx_pwr_track_header_file(&hal->odmpriv);
 		if (HAL_STATUS_SUCCESS != status) {
-			RTW_INFO("%s: Write PwrTrack Table Fail!\n", __FUNCTION__);
+			RTW_DBG("%s: Write PwrTrack Table Fail!\n", __FUNCTION__);
 			goto exit;
 		}
 		ret = _TRUE;
@@ -361,7 +361,7 @@ static void dm_CheckPbcGPIO(PADAPTER adapter)
 		 * Here we only set bPbcPressed to true
 		 * After trigger PBC, the variable will be set to false
 		 */
-		RTW_INFO("CheckPbcGPIO - PBC is pressed\n");
+		RTW_DBG("CheckPbcGPIO - PBC is pressed\n");
 		rtw_request_wps_pbc_event(adapter);
 	}
 }
@@ -405,7 +405,7 @@ void dm_InterruptMigration(PADAPTER adapter)
 
 	/* Update current settings. */
 	if (bCurrentIntMt != IntMtToSet) {
-		RTW_INFO("%s: Update interrupt migration(%d)\n", __FUNCTION__, IntMtToSet);
+		RTW_DBG("%s: Update interrupt migration(%d)\n", __FUNCTION__, IntMtToSet);
 		if (IntMtToSet) {
 			/*
 			 * <Roger_Notes> Set interrupt migration timer and corresponging Tx/Rx counter.
@@ -451,7 +451,7 @@ static void init_phydm_cominfo(PADAPTER adapter)
 	else if (IS_CHIP_VENDOR_SMIC(hal->version_id))
 		fab_ver = ODM_UMC + 1;
 	else
-		RTW_INFO("%s: unknown fab_ver=%d !!\n",
+		RTW_DBG("%s: unknown fab_ver=%d !!\n",
 			 __FUNCTION__, GET_CVID_MANUFACTUER(hal->version_id));
 
 	if (IS_A_CUT(hal->version_id))
@@ -473,10 +473,10 @@ static void init_phydm_cominfo(PADAPTER adapter)
 	else if (IS_K_CUT(hal->version_id))
 		cut_ver = ODM_CUT_K;
 	else
-		RTW_INFO("%s: unknown cut_ver=%d !!\n",
+		RTW_DBG("%s: unknown cut_ver=%d !!\n",
 			 __FUNCTION__, GET_CVID_CUT_VERSION(hal->version_id));
 
-	RTW_INFO("%s: fab_ver=%d cut_ver=%d\n", __FUNCTION__, fab_ver, cut_ver);
+	RTW_DBG("%s: fab_ver=%d cut_ver=%d\n", __FUNCTION__, fab_ver, cut_ver);
 	odm_cmn_info_init(p_dm_odm, ODM_CMNINFO_FAB_VER, fab_ver);
 	odm_cmn_info_init(p_dm_odm, ODM_CMNINFO_CUT_VER, cut_ver);
 
@@ -639,7 +639,7 @@ u32 rtl8822b_read_rf_reg(PADAPTER adapter, enum rf_path path, u32 addr, u32 mask
 
 	val = config_phydm_read_rf_reg_8822b(phydm, path, addr, mask);
 	if (!config_phydm_read_rf_check_8822b(val))
-		RTW_INFO(FUNC_ADPT_FMT ": read RF reg path=%d addr=0x%x mask=0x%x FAIL!\n",
+		RTW_DBG(FUNC_ADPT_FMT ": read RF reg path=%d addr=0x%x mask=0x%x FAIL!\n",
 			 FUNC_ADPT_ARG(adapter), path, addr, mask);
 
 	return val;
@@ -652,7 +652,7 @@ void rtl8822b_write_rf_reg(PADAPTER adapter, enum rf_path path, u32 addr, u32 ma
 
 	ret = config_phydm_write_rf_reg_8822b(phydm, path, addr, mask, val);
 	if (_FALSE == ret)
-		RTW_INFO(FUNC_ADPT_FMT ": write RF reg path=%d addr=0x%x mask=0x%x val=0x%x FAIL!\n",
+		RTW_DBG(FUNC_ADPT_FMT ": write RF reg path=%d addr=0x%x mask=0x%x val=0x%x FAIL!\n",
 			 FUNC_ADPT_ARG(adapter), path, addr, mask, val);
 }
 
@@ -720,7 +720,7 @@ void rtl8822b_set_tx_power_index(PADAPTER adapter, u32 powerindex, enum rf_path 
 		rate = rate - 3;
 
 		if (!config_phydm_write_txagc_8822b(phydm, index, rfpath, rate)) {
-			RTW_INFO("%s(index:%d, rfpath:%d, rate:0x%02x, disable api:%d) fail\n",
+			RTW_DBG("%s(index:%d, rfpath:%d, rate:0x%02x, disable api:%d) fail\n",
 				__FUNCTION__, index, rfpath, rate, phydm->is_disable_phy_api);
 
 			rtw_warn_on(1);
@@ -854,7 +854,7 @@ static u8 get_pri_ch_id(PADAPTER adapter)
 			else if (hal->nCur80MhzPrimeSC == HAL_PRIME_CHNL_OFFSET_UPPER)
 				pri_ch_idx = VHT_DATA_SC_40_UPPER_OF_80MHZ;
 			else
-				RTW_INFO("SCMapping: DONOT CARE Mode Setting\n");
+				RTW_DBG("SCMapping: DONOT CARE Mode Setting\n");
 		}
 	} else if (hal->current_channel_bw == CHANNEL_WIDTH_40) {
 		/* primary channel is at upper subband of 40MHz */
@@ -864,7 +864,7 @@ static u8 get_pri_ch_id(PADAPTER adapter)
 		else if (hal->nCur40MhzPrimeSC == HAL_PRIME_CHNL_OFFSET_LOWER)
 			pri_ch_idx = VHT_DATA_SC_20_LOWER_OF_80MHZ;
 		else
-			RTW_INFO("SCMapping: DONOT CARE Mode Setting\n");
+			RTW_DBG("SCMapping: DONOT CARE Mode Setting\n");
 	}
 
 	return  pri_ch_idx;
@@ -880,7 +880,7 @@ static void mac_switch_bandwidth(PADAPTER adapter, u8 pri_ch_idx)
 	bw = hal->current_channel_bw;
 	err = rtw_halmac_set_bandwidth(adapter_to_dvobj(adapter), channel, pri_ch_idx, bw);
 	if (err) {
-		RTW_INFO(FUNC_ADPT_FMT ": (channel=%d, pri_ch_idx=%d, bw=%d) fail\n",
+		RTW_DBG(FUNC_ADPT_FMT ": (channel=%d, pri_ch_idx=%d, bw=%d) fail\n",
 			 FUNC_ADPT_ARG(adapter), channel, pri_ch_idx, bw);
 	}
 }
@@ -898,7 +898,7 @@ static void switch_chnl_and_set_bw_by_drv(PADAPTER adapter, u8 switch_band)
 		ret = config_phydm_switch_band_8822b(p_dm_odm, hal->current_channel);
 
 		if (!ret) {
-			RTW_INFO("%s: config_phydm_switch_band_8822b fail\n", __FUNCTION__);
+			RTW_DBG("%s: config_phydm_switch_band_8822b fail\n", __FUNCTION__);
 			rtw_warn_on(1);
 			return;
 		}
@@ -910,7 +910,7 @@ static void switch_chnl_and_set_bw_by_drv(PADAPTER adapter, u8 switch_band)
 		hal->bSwChnl = _FALSE;
 
 		if (!ret) {
-			RTW_INFO("%s: config_phydm_switch_channel_8822b fail\n", __FUNCTION__);
+			RTW_DBG("%s: config_phydm_switch_channel_8822b fail\n", __FUNCTION__);
 			rtw_warn_on(1);
 			return;
 		}
@@ -929,7 +929,7 @@ static void switch_chnl_and_set_bw_by_drv(PADAPTER adapter, u8 switch_band)
 		hal->bSetChnlBW = _FALSE;
 
 		if (!ret) {
-			RTW_INFO("%s: config_phydm_switch_bandwidth_8822b fail\n", __FUNCTION__);
+			RTW_DBG("%s: config_phydm_switch_bandwidth_8822b fail\n", __FUNCTION__);
 			rtw_warn_on(1);
 			return;
 		}
@@ -1065,7 +1065,7 @@ void rtl8822b_handle_sw_chnl_and_set_bw(
 
 	/* check swchnl or setbw */
 	if (!bSwitchChannel && !bSetBandWidth) {
-		RTW_INFO("%s: not switch channel and not set bandwidth\n", __FUNCTION__);
+		RTW_DBG("%s: not switch channel and not set bandwidth\n", __FUNCTION__);
 		return;
 	}
 
@@ -1145,9 +1145,9 @@ void rtl8822b_set_channel_bw(PADAPTER adapter, u8 center_ch, enum channel_width 
 void rtl8822b_notch_filter_switch(PADAPTER adapter, bool enable)
 {
 	if (enable)
-		RTW_INFO("%s: Enable notch filter\n", __FUNCTION__);
+		RTW_DBG("%s: Enable notch filter\n", __FUNCTION__);
 	else
-		RTW_INFO("%s: Disable notch filter\n", __FUNCTION__);
+		RTW_DBG("%s: Disable notch filter\n", __FUNCTION__);
 }
 
 #ifdef CONFIG_MP_INCLUDED
@@ -1171,7 +1171,7 @@ void rtl8822b_mp_config_rfpath(PADAPTER adapter)
 	anttx = hal->antenna_tx_path;
 	antrx = hal->AntennaRxPath;
 	hal->antenna_test = _TRUE;
-	RTW_INFO("+Config RF Path, tx=0x%x rx=0x%x\n", anttx, antrx);
+	RTW_DBG("+Config RF Path, tx=0x%x rx=0x%x\n", anttx, antrx);
 
 	switch (anttx) {
 	case ANTENNA_A:
@@ -1204,7 +1204,7 @@ void rtl8822b_mp_config_rfpath(PADAPTER adapter)
 
 	config_phydm_trx_mode_8822b(GET_PDM_ODM(adapter), bb_tx, bb_rx, FALSE);
 
-	RTW_INFO("-Config RF Path Finish\n");
+	RTW_DBG("-Config RF Path Finish\n");
 }
 #endif /* CONFIG_MP_INCLUDED */
 
@@ -1374,7 +1374,7 @@ static void _sounding_config_su(PADAPTER adapter, struct beamformee_entry *bfee,
 		break;
 
 	default:
-		RTW_INFO("%s: SU cfg_type=%d, don't apply Vmatrix!\n", __FUNCTION__, cfg_type);
+		RTW_DBG("%s: SU cfg_type=%d, don't apply Vmatrix!\n", __FUNCTION__, cfg_type);
 		break;
 	}
 
@@ -1398,7 +1398,7 @@ static void _sounding_config_mu(PADAPTER adapter, struct beamformee_entry *bfee,
 
 	switch (cfg_type) {
 	case HW_CFG_SOUNDING_TYPE_LEAVE:
-		RTW_INFO("%s: MU HW_CFG_SOUNDING_TYPE_LEAVE\n", __FUNCTION__);
+		RTW_DBG("%s: MU HW_CFG_SOUNDING_TYPE_LEAVE\n", __FUNCTION__);
 
 		/* Clear the entry table */
 		mu_tx_ctl = rtw_read32(adapter, REG_MU_TX_CTL_8822B);
@@ -1423,7 +1423,7 @@ static void _sounding_config_mu(PADAPTER adapter, struct beamformee_entry *bfee,
 		break;
 
 	case HW_CFG_SOUNDING_TYPE_SOUNDDOWN:
-		RTW_INFO("%s: MU HW_CFG_SOUNDING_TYPE_SOUNDDOWN\n",  __FUNCTION__);
+		RTW_DBG("%s: MU HW_CFG_SOUNDING_TYPE_SOUNDDOWN\n",  __FUNCTION__);
 
 		/* Update all MU entry table */
 		i = 0;
@@ -1517,7 +1517,7 @@ static void _sounding_config_mu(PADAPTER adapter, struct beamformee_entry *bfee,
 static void _config_sounding(PADAPTER adapter, struct beamformee_entry *bfee, u8 mu_sounding, enum _HW_CFG_SOUNDING_TYPE cfg_type)
 {
 	if (cfg_type == HW_CFG_SOUNDING_TYPE_RESET) {
-		RTW_INFO("%s: HW_CFG_SOUNDING_TYPE_RESET\n", __FUNCTION__);
+		RTW_DBG("%s: HW_CFG_SOUNDING_TYPE_RESET\n", __FUNCTION__);
 		_sounding_reset_all(adapter);
 		return;
 	}
@@ -1539,7 +1539,7 @@ static void _config_beamformer_su(PADAPTER adapter, struct beamformer_entry *bfe
 	u8 i;
 
 
-	RTW_INFO("%s: Config SU BFer entry HW setting\n", __FUNCTION__);
+	RTW_DBG("%s: Config SU BFer entry HW setting\n", __FUNCTION__);
 
 	if (bfer->su_reg_index == 0) {
 		addr_bfer_info = REG_ASSOCIATED_BFMER0_INFO_8822B;
@@ -1573,9 +1573,9 @@ static void _config_beamformer_su(PADAPTER adapter, struct beamformer_entry *bfe
 	coefficientsize = 3;
 	csi_param = (u16)((coefficientsize<<10)|(codebookinfo<<8)|(grouping<<6)|(nr_index<<3)|(nc_index));
 	rtw_write16(adapter, addr_csi_rpt, csi_param);
-	RTW_INFO("%s: nc=%d nr=%d group=%d codebookinfo=%d coefficientsize=%d\n",
+	RTW_DBG("%s: nc=%d nr=%d group=%d codebookinfo=%d coefficientsize=%d\n",
 		 __FUNCTION__, nc_index, nr_index, grouping, codebookinfo, coefficientsize);
-	RTW_INFO("%s: csi=0x%04x\n", __FUNCTION__, csi_param);
+	RTW_DBG("%s: csi=0x%04x\n", __FUNCTION__, csi_param);
 
 	/* ndp_rx_standby_timer */
 	rtw_write8(adapter, REG_SND_PTCL_CTRL_8822B+3, 0x70);
@@ -1658,7 +1658,7 @@ static void _config_beamformee_su(PADAPTER adapter, struct beamformee_entry *bfe
 	u32 val32;
 
 
-	RTW_INFO("%s: Config SU BFee entry HW setting\n", __FUNCTION__);
+	RTW_DBG("%s: Config SU BFee entry HW setting\n", __FUNCTION__);
 
 	mlme = &adapter->mlmepriv;
 	info = GET_BEAMFORM_INFO(adapter);
@@ -1724,7 +1724,7 @@ static void _config_beamformee_mu(PADAPTER adapter, struct beamformee_entry *bfe
 	u32 val32;
 
 
-	RTW_INFO("%s: Config MU BFee entry HW setting\n", __FUNCTION__);
+	RTW_DBG("%s: Config MU BFee entry HW setting\n", __FUNCTION__);
 
 	hal = GET_HAL_DATA(adapter);
 	info = GET_BEAMFORM_INFO(adapter);
@@ -1798,7 +1798,7 @@ static void _config_beamformee_mu(PADAPTER adapter, struct beamformee_entry *bfe
 	val32 = BIT_SET_R_MU_TABLE_VALID_8822B(val32, info->beamformee_mu_reg_maping);
 	rtw_write32(adapter, REG_MU_TX_CTL_8822B, val32);
 
-	RTW_INFO("%s: RegMUTxCtrl=0x%x, user_position_l=0x%x, user_position_h=0x%x\n",
+	RTW_DBG("%s: RegMUTxCtrl=0x%x, user_position_l=0x%x, user_position_h=0x%x\n",
 		 __FUNCTION__, val32, user_position_l, user_position_h);
 
 	val16 = rtw_read16(adapter, mu_reg[idx]);
@@ -1806,7 +1806,7 @@ static void _config_beamformee_mu(PADAPTER adapter, struct beamformee_entry *bfe
 	val16 |= BIT(9); /* Enable MU BFee */
 	val16 |= bfee->p_aid;
 	rtw_write16(adapter, mu_reg[idx], val16);
-	RTW_INFO("%s: Write mu_reg 0x%x = 0x%x\n",
+	RTW_DBG("%s: Write mu_reg 0x%x = 0x%x\n",
 		 __FUNCTION__, mu_reg[idx], val16);
 
 	/* 0x42C[30] = 1 (0: from Tx desc, 1: from 0x45F) */
@@ -1872,7 +1872,7 @@ static void _reset_beamformer_su(PADAPTER adapter, struct beamformer_entry *bfer
 	info->beamformer_su_reg_maping &= ~BIT(idx);
 	bfer->su_reg_index = 0xFF;
 
-	RTW_INFO("%s: Clear SU BFer entry(%d) HW setting\n", __FUNCTION__, idx);
+	RTW_DBG("%s: Clear SU BFer entry(%d) HW setting\n", __FUNCTION__, idx);
 }
 
 static void _reset_beamformer_mu(PADAPTER adapter, struct beamformer_entry *bfer)
@@ -1887,7 +1887,7 @@ static void _reset_beamformer_mu(PADAPTER adapter, struct beamformer_entry *bfer
 			bf_info->beamformer_mu_cnt == 0)
 		rtw_halmac_bf_del_sounding(adapter_to_dvobj(adapter), HAL_BFEE);
 
-	RTW_INFO("%s: Clear MU BFer entry HW setting\n", __FUNCTION__);
+	RTW_DBG("%s: Clear MU BFer entry HW setting\n", __FUNCTION__);
 }
 
 static void _reset_beamformee_su(PADAPTER adapter, struct beamformee_entry *bfee)
@@ -1929,7 +1929,7 @@ static void _reset_beamformee_su(PADAPTER adapter, struct beamformee_entry *bfee
 	info->beamformee_su_reg_maping &= ~BIT(idx);
 	bfee->su_reg_index = 0xFF;
 
-	RTW_INFO("%s: Clear SU BFee entry(%d) HW setting\n", __FUNCTION__, idx);
+	RTW_DBG("%s: Clear SU BFee entry(%d) HW setting\n", __FUNCTION__, idx);
 }
 
 static void _reset_beamformee_mu(PADAPTER adapter, struct beamformee_entry *bfee)
@@ -1964,7 +1964,7 @@ static void _reset_beamformee_mu(PADAPTER adapter, struct beamformee_entry *bfee
 	info->beamformee_mu_reg_maping &= ~BIT(idx);
 	bfee->mu_reg_index = 0xFF;
 
-	RTW_INFO("%s: Clear MU BFee entry(%d) HW setting\n", __FUNCTION__, idx);
+	RTW_DBG("%s: Clear MU BFee entry(%d) HW setting\n", __FUNCTION__, idx);
 }
 
 void rtl8822b_phy_bf_reset_all(PADAPTER adapter)
@@ -1974,7 +1974,7 @@ void rtl8822b_phy_bf_reset_all(PADAPTER adapter)
 	u32 val32;
 
 
-	RTW_INFO("+%s\n", __FUNCTION__);
+	RTW_DBG("+%s\n", __FUNCTION__);
 	info = GET_BEAMFORM_INFO(adapter);
 
 	info->bSetBFHwConfigInProgess = _TRUE;
@@ -2021,7 +2021,7 @@ void rtl8822b_phy_bf_reset_all(PADAPTER adapter)
 	if (_TRUE == info->bEnableSUTxBFWorkAround)
 		rtl8822b_phy_bf_set_csi_report(adapter, &info->TargetCSIInfo);
 
-	RTW_INFO("-%s\n", __FUNCTION__);
+	RTW_DBG("-%s\n", __FUNCTION__);
 }
 
 void rtl8822b_phy_bf_init(PADAPTER adapter)
@@ -2071,7 +2071,7 @@ void rtl8822b_phy_bf_enter(PADAPTER adapter, struct sta_info *sta)
 	struct beamformee_entry *bfee;
 
 
-	RTW_INFO("+%s: " MAC_FMT "\n", __FUNCTION__, MAC_ARG(sta->cmn.mac_addr));
+	RTW_DBG("+%s: " MAC_FMT "\n", __FUNCTION__, MAC_ARG(sta->cmn.mac_addr));
 
 	info = GET_BEAMFORM_INFO(adapter);
 	bfer = rtw_bf_bfer_get_entry_by_addr(adapter, sta->cmn.mac_addr);
@@ -2103,7 +2103,7 @@ void rtl8822b_phy_bf_enter(PADAPTER adapter, struct sta_info *sta)
 
 	info->bSetBFHwConfigInProgess = _FALSE;
 
-	RTW_INFO("-%s\n", __FUNCTION__);
+	RTW_DBG("-%s\n", __FUNCTION__);
 }
 
 void rtl8822b_phy_bf_leave(PADAPTER adapter, u8 *addr)
@@ -2113,7 +2113,7 @@ void rtl8822b_phy_bf_leave(PADAPTER adapter, u8 *addr)
 	struct beamformee_entry *bfee;
 
 
-	RTW_INFO("+%s: " MAC_FMT "\n", __FUNCTION__, MAC_ARG(addr));
+	RTW_DBG("+%s: " MAC_FMT "\n", __FUNCTION__, MAC_ARG(addr));
 
 	info = GET_BEAMFORM_INFO(adapter);
 
@@ -2153,7 +2153,7 @@ void rtl8822b_phy_bf_leave(PADAPTER adapter, u8 *addr)
 		bfee->used = _FALSE;
 	}
 
-	RTW_INFO("-%s\n", __FUNCTION__);
+	RTW_DBG("-%s\n", __FUNCTION__);
 }
 
 void rtl8822b_phy_bf_set_gid_table(PADAPTER adapter,
@@ -2188,7 +2188,7 @@ void rtl8822b_phy_bf_set_gid_table(PADAPTER adapter,
 			user_position[1] |= (bfer->user_position[i] << ((i - 4) << 3));
 	}
 
-	RTW_INFO("%s: STA0: gid_valid=0x%x, user_position_l=0x%x, user_position_h=0x%x\n",
+	RTW_DBG("%s: STA0: gid_valid=0x%x, user_position_l=0x%x, user_position_h=0x%x\n",
 		__func__, gid_valid[0], user_position[0], user_position[1]);
 
 	/* For GID 32~64 */
@@ -2202,7 +2202,7 @@ void rtl8822b_phy_bf_set_gid_table(PADAPTER adapter,
 			user_position[3] |= (bfer->user_position[i] << ((i - 12) << 3));
 	}
 
-	RTW_INFO("%s: STA1: gid_valid=0x%x, user_position_l=0x%x, user_position_h=0x%x\n",
+	RTW_DBG("%s: STA1: gid_valid=0x%x, user_position_l=0x%x, user_position_h=0x%x\n",
 		__func__, gid_valid[1], user_position[2], user_position[3]);
 
 	rtw_halmac_bf_cfg_mu_bfee(adapter_to_dvobj(adapter), gid_valid, user_position);
@@ -2237,7 +2237,7 @@ void rtl8822b_phy_bf_set_csi_report(PADAPTER adapter, struct _RT_CSI_INFO *csi)
 			csi->ChnlWidth,
 			csi->bVHT);
 
-		RTW_INFO("%s: bEnable=%d, Nc=%d, Nr=%d, CH_W=%d, Ng=%d, CodeBook=%d\n",
+		RTW_DBG("%s: bEnable=%d, Nc=%d, Nr=%d, CH_W=%d, Ng=%d, CodeBook=%d\n",
 			 __FUNCTION__, bEnable,
 			 csi->Nc, csi->Nr, csi->ChnlWidth, csi->Ng, csi->CodeBook);
 	}
@@ -2256,7 +2256,7 @@ void rtl8822b_phy_bf_sounding_status(PADAPTER adapter, u8 status)
 	u8 is_sounding_success[6] = {0};
 
 
-	RTW_INFO("+%s\n", __FUNCTION__);
+	RTW_DBG("+%s\n", __FUNCTION__);
 
 	info = GET_BEAMFORM_INFO(adapter);
 	sounding = &info->sounding_info;
@@ -2265,16 +2265,16 @@ void rtl8822b_phy_bf_sounding_status(PADAPTER adapter, u8 status)
 
 	if (sounding->state == SOUNDING_STATE_SU_SOUNDDOWN) {
 		/* SU sounding done */
-		RTW_INFO("%s: SUBFeeCurIdx=%d\n", __FUNCTION__, sounding->su_bfee_curidx);
+		RTW_DBG("%s: SUBFeeCurIdx=%d\n", __FUNCTION__, sounding->su_bfee_curidx);
 
 		bfee = &info->bfee_entry[sounding->su_bfee_curidx];
 		if (bfee->bSoundingTimeout) {
-			RTW_INFO("%s: Return because SUBFeeCurIdx(%d) is sounding timeout!!!\n", __FUNCTION__, sounding->su_bfee_curidx);
+			RTW_DBG("%s: Return because SUBFeeCurIdx(%d) is sounding timeout!!!\n", __FUNCTION__, sounding->su_bfee_curidx);
 			info->bSetBFHwConfigInProgess = _FALSE;
 			return;
 		}
 
-		RTW_INFO("%s: Config SU sound down HW settings\n", __FUNCTION__);
+		RTW_DBG("%s: Config SU sound down HW settings\n", __FUNCTION__);
 		/* Config SU sounding */
 		if (_TRUE == status)
 			sounding_type = HW_CFG_SOUNDING_TYPE_SOUNDDOWN;
@@ -2289,7 +2289,7 @@ void rtl8822b_phy_bf_sounding_status(PADAPTER adapter, u8 status)
 		rtw_write16(adapter, REG_TXBF_CTRL_8822B, val16);
 	} else if (sounding->state == SOUNDING_STATE_MU_SOUNDDOWN) {
 		/* MU sounding done */
-		RTW_INFO("%s: Config MU sound down HW settings\n", __FUNCTION__);
+		RTW_DBG("%s: Config MU sound down HW settings\n", __FUNCTION__);
 
 		val32 = rtw_read32(adapter, REG_WMAC_ASSOCIATED_MU_BFMEE2_8822B);
 		is_sounding_success[0] = (val32 & BIT_STATUS_BFEE2_8822B) ? 1:0;
@@ -2301,19 +2301,19 @@ void rtl8822b_phy_bf_sounding_status(PADAPTER adapter, u8 status)
 		is_sounding_success[4] = (val32 & BIT_STATUS_BFEE6_8822B) ? 1:0;
 		is_sounding_success[5] = ((val32 >> 16) & BIT_STATUS_BFEE7_8822B) ? 1:0;
 
-		RTW_INFO("%s: is_sounding_success STA1:%d, STA2:%d, STA3:%d, STA4:%d, STA5:%d, STA6:%d\n",
+		RTW_DBG("%s: is_sounding_success STA1:%d, STA2:%d, STA3:%d, STA4:%d, STA5:%d, STA6:%d\n",
 			 __FUNCTION__, is_sounding_success[0], is_sounding_success[1] , is_sounding_success[2],
 			 is_sounding_success[3], is_sounding_success[4], is_sounding_success[5]);
 
 		/* Config MU sounding */
 		_config_sounding(adapter, NULL, _TRUE, HW_CFG_SOUNDING_TYPE_SOUNDDOWN);
 	} else {
-		RTW_INFO("%s: Invalid sounding state(%d). Do nothing!\n", __FUNCTION__, sounding->state);
+		RTW_DBG("%s: Invalid sounding state(%d). Do nothing!\n", __FUNCTION__, sounding->state);
 	}
 
 	info->bSetBFHwConfigInProgess = _FALSE;
 
-	RTW_INFO("-%s\n", __FUNCTION__);
+	RTW_DBG("-%s\n", __FUNCTION__);
 }
 #endif /* CONFIG_BEAMFORMING */
 

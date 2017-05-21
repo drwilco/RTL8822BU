@@ -589,7 +589,7 @@ static ssize_t proc_set_config_gpio(struct file *file, const char __user *buffer
 
 	if (buffer && !copy_from_user(tmp, buffer, count)) {
 		num	= sscanf(tmp, "%d %d", &gpio_pin, &gpio_mode);
-		RTW_INFO("num=%d gpio_pin=%d mode=%d\n", num, gpio_pin, gpio_mode);
+		RTW_DBG("num=%d gpio_pin=%d mode=%d\n", num, gpio_pin, gpio_mode);
 		padapter->pre_gpio_pin = gpio_pin;
 
 		if (gpio_mode == 0 || gpio_mode == 1)
@@ -615,7 +615,7 @@ static ssize_t proc_set_gpio_output_value(struct file *file, const char __user *
 
 	if (buffer && !copy_from_user(tmp, buffer, count)) {
 		num	= sscanf(tmp, "%d %d", &gpio_pin, &pin_mode);
-		RTW_INFO("num=%d gpio_pin=%d pin_high=%d\n", num, gpio_pin, pin_mode);
+		RTW_DBG("num=%d gpio_pin=%d pin_high=%d\n", num, gpio_pin, pin_mode);
 		padapter->pre_gpio_pin = gpio_pin;
 
 		if (pin_mode == 0 || pin_mode == 1)
@@ -654,7 +654,7 @@ static ssize_t proc_set_gpio(struct file *file, const char __user *buffer, size_
 
 	if (buffer && !copy_from_user(tmp, buffer, count)) {
 		num	= sscanf(tmp, "%d", &gpio_pin);
-		RTW_INFO("num=%d gpio_pin=%d\n", num, gpio_pin);
+		RTW_DBG("num=%d gpio_pin=%d\n", num, gpio_pin);
 		padapter->pre_gpio_pin = gpio_pin;
 
 	}
@@ -675,7 +675,7 @@ static ssize_t proc_set_rx_info_msg(struct file *file, const char __user *buffer
 		return -EFAULT;
 
 	if (count < 1) {
-		RTW_INFO("argument size is less than 1\n");
+		RTW_DBG("argument size is less than 1\n");
 		return -EFAULT;
 	}
 
@@ -689,7 +689,7 @@ static ssize_t proc_set_rx_info_msg(struct file *file, const char __user *buffer
 
 		precvpriv->store_law_data_flag = (BOOLEAN) phy_info_flag;
 
-		/*RTW_INFO("precvpriv->store_law_data_flag = %d\n",( BOOLEAN )(precvpriv->store_law_data_flag));*/
+		/*RTW_DBG("precvpriv->store_law_data_flag = %d\n",( BOOLEAN )(precvpriv->store_law_data_flag));*/
 	}
 	return count;
 }
@@ -814,15 +814,15 @@ static ssize_t proc_set_linked_info_dump(struct file *file, const char __user *b
 	}
 
 	pre_mode = padapter->bLinkInfoDump;
-	RTW_INFO("pre_mode=%d\n", pre_mode);
+	RTW_DBG("pre_mode=%d\n", pre_mode);
 
 	if (buffer && !copy_from_user(tmp, buffer, count)) {
 
 		num	= sscanf(tmp, "%d ", &mode);
-		RTW_INFO("num=%d mode=%d\n", num, mode);
+		RTW_DBG("num=%d mode=%d\n", num, mode);
 
 		if (num != 1) {
-			RTW_INFO("argument number is wrong\n");
+			RTW_DBG("argument number is wrong\n");
 			return -EFAULT;
 		}
 
@@ -830,7 +830,7 @@ static ssize_t proc_set_linked_info_dump(struct file *file, const char __user *b
 			padapter->bLinkInfoDump = mode;
 
 		else if ((mode == 2) || (mode == 0 && pre_mode == 2)) { /* consider power_saving */
-			/* RTW_INFO("linked_info_dump =%s\n", (padapter->bLinkInfoDump)?"enable":"disable") */
+			/* RTW_DBG("linked_info_dump =%s\n", (padapter->bLinkInfoDump)?"enable":"disable") */
 			linked_info_dump(padapter, mode);
 		}
 	}
@@ -1014,7 +1014,7 @@ static ssize_t proc_set_chan_plan(struct file *file, const char __user *buffer, 
 		return -EFAULT;
 
 	if (count < 1) {
-		RTW_INFO("argument size is less than 1\n");
+		RTW_DBG("argument size is less than 1\n");
 		return -EFAULT;
 	}
 
@@ -1569,7 +1569,7 @@ static ssize_t proc_set_udpport(struct file *file, const char __user *buffer, si
 		return -EFAULT;
 
 	if (count < 1) {
-		RTW_INFO("argument size is less than 1\n");
+		RTW_DBG("argument size is less than 1\n");
 		return -EFAULT;
 	}
 
@@ -1583,7 +1583,7 @@ static ssize_t proc_set_udpport(struct file *file, const char __user *buffer, si
 		int num = sscanf(tmp, "%d", &sink_udpport);
 
 		if (num !=  1) {
-			RTW_INFO("invalid input parameter number!\n");
+			RTW_DBG("invalid input parameter number!\n");
 			return count;
 		}
 
@@ -1994,7 +1994,7 @@ static int proc_get_tx_power_idx(struct seq_file *m, void *v)
 	u8 rs = pos & 0xFF;
 
 	if (0)
-		RTW_INFO("%s path=%u, rs=%u\n", __func__, path, rs);
+		RTW_DBG("%s path=%u, rs=%u\n", __func__, path, rs);
 
 	if (path == RF_PATH_A && rs == CCK)
 		dump_tx_power_idx_title(m, adapter);
@@ -2102,7 +2102,7 @@ static ssize_t proc_set_kfree_bb_gain(struct file *file, const char __user *buff
 		c = strsep(&next, " \t");
 
 		if (sscanf(c, "%s", ch_band_Group) != 1) {
-			RTW_INFO("Error Head Format, channel Group select\n,Please input:\t 2G , 5GLB1 , 5GLB2 , 5GMB1 , 5GMB2 , 5GHB\n");
+			RTW_ERR("Error Head Format, channel Group select\n,Please input:\t 2G , 5GLB1 , 5GLB2 , 5GMB1 , 5GMB2 , 5GHB\n");
 			return count;
 		}
 		if (strcmp("2G", ch_band_Group) == 0)
@@ -2120,7 +2120,7 @@ static ssize_t proc_set_kfree_bb_gain(struct file *file, const char __user *buff
 			chidx = BB_GAIN_5GHB;
 #endif /*CONFIG_IEEE80211_BAND_5GHZ*/
 		else {
-			RTW_INFO("Error Head Format, channel Group select\n,Please input:\t 2G , 5GLB1 , 5GLB2 , 5GMB1 , 5GMB2 , 5GHB\n");
+			RTW_ERR("Error Head Format, channel Group select\n,Please input:\t 2G , 5GLB1 , 5GLB2 , 5GMB1 , 5GMB2 , 5GHB\n");
 			return count;
 		}
 		c = strsep(&next, " \t");
@@ -2130,7 +2130,7 @@ static ssize_t proc_set_kfree_bb_gain(struct file *file, const char __user *buff
 				break;
 
 			kfree_data->bb_gain[chidx][i] = bb_gain[i];
-			RTW_INFO("%s,kfree_data->bb_gain[%d][%d]=%x\n", __func__, chidx, i, kfree_data->bb_gain[chidx][i]);
+			RTW_DBG("%s,kfree_data->bb_gain[%d][%d]=%x\n", __func__, chidx, i, kfree_data->bb_gain[chidx][i]);
 
 			c = strsep(&next, " \t");
 			i++;
@@ -2203,7 +2203,7 @@ static ssize_t proc_set_tx_gain_offset(struct file *file, const char __user *buf
 		if (num < 2)
 			return count;
 
-		RTW_INFO("write rf_path:%u tx gain offset:%d\n", rf_path, offset);
+		RTW_DBG("write rf_path:%u tx gain offset:%d\n", rf_path, offset);
 		rtw_rf_set_tx_gain_offset(adapter, rf_path, offset);
 	}
 
@@ -2274,11 +2274,11 @@ static int btreg_parse_str(char const *input, u8 *type, u16 *addr, u16 *val)
 
 	num = sscanf(input, "%s %x %x", str, &a, &v);
 	if (num < 2) {
-		RTW_INFO("%s: INVALID input!(%s)\n", __FUNCTION__, input);
+		RTW_DBG("%s: INVALID input!(%s)\n", __FUNCTION__, input);
 		return -EINVAL;
 	}
 	if ((num < 3) && val) {
-		RTW_INFO("%s: INVALID input!(%s)\n", __FUNCTION__, input);
+		RTW_DBG("%s: INVALID input!(%s)\n", __FUNCTION__, input);
 		return -EINVAL;
 	}
 
@@ -2294,7 +2294,7 @@ static int btreg_parse_str(char const *input, u8 *type, u16 *addr, u16 *val)
 		}
 	}
 	if (i == n) {
-		RTW_INFO("%s: unknown type(%s)!\n", __FUNCTION__, str);
+		RTW_DBG("%s: unknown type(%s)!\n", __FUNCTION__, str);
 		return -EINVAL;
 	}
 
@@ -2302,7 +2302,7 @@ static int btreg_parse_str(char const *input, u8 *type, u16 *addr, u16 *val)
 	case 0:
 		/* RF */
 		if (a & 0xFFFFFF80) {
-			RTW_INFO("%s: INVALID address(0x%X) for type %s(%d)!\n",
+			RTW_DBG("%s: INVALID address(0x%X) for type %s(%d)!\n",
 				 __FUNCTION__, a, btreg_type[t], t);
 			return -EINVAL;
 		}
@@ -2310,7 +2310,7 @@ static int btreg_parse_str(char const *input, u8 *type, u16 *addr, u16 *val)
 	case 1:
 		/* Modem */
 		if (a & 0xFFFFFE00) {
-			RTW_INFO("%s: INVALID address(0x%X) for type %s(%d)!\n",
+			RTW_DBG("%s: INVALID address(0x%X) for type %s(%d)!\n",
 				 __FUNCTION__, a, btreg_type[t], t);
 			return -EINVAL;
 		}
@@ -2318,7 +2318,7 @@ static int btreg_parse_str(char const *input, u8 *type, u16 *addr, u16 *val)
 	default:
 		/* Others(Bluewize, Vendor, LE) */
 		if (a & 0xFFFFF000) {
-			RTW_INFO("%s: INVALID address(0x%X) for type %s(%d)!\n",
+			RTW_DBG("%s: INVALID address(0x%X) for type %s(%d)!\n",
 				 __FUNCTION__, a, btreg_type[t], t);
 			return -EINVAL;
 		}
@@ -2327,7 +2327,7 @@ static int btreg_parse_str(char const *input, u8 *type, u16 *addr, u16 *val)
 
 	if (val) {
 		if (v & 0xFFFF0000) {
-			RTW_INFO("%s: INVALID value(0x%x)!\n", __FUNCTION__, v);
+			RTW_DBG("%s: INVALID value(0x%x)!\n", __FUNCTION__, v);
 			return -EINVAL;
 		}
 		*val = (u16)v;
@@ -2374,14 +2374,14 @@ ssize_t proc_set_btreg_read(struct file *file, const char __user *buffer, size_t
 	padapter = (PADAPTER)rtw_netdev_priv(dev);
 
 	if (NULL == buffer) {
-		RTW_INFO(FUNC_ADPT_FMT ": input buffer is NULL!\n",
+		RTW_DBG(FUNC_ADPT_FMT ": input buffer is NULL!\n",
 			 FUNC_ADPT_ARG(padapter));
 		err = -EFAULT;
 		goto exit;
 	}
 
 	if (count < 1) {
-		RTW_INFO(FUNC_ADPT_FMT ": input length is 0!\n",
+		RTW_DBG(FUNC_ADPT_FMT ": input length is 0!\n",
 			 FUNC_ADPT_ARG(padapter));
 		err = -EFAULT;
 		goto exit;
@@ -2392,7 +2392,7 @@ ssize_t proc_set_btreg_read(struct file *file, const char __user *buffer, size_t
 		num = (sizeof(tmp) - 1);
 
 	if (copy_from_user(tmp, buffer, num)) {
-		RTW_INFO(FUNC_ADPT_FMT ": copy buffer from user space FAIL!\n",
+		RTW_DBG(FUNC_ADPT_FMT ": copy buffer from user space FAIL!\n",
 			 FUNC_ADPT_ARG(padapter));
 		err = -EFAULT;
 		goto exit;
@@ -2404,7 +2404,7 @@ ssize_t proc_set_btreg_read(struct file *file, const char __user *buffer, size_t
 	if (err)
 		goto exit;
 
-	RTW_INFO(FUNC_ADPT_FMT ": addr=(%s)0x%X\n",
+	RTW_DBG(FUNC_ADPT_FMT ": addr=(%s)0x%X\n",
 		FUNC_ADPT_ARG(padapter), btreg_type[btreg_read_type], btreg_read_addr);
 
 exit:
@@ -2454,14 +2454,14 @@ ssize_t proc_set_btreg_write(struct file *file, const char __user *buffer, size_
 	padapter = (PADAPTER)rtw_netdev_priv(dev);
 
 	if (NULL == buffer) {
-		RTW_INFO(FUNC_ADPT_FMT ": input buffer is NULL!\n",
+		RTW_DBG(FUNC_ADPT_FMT ": input buffer is NULL!\n",
 			 FUNC_ADPT_ARG(padapter));
 		err = -EFAULT;
 		goto exit;
 	}
 
 	if (count < 1) {
-		RTW_INFO(FUNC_ADPT_FMT ": input length is 0!\n",
+		RTW_DBG(FUNC_ADPT_FMT ": input length is 0!\n",
 			 FUNC_ADPT_ARG(padapter));
 		err = -EFAULT;
 		goto exit;
@@ -2472,7 +2472,7 @@ ssize_t proc_set_btreg_write(struct file *file, const char __user *buffer, size_
 		num = (sizeof(tmp) - 1);
 
 	if (copy_from_user(tmp, buffer, num)) {
-		RTW_INFO(FUNC_ADPT_FMT ": copy buffer from user space FAIL!\n",
+		RTW_DBG(FUNC_ADPT_FMT ": copy buffer from user space FAIL!\n",
 			 FUNC_ADPT_ARG(padapter));
 		err = -EFAULT;
 		goto exit;
@@ -2482,7 +2482,7 @@ ssize_t proc_set_btreg_write(struct file *file, const char __user *buffer, size_
 	if (err)
 		goto exit;
 
-	RTW_INFO(FUNC_ADPT_FMT ": Set (%s)0x%X = 0x%x\n",
+	RTW_DBG(FUNC_ADPT_FMT ": Set (%s)0x%X = 0x%x\n",
 		FUNC_ADPT_ARG(padapter), btreg_type[btreg_write_type], btreg_write_addr, val);
 
 	ret = rtw_btcoex_btreg_write(padapter, btreg_write_type, btreg_write_addr, val);

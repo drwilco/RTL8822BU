@@ -70,11 +70,11 @@ int platform_wifi_power_on(void)
 
 		type = script_get_item("wifi_para", "wifi_sdc_id", &val);
 		if (SCIRPT_ITEM_VALUE_TYPE_INT != type) {
-			RTW_INFO("get wifi_sdc_id failed\n");
+			RTW_DBG("get wifi_sdc_id failed\n");
 			ret = -1;
 		} else {
 			sdc_id = val.val;
-			RTW_INFO("----- %s sdc_id: %d, mod_sel: %d\n", __FUNCTION__, sdc_id, mod_sel);
+			RTW_DBG("----- %s sdc_id: %d, mod_sel: %d\n", __FUNCTION__, sdc_id, mod_sel);
 
 #if defined(CONFIG_PLATFORM_ARM_SUN6I) || defined(CONFIG_PLATFORM_ARM_SUN7I)
 			sw_mci_rescan_card(sdc_id, 1);
@@ -84,7 +84,7 @@ int platform_wifi_power_on(void)
 			mdelay(100);
 			wifi_pm_power(1);
 
-			RTW_INFO("%s: power up, rescan card.\n", __FUNCTION__);
+			RTW_DBG("%s: power up, rescan card.\n", __FUNCTION__);
 		}
 
 #ifdef CONFIG_GPIO_WAKEUP
@@ -99,7 +99,7 @@ int platform_wifi_power_on(void)
 #endif
 #endif /* CONFIG_PLATFORM_ARM_SUN8I_W5P1 */
 		if (SCIRPT_ITEM_VALUE_TYPE_PIO != type) {
-			RTW_INFO("No definition of wake up host PIN\n");
+			RTW_DBG("No definition of wake up host PIN\n");
 			ret = -1;
 		} else {
 			gpio_eint_wlan = val.gpio.gpio;
@@ -125,6 +125,6 @@ void platform_wifi_power_off(void)
 	mdelay(100);
 	wifi_pm_power(0);
 
-	RTW_INFO("%s: remove card, power off.\n", __FUNCTION__);
+	RTW_DBG("%s: remove card, power off.\n", __FUNCTION__);
 #endif /* CONFIG_MMC */
 }

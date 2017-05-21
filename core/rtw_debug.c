@@ -355,7 +355,7 @@ void rtw_sink_rtp_seq_dbg(_adapter *adapter, u8 *ehdr_pos)
 			precvpriv->pre_rtp_rxseq = precvpriv->cur_rtp_rxseq;
 			precvpriv->cur_rtp_rxseq = be16_to_cpu(*((u16 *)(ehdr_pos + 0x2C)));
 			if (precvpriv->pre_rtp_rxseq + 1 != precvpriv->cur_rtp_rxseq)
-				RTW_INFO("%s : RTP Seq num from %d to %d\n", __FUNCTION__, precvpriv->pre_rtp_rxseq, precvpriv->cur_rtp_rxseq);
+				RTW_DBG("%s : RTP Seq num from %d to %d\n", __FUNCTION__, precvpriv->pre_rtp_rxseq, precvpriv->cur_rtp_rxseq);
 		}
 	}
 }
@@ -628,7 +628,7 @@ ssize_t proc_set_write_reg(struct file *file, const char __user *buffer, size_t 
 	u32 addr, val, len;
 
 	if (count < 3) {
-		RTW_INFO("argument size is less than 3\n");
+		RTW_ERR("argument size is less than 3\n");
 		return -EFAULT;
 	}
 
@@ -642,7 +642,7 @@ ssize_t proc_set_write_reg(struct file *file, const char __user *buffer, size_t 
 		int num = sscanf(tmp, "%x %x %x", &addr, &val, &len);
 
 		if (num !=  3) {
-			RTW_INFO("invalid write_reg parameter!\n");
+			RTW_ERR("invalid write_reg parameter!\n");
 			return count;
 		}
 
@@ -657,7 +657,7 @@ ssize_t proc_set_write_reg(struct file *file, const char __user *buffer, size_t 
 			rtw_write32(padapter, addr, val);
 			break;
 		default:
-			RTW_INFO("error write length=%d", len);
+			RTW_ERR("error write length=%d", len);
 			break;
 		}
 
@@ -705,7 +705,7 @@ ssize_t proc_set_read_reg(struct file *file, const char __user *buffer, size_t c
 	u32 addr, len;
 
 	if (count < 2) {
-		RTW_INFO("argument size is less than 2\n");
+		RTW_ERR("argument size is less than 2\n");
 		return -EFAULT;
 	}
 
@@ -719,7 +719,7 @@ ssize_t proc_set_read_reg(struct file *file, const char __user *buffer, size_t c
 		int num = sscanf(tmp, "%x %x", &addr, &len);
 
 		if (num !=  2) {
-			RTW_INFO("invalid read_reg parameter!\n");
+			RTW_ERR("invalid read_reg parameter!\n");
 			return count;
 		}
 
@@ -1022,7 +1022,7 @@ ssize_t proc_set_roam_tgt_addr(struct file *file, const char __user *buffer, siz
 		if (num == 6)
 			_rtw_memcpy(adapter->mlmepriv.roam_tgt_addr, addr, ETH_ALEN);
 
-		RTW_INFO("set roam_tgt_addr to "MAC_FMT"\n", MAC_ARG(adapter->mlmepriv.roam_tgt_addr));
+		RTW_DBG("set roam_tgt_addr to "MAC_FMT"\n", MAC_ARG(adapter->mlmepriv.roam_tgt_addr));
 	}
 
 	return count;
@@ -1479,12 +1479,12 @@ ssize_t proc_set_survey_info(struct file *file, const char __user *buffer, size_
 
 #ifdef CONFIG_MP_INCLUDED
 	if (rtw_mp_mode_check(padapter)) {
-		RTW_INFO("MP mode block Scan request\n");
+		RTW_DBG("MP mode block Scan request\n");
 		goto exit;
 	}
 #endif
 	if (rtw_is_scan_deny(padapter)) {
-		RTW_INFO(FUNC_ADPT_FMT  ": scan deny\n", FUNC_ADPT_ARG(padapter));
+		RTW_DBG(FUNC_ADPT_FMT  ": scan deny\n", FUNC_ADPT_ARG(padapter));
 		goto exit;
 	}
 
@@ -1493,28 +1493,28 @@ ssize_t proc_set_survey_info(struct file *file, const char __user *buffer, size_
 		goto cancel_ps_deny;
 
 	if (!rtw_is_adapter_up(padapter)) {
-		RTW_INFO("scan abort!! adapter cannot use\n");
+		RTW_ERR("scan abort!! adapter cannot use\n");
 		goto cancel_ps_deny;
 	}
 
 	if (rtw_mi_busy_traffic_check(padapter, _FALSE)) {
-		RTW_INFO("scan abort!! BusyTraffic == _TRUE\n");
+		RTW_ERR("scan abort!! BusyTraffic == _TRUE\n");
 		goto cancel_ps_deny;
 	}
 
 	if (check_fwstate(pmlmepriv, WIFI_AP_STATE) && check_fwstate(pmlmepriv, WIFI_UNDER_WPS)) {
-		RTW_INFO("scan abort!! AP mode process WPS\n");
+		RTW_ERR("scan abort!! AP mode process WPS\n");
 		goto cancel_ps_deny;
 	}
 	if (check_fwstate(pmlmepriv, _FW_UNDER_SURVEY | _FW_UNDER_LINKING) == _TRUE) {
-		RTW_INFO("scan abort!! fwstate=0x%x\n", pmlmepriv->fw_state);
+		RTW_ERR("scan abort!! fwstate=0x%x\n", pmlmepriv->fw_state);
 		goto cancel_ps_deny;
 	}
 
 #ifdef CONFIG_CONCURRENT_MODE
 	if (rtw_mi_buddy_check_fwstate(padapter,
 		       _FW_UNDER_SURVEY | _FW_UNDER_LINKING | WIFI_UNDER_WPS)) {
-		RTW_INFO("scan abort!! buddy_fwstate check failed\n");
+		RTW_ERR("scan abort!! buddy_fwstate check failed\n");
 		goto cancel_ps_deny;
 	}
 #endif
@@ -2416,7 +2416,7 @@ ssize_t proc_set_hw_status(struct file *file, const char __user *buffer, size_t 
 
 		if (regsty && enable <= 1) {
 			regsty->check_hw_status = enable;
-			RTW_INFO("check_hw_status=%d\n", regsty->check_hw_status);
+			RTW_DBG("check_hw_status=%d\n", regsty->check_hw_status);
 		}
 	}
 
@@ -2510,9 +2510,9 @@ ssize_t proc_set_rx_signal(struct file *file, const char __user *buffer, size_t 
 		padapter->recvpriv.signal_strength_dbg = signal_strength;
 
 		if (is_signal_dbg)
-			RTW_INFO("set %s %u\n", "DBG_SIGNAL_STRENGTH", signal_strength);
+			RTW_DBG("set %s %u\n", "DBG_SIGNAL_STRENGTH", signal_strength);
 		else
-			RTW_INFO("set %s\n", "HW_SIGNAL_STRENGTH");
+			RTW_DBG("set %s\n", "HW_SIGNAL_STRENGTH");
 
 	}
 
@@ -2555,7 +2555,7 @@ ssize_t proc_set_ht_enable(struct file *file, const char __user *buffer, size_t 
 
 		if (pregpriv && mode < 2) {
 			pregpriv->ht_enable = mode;
-			RTW_INFO("ht_enable=%d\n", pregpriv->ht_enable);
+			RTW_DBG("ht_enable=%d\n", pregpriv->ht_enable);
 		}
 	}
 
@@ -2793,7 +2793,7 @@ ssize_t proc_set_rx_ampdu_factor(struct file *file, const char __user *buffer
 		int num = sscanf(tmp, "%d ", &factor);
 
 		if (padapter && (num == 1)) {
-			RTW_INFO("padapter->driver_rx_ampdu_factor = %x\n", factor);
+			RTW_DBG("padapter->driver_rx_ampdu_factor = %x\n", factor);
 
 			if (factor  > 0x03)
 				padapter->driver_rx_ampdu_factor = 0xFF;
@@ -2879,7 +2879,7 @@ ssize_t proc_set_rx_ampdu_density(struct file *file, const char __user *buffer, 
 		int num = sscanf(tmp, "%d ", &density);
 
 		if (padapter && (num == 1)) {
-			RTW_INFO("padapter->driver_rx_ampdu_spacing = %x\n", density);
+			RTW_DBG("padapter->driver_rx_ampdu_spacing = %x\n", density);
 
 			if (density > 0x07)
 				padapter->driver_rx_ampdu_spacing = 0xFF;
@@ -2923,7 +2923,7 @@ ssize_t proc_set_tx_ampdu_density(struct file *file, const char __user *buffer, 
 		int num = sscanf(tmp, "%d ", &density);
 
 		if (padapter && (num == 1)) {
-			RTW_INFO("padapter->driver_ampdu_spacing = %x\n", density);
+			RTW_DBG("padapter->driver_ampdu_spacing = %x\n", density);
 
 			if (density > 0x07)
 				padapter->driver_ampdu_spacing = 0xFF;
@@ -2975,7 +2975,7 @@ ssize_t proc_set_tx_amsdu(struct file *file, const char __user *buffer, size_t c
 		int num = sscanf(tmp, "%d ", &amsdu);
 
 		if (padapter && (num == 1)) {
-			RTW_INFO("padapter->tx_amsdu = %x\n", amsdu);
+			RTW_DBG("padapter->tx_amsdu = %x\n", amsdu);
 
 			if (amsdu > 3)
 				padapter->tx_amsdu = 0;
@@ -3025,7 +3025,7 @@ ssize_t proc_set_tx_amsdu_rate(struct file *file, const char __user *buffer, siz
 		int num = sscanf(tmp, "%d ", &amsdu_rate);
 
 		if (padapter && (num == 1)) {
-			RTW_INFO("padapter->tx_amsdu_rate = %x\n", amsdu_rate);
+			RTW_DBG("padapter->tx_amsdu_rate = %x\n", amsdu_rate);
 			padapter->tx_amsdu_rate = amsdu_rate;
 		}
 	}
@@ -3074,7 +3074,7 @@ ssize_t proc_set_en_fwps(struct file *file, const char __user *buffer, size_t co
 
 		if (pregpriv &&  mode < 2) {
 			pregpriv->check_fw_ps = mode;
-			RTW_INFO("pregpriv->check_fw_ps=%d\n", pregpriv->check_fw_ps);
+			RTW_DBG("pregpriv->check_fw_ps=%d\n", pregpriv->check_fw_ps);
 		}
 
 	}
@@ -3228,7 +3228,7 @@ ssize_t proc_set_stbc_cap(struct file *file, const char __user *buffer, size_t c
 
 		if (pregpriv) {
 			pregpriv->stbc_cap = mode;
-			RTW_INFO("stbc_cap = 0x%02x\n", mode);
+			RTW_DBG("stbc_cap = 0x%02x\n", mode);
 		}
 	}
 
@@ -3309,7 +3309,7 @@ ssize_t proc_set_ldpc_cap(struct file *file, const char __user *buffer, size_t c
 
 		if (pregpriv) {
 			pregpriv->ldpc_cap = mode;
-			RTW_INFO("ldpc_cap = 0x%02x\n", mode);
+			RTW_DBG("ldpc_cap = 0x%02x\n", mode);
 		}
 	}
 
@@ -3350,7 +3350,7 @@ ssize_t proc_set_txbf_cap(struct file *file, const char __user *buffer, size_t c
 
 		if (pregpriv) {
 			pregpriv->beamform_cap = mode;
-			RTW_INFO("beamform_cap = 0x%02x\n", mode);
+			RTW_DBG("beamform_cap = 0x%02x\n", mode);
 		}
 	}
 
@@ -3375,7 +3375,7 @@ ssize_t proc_set_txbf_cap(struct file *file, const char __user *buffer, size_t c
 
 	if (count < 1)
 	{
-		RTW_INFO("argument size is less than 1\n");
+		RTW_ERR("argument size is less than 1\n");
 		return -EFAULT;
 	}
 
@@ -3389,18 +3389,18 @@ ssize_t proc_set_txbf_cap(struct file *file, const char __user *buffer, size_t c
 		int num = sscanf(tmp, "%x", &enable);
 
 		if (num !=  1) {
-			RTW_INFO("invalid set_rssi_disp parameter!\n");
+			RTW_ERR("invalid set_rssi_disp parameter!\n");
 			return count;
 		}
 
 		if(enable)
 		{
-			RTW_INFO("Linked info Function Enable\n");
+			RTW_DBG("Linked info Function Enable\n");
 			padapter->bLinkInfoDump = enable ;
 		}
 		else
 		{
-			RTW_INFO("Linked info Function Disable\n");
+			RTW_DBG("Linked info Function Disable\n");
 			padapter->bLinkInfoDump = 0 ;
 		}
 
@@ -3624,7 +3624,7 @@ ssize_t proc_set_best_channel(struct file *file, const char __user *buffer, size
 		for (i = 0; i < rfctl->max_chan_nums && rfctl->channel_set[i].ChannelNum != 0; i++)
 			rfctl->channel_set[i].rx_count = 0;
 
-		RTW_INFO("set %s\n", "Clean Best Channel Count");
+		RTW_DBG("set %s\n", "Clean Best Channel Count");
 	}
 
 	return count;
@@ -3656,17 +3656,17 @@ ssize_t proc_set_btcoex_dbg(struct file *file, const char __user *buffer, size_t
 
 	padapter = (PADAPTER)rtw_netdev_priv(dev);
 
-	/*	RTW_INFO("+" FUNC_ADPT_FMT "\n", FUNC_ADPT_ARG(padapter)); */
+	/*	RTW_DBG("+" FUNC_ADPT_FMT "\n", FUNC_ADPT_ARG(padapter)); */
 
 	if (NULL == buffer) {
-		RTW_INFO(FUNC_ADPT_FMT ": input buffer is NULL!\n",
+		RTW_DBG(FUNC_ADPT_FMT ": input buffer is NULL!\n",
 			 FUNC_ADPT_ARG(padapter));
 
 		return -EFAULT;
 	}
 
 	if (count < 1) {
-		RTW_INFO(FUNC_ADPT_FMT ": input length is 0!\n",
+		RTW_DBG(FUNC_ADPT_FMT ": input length is 0!\n",
 			 FUNC_ADPT_ARG(padapter));
 
 		return -EFAULT;
@@ -3677,7 +3677,7 @@ ssize_t proc_set_btcoex_dbg(struct file *file, const char __user *buffer, size_t
 		num = (sizeof(tmp) - 1);
 
 	if (copy_from_user(tmp, buffer, num)) {
-		RTW_INFO(FUNC_ADPT_FMT ": copy buffer from user space FAIL!\n",
+		RTW_DBG(FUNC_ADPT_FMT ": copy buffer from user space FAIL!\n",
 			 FUNC_ADPT_ARG(padapter));
 
 		return -EFAULT;
@@ -3690,14 +3690,14 @@ ssize_t proc_set_btcoex_dbg(struct file *file, const char __user *buffer, size_t
 		else
 			_rtw_memset(module, 0xFF, sizeof(module));
 	} else if (2 != num) {
-		RTW_INFO(FUNC_ADPT_FMT ": input(\"%s\") format incorrect!\n",
+		RTW_DBG(FUNC_ADPT_FMT ": input(\"%s\") format incorrect!\n",
 			 FUNC_ADPT_ARG(padapter), tmp);
 
 		if (0 == num)
 			return -EFAULT;
 	}
 
-	RTW_INFO(FUNC_ADPT_FMT ": input 0x%08X 0x%08X\n",
+	RTW_DBG(FUNC_ADPT_FMT ": input 0x%08X 0x%08X\n",
 		 FUNC_ADPT_ARG(padapter), module[0], module[1]);
 	rtw_btcoex_SetDBG(padapter, module);
 
@@ -4209,9 +4209,9 @@ ssize_t proc_set_pattern_info(struct file *file, const char __user *buffer,
 	}
 
 	if (pwrpriv->wowlan_pattern_idx >= MAX_WKFM_CAM_NUM) {
-		RTW_INFO("WARNING: priv-pattern is full(idx: %d)\n",
+		RTW_DBG("WARNING: priv-pattern is full(idx: %d)\n",
 			 pwrpriv->wowlan_pattern_idx);
-		RTW_INFO("WARNING: please clean priv-pattern first\n");
+		RTW_DBG("WARNING: please clean priv-pattern first\n");
 		return -ENOMEM;
 	}
 
@@ -4357,9 +4357,9 @@ ssize_t proc_set_wowlan_gpio_info(struct file *file, const char __user *buffer,
 		#endif
 		rtw_ps_deny_cancel(padapter, PS_DENY_IOCTL);
 
-		RTW_INFO("set %s %d\n", "gpio_high_active",
+		RTW_DBG("set %s %d\n", "gpio_high_active",
 			 pwrpriv->is_high_active);
-		RTW_INFO("%s: set GPIO_%d %d as default.\n",
+		RTW_DBG("%s: set GPIO_%d %d as default.\n",
 			 __func__, WAKEUP_GPIO_IDX, val8);
 	}
 
@@ -5045,7 +5045,7 @@ ssize_t proc_set_monitor(struct file *file, const char __user *buffer, size_t co
 	u8 target_chan, target_offset, target_bw;
 
 	if (count < 3) {
-		RTW_INFO("argument size is less than 3\n");
+		RTW_DBG("argument size is less than 3\n");
 		return -EFAULT;
 	}
 
@@ -5058,7 +5058,7 @@ ssize_t proc_set_monitor(struct file *file, const char __user *buffer, size_t co
 		int num = sscanf(tmp, "%hhu %hhu %hhu", &target_chan, &target_offset, &target_bw);
 
 		if (num != 3) {
-			RTW_INFO("invalid write_reg parameter!\n");
+			RTW_DBG("invalid write_reg parameter!\n");
 			return count;
 		}
 
@@ -5194,7 +5194,7 @@ ssize_t proc_set_efuse_map(struct file *file, const char __user *buffer, size_t 
 	u8 ips_mode = IPS_NUM;
 
 	if (count < 3) {
-		RTW_INFO("argument size is less than 3\n");
+		RTW_DBG("argument size is less than 3\n");
 		return -EFAULT;
 	}
 
@@ -5208,14 +5208,14 @@ ssize_t proc_set_efuse_map(struct file *file, const char __user *buffer, size_t 
 		int num = sscanf(tmp, "%x %d %x", &addr, &cnts, &efuse_data);
 
 		if (num != 3) {
-			RTW_INFO("invalid write_reg parameter!\n");
+			RTW_DBG("invalid write_reg parameter!\n");
 			return count;
 		}
 	}
 	ips_mode = pwrctrlpriv->ips_mode;
 	rtw_pm_set_ips(padapter, IPS_NONE);
 	if (rtw_efuse_map_write(padapter, addr, cnts, &efuse_data) == _FAIL)
-		RTW_INFO("WARN - rtw_efuse_map_write error!!\n");
+		RTW_ERR("WARN - rtw_efuse_map_write error!!\n");
 	rtw_pm_set_ips(padapter, ips_mode);
 #endif
 	return count;
@@ -5241,7 +5241,7 @@ ssize_t proc_set_tx_sa_query(struct file *file, const char __user *buffer, size_
 	u8 index;
 
 	if (count > 2) {
-		RTW_INFO("argument size is more than 2\n");
+		RTW_DBG("argument size is more than 2\n");
 		return -EFAULT;
 	}
 
@@ -5250,15 +5250,15 @@ ssize_t proc_set_tx_sa_query(struct file *file, const char __user *buffer, size_
 		int num = sscanf(tmp, "%x", &key_type);
 
 		if (num !=  1) {
-			RTW_INFO("invalid read_reg parameter!\n");
+			RTW_DBG("invalid read_reg parameter!\n");
 			return count;
 		}
-		RTW_INFO("0: set sa query request , key_type=%d\n", key_type);
+		RTW_DBG("0: set sa query request , key_type=%d\n", key_type);
 	}
 
 	if ((check_fwstate(pmlmepriv, WIFI_STATION_STATE) == _TRUE)
 	    && (check_fwstate(pmlmepriv, _FW_LINKED) == _TRUE) && SEC_IS_BIP_KEY_INSTALLED(&padapter->securitypriv) == _TRUE) {
-		RTW_INFO("STA:"MAC_FMT"\n", MAC_ARG(get_my_bssid(&(pmlmeinfo->network))));
+		RTW_DBG("STA:"MAC_FMT"\n", MAC_ARG(get_my_bssid(&(pmlmeinfo->network))));
 		/* TX unicast sa_query to AP */
 		issue_action_SA_Query(padapter, get_my_bssid(&(pmlmeinfo->network)), 0, 0, (u8)key_type);
 	} else if (check_fwstate(pmlmepriv, WIFI_AP_STATE) == _TRUE && SEC_IS_BIP_KEY_INSTALLED(&padapter->securitypriv) == _TRUE) {
@@ -5283,7 +5283,7 @@ ssize_t proc_set_tx_sa_query(struct file *file, const char __user *buffer, size_
 				if (!_rtw_memcmp(get_my_bssid(&(pmlmeinfo->network)), &mac_addr[index][0], ETH_ALEN)
 				    && !IS_MCAST(&mac_addr[index][0])) {
 					issue_action_SA_Query(padapter, &mac_addr[index][0], 0, 0, (u8)key_type);
-					RTW_INFO("STA[%u]:"MAC_FMT"\n", index , MAC_ARG(&mac_addr[index][0]));
+					RTW_DBG("STA[%u]:"MAC_FMT"\n", index , MAC_ARG(&mac_addr[index][0]));
 				}
 			}
 		}
@@ -5322,7 +5322,7 @@ ssize_t proc_set_tx_deauth(struct file *file, const char __user *buffer, size_t 
 
 
 	if (count > 2) {
-		RTW_INFO("argument size is more than 2\n");
+		RTW_ERR("argument size is more than 2\n");
 		return -EFAULT;
 	}
 
@@ -5331,10 +5331,10 @@ ssize_t proc_set_tx_deauth(struct file *file, const char __user *buffer, size_t 
 		int num = sscanf(tmp, "%x", &key_type);
 
 		if (num !=  1) {
-			RTW_INFO("invalid read_reg parameter!\n");
+			RTW_ERR("invalid read_reg parameter!\n");
 			return count;
 		}
-		RTW_INFO("key_type=%d\n", key_type);
+		RTW_DBG("key_type=%d\n", key_type);
 	}
 	if (key_type < 0 || key_type > 4)
 		return count;
@@ -5388,7 +5388,7 @@ ssize_t proc_set_tx_deauth(struct file *file, const char __user *buffer, size_t 
 						associated_clients_update(padapter, updated, STA_INFO_UPDATE_ALL);
 					}
 
-					RTW_INFO("STA[%u]:"MAC_FMT"\n", index , MAC_ARG(&mac_addr[index][0]));
+					RTW_DBG("STA[%u]:"MAC_FMT"\n", index , MAC_ARG(&mac_addr[index][0]));
 				}
 			}
 		}
@@ -5427,7 +5427,7 @@ ssize_t proc_set_tx_auth(struct file *file, const char __user *buffer, size_t co
 
 
 	if (count > 2) {
-		RTW_INFO("argument size is more than 2\n");
+		RTW_ERR("argument size is more than 2\n");
 		return -EFAULT;
 	}
 
@@ -5436,10 +5436,10 @@ ssize_t proc_set_tx_auth(struct file *file, const char __user *buffer, size_t co
 		int num = sscanf(tmp, "%x", &tx_auth);
 
 		if (num !=  1) {
-			RTW_INFO("invalid read_reg parameter!\n");
+			RTW_ERR("invalid read_reg parameter!\n");
 			return count;
 		}
-		RTW_INFO("1: setnd auth, 2: send assoc request. tx_auth=%d\n", tx_auth);
+		RTW_DBG("1: setnd auth, 2: send assoc request. tx_auth=%d\n", tx_auth);
 	}
 
 	if ((check_fwstate(pmlmepriv, WIFI_STATION_STATE) == _TRUE)
@@ -5494,17 +5494,17 @@ ssize_t proc_set_mcc_enable(struct file *file, const char __user *buffer, size_t
 	u32 en_mcc = 0;
 
 	if (NULL == buffer) {
-		RTW_INFO(FUNC_ADPT_FMT ": input buffer is NULL!\n", FUNC_ADPT_ARG(padapter));
+		RTW_DBG(FUNC_ADPT_FMT ": input buffer is NULL!\n", FUNC_ADPT_ARG(padapter));
 		return -EFAULT;
 	}
 
 	if (count < 1) {
-		RTW_INFO(FUNC_ADPT_FMT ": input length is 0!\n", FUNC_ADPT_ARG(padapter));
+		RTW_DBG(FUNC_ADPT_FMT ": input length is 0!\n", FUNC_ADPT_ARG(padapter));
 		return -EFAULT;
 	}
 
 	if (count > sizeof(tmp)) {
-		RTW_INFO(FUNC_ADPT_FMT ": input length is too large\n", FUNC_ADPT_ARG(padapter));
+		RTW_DBG(FUNC_ADPT_FMT ": input length is too large\n", FUNC_ADPT_ARG(padapter));
 		rtw_warn_on(1);
 		return -EFAULT;
 	}
@@ -5520,7 +5520,7 @@ ssize_t proc_set_mcc_enable(struct file *file, const char __user *buffer, size_t
 			return -EINVAL;
 		}
 
-		RTW_INFO("%s: en_mcc = %d\n", __func__, en_mcc);
+		RTW_DBG("%s: en_mcc = %d\n", __func__, en_mcc);
 
 		for (i = 0; i < dvobj->iface_nums; i++) {
 			iface = dvobj->padapters[i];
@@ -5541,17 +5541,17 @@ ssize_t proc_set_mcc_duration(struct file *file, const char __user *buffer, size
 	u32 enable_runtime_duration = 0, mcc_duration = 0;
 
 	if (NULL == buffer) {
-		RTW_INFO(FUNC_ADPT_FMT ": input buffer is NULL!\n", FUNC_ADPT_ARG(padapter));
+		RTW_ERR(FUNC_ADPT_FMT ": input buffer is NULL!\n", FUNC_ADPT_ARG(padapter));
 		return -EFAULT;
 	}
 
 	if (count < 1) {
-		RTW_INFO(FUNC_ADPT_FMT ": input length is 0!\n", FUNC_ADPT_ARG(padapter));
+		RTW_ERR(FUNC_ADPT_FMT ": input length is 0!\n", FUNC_ADPT_ARG(padapter));
 		return -EFAULT;
 	}
 
 	if (count > sizeof(tmp)) {
-		RTW_INFO(FUNC_ADPT_FMT ": input length is too large\n", FUNC_ADPT_ARG(padapter));
+		RTW_ERR(FUNC_ADPT_FMT ": input length is too large\n", FUNC_ADPT_ARG(padapter));
 		rtw_warn_on(1);
 		return -EFAULT;
 	}
@@ -5560,7 +5560,7 @@ ssize_t proc_set_mcc_duration(struct file *file, const char __user *buffer, size
 		int num = sscanf(tmp, "%u %u", &enable_runtime_duration, &mcc_duration);
 
 		if (num < 1) {
-			RTW_INFO(FUNC_ADPT_FMT ": input parameters < 1\n", FUNC_ADPT_ARG(padapter));
+			RTW_ERR(FUNC_ADPT_FMT ": input parameters < 1\n", FUNC_ADPT_ARG(padapter));
 			return -EINVAL;
 		}
 
@@ -5591,17 +5591,17 @@ ssize_t proc_set_mcc_single_tx_criteria(struct file *file, const char __user *bu
 	u32 mcc_single_tx_criteria = 0;
 
 	if (NULL == buffer) {
-		RTW_INFO(FUNC_ADPT_FMT ": input buffer is NULL!\n", FUNC_ADPT_ARG(padapter));
+		RTW_ERR(FUNC_ADPT_FMT ": input buffer is NULL!\n", FUNC_ADPT_ARG(padapter));
 		return -EFAULT;
 	}
 
 	if (count < 1) {
-		RTW_INFO(FUNC_ADPT_FMT ": input length is 0!\n", FUNC_ADPT_ARG(padapter));
+		RTW_ERR(FUNC_ADPT_FMT ": input length is 0!\n", FUNC_ADPT_ARG(padapter));
 		return -EFAULT;
 	}
 
 	if (count > sizeof(tmp)) {
-		RTW_INFO(FUNC_ADPT_FMT ": input length is too large\n", FUNC_ADPT_ARG(padapter));
+		RTW_ERR(FUNC_ADPT_FMT ": input length is too large\n", FUNC_ADPT_ARG(padapter));
 		rtw_warn_on(1);
 		return -EFAULT;
 	}
@@ -5613,11 +5613,11 @@ ssize_t proc_set_mcc_single_tx_criteria(struct file *file, const char __user *bu
 		int num = sscanf(tmp, "%u", &mcc_single_tx_criteria);
 
 		if (num < 1) {
-			RTW_INFO(FUNC_ADPT_FMT ": input parameters < 1\n", FUNC_ADPT_ARG(padapter));
+			RTW_ERR(FUNC_ADPT_FMT ": input parameters < 1\n", FUNC_ADPT_ARG(padapter));
 			return -EINVAL;
 		}
 
-		RTW_INFO("%s: mcc_single_tx_criteria = %d\n", __func__, mcc_single_tx_criteria);
+		RTW_DBG("%s: mcc_single_tx_criteria = %d\n", __func__, mcc_single_tx_criteria);
 
 		for (i = 0; i < dvobj->iface_nums; i++) {
 			iface = dvobj->padapters[i];
@@ -5641,17 +5641,17 @@ ssize_t proc_set_mcc_ap_bw20_target_tp(struct file *file, const char __user *buf
 	u32 mcc_ap_bw20_target_tp = 0;
 
 	if (NULL == buffer) {
-		RTW_INFO(FUNC_ADPT_FMT ": input buffer is NULL!\n", FUNC_ADPT_ARG(padapter));
+		RTW_ERR(FUNC_ADPT_FMT ": input buffer is NULL!\n", FUNC_ADPT_ARG(padapter));
 		return -EFAULT;
 	}
 
 	if (count < 1) {
-		RTW_INFO(FUNC_ADPT_FMT ": input length is 0!\n", FUNC_ADPT_ARG(padapter));
+		RTW_ERR(FUNC_ADPT_FMT ": input length is 0!\n", FUNC_ADPT_ARG(padapter));
 		return -EFAULT;
 	}
 
 	if (count > sizeof(tmp)) {
-		RTW_INFO(FUNC_ADPT_FMT ": input length is too large\n", FUNC_ADPT_ARG(padapter));
+		RTW_ERR(FUNC_ADPT_FMT ": input length is too large\n", FUNC_ADPT_ARG(padapter));
 		rtw_warn_on(1);
 		return -EFAULT;
 	}
@@ -5660,11 +5660,11 @@ ssize_t proc_set_mcc_ap_bw20_target_tp(struct file *file, const char __user *buf
 		int num = sscanf(tmp, "%u", &mcc_ap_bw20_target_tp);
 
 		if (num < 1) {
-			RTW_INFO(FUNC_ADPT_FMT ": input parameters < 1\n", FUNC_ADPT_ARG(padapter));
+			RTW_ERR(RTW_DBG(FUNC_ADPT_FMT ": input parameters < 1\n", FUNC_ADPT_ARG(padapter));
 			return -EINVAL;
 		}
 
-		RTW_INFO("%s: mcc_ap_bw20_target_tp = %d\n", __func__, mcc_ap_bw20_target_tp);
+		RTW_DBG("%s: mcc_ap_bw20_target_tp = %d\n", __func__, mcc_ap_bw20_target_tp);
 
 		padapter->registrypriv.rtw_mcc_ap_bw20_target_tx_tp = mcc_ap_bw20_target_tp;
 
@@ -5682,17 +5682,17 @@ ssize_t proc_set_mcc_ap_bw40_target_tp(struct file *file, const char __user *buf
 	u32 mcc_ap_bw40_target_tp = 0;
 
 	if (NULL == buffer) {
-		RTW_INFO(FUNC_ADPT_FMT ": input buffer is NULL!\n", FUNC_ADPT_ARG(padapter));
+		RTW_ERR(FUNC_ADPT_FMT ": input buffer is NULL!\n", FUNC_ADPT_ARG(padapter));
 		return -EFAULT;
 	}
 
 	if (count < 1) {
-		RTW_INFO(FUNC_ADPT_FMT ": input length is 0!\n", FUNC_ADPT_ARG(padapter));
+		RTW_ERR(FUNC_ADPT_FMT ": input length is 0!\n", FUNC_ADPT_ARG(padapter));
 		return -EFAULT;
 	}
 
 	if (count > sizeof(tmp)) {
-		RTW_INFO(FUNC_ADPT_FMT ": input length is too large\n", FUNC_ADPT_ARG(padapter));
+		RTW_ERR(FUNC_ADPT_FMT ": input length is too large\n", FUNC_ADPT_ARG(padapter));
 		rtw_warn_on(1);
 		return -EFAULT;
 	}
@@ -5701,11 +5701,11 @@ ssize_t proc_set_mcc_ap_bw40_target_tp(struct file *file, const char __user *buf
 		int num = sscanf(tmp, "%u", &mcc_ap_bw40_target_tp);
 
 		if (num < 1) {
-			RTW_INFO(FUNC_ADPT_FMT ": input parameters < 1\n", FUNC_ADPT_ARG(padapter));
+			RTW_ERR(FUNC_ADPT_FMT ": input parameters < 1\n", FUNC_ADPT_ARG(padapter));
 			return -EINVAL;
 		}
 
-		RTW_INFO("%s: mcc_ap_bw40_target_tp = %d\n", __func__, mcc_ap_bw40_target_tp);
+		RTW_DBG("%s: mcc_ap_bw40_target_tp = %d\n", __func__, mcc_ap_bw40_target_tp);
 
 		padapter->registrypriv.rtw_mcc_ap_bw40_target_tx_tp = mcc_ap_bw40_target_tp;
 
@@ -5723,17 +5723,17 @@ ssize_t proc_set_mcc_ap_bw80_target_tp(struct file *file, const char __user *buf
 	u32 mcc_ap_bw80_target_tp = 0;
 
 	if (NULL == buffer) {
-		RTW_INFO(FUNC_ADPT_FMT ": input buffer is NULL!\n", FUNC_ADPT_ARG(padapter));
+		RTW_ERR(FUNC_ADPT_FMT ": input buffer is NULL!\n", FUNC_ADPT_ARG(padapter));
 		return -EFAULT;
 	}
 
 	if (count < 1) {
-		RTW_INFO(FUNC_ADPT_FMT ": input length is 0!\n", FUNC_ADPT_ARG(padapter));
+		RTW_ERR(FUNC_ADPT_FMT ": input length is 0!\n", FUNC_ADPT_ARG(padapter));
 		return -EFAULT;
 	}
 
 	if (count > sizeof(tmp)) {
-		RTW_INFO(FUNC_ADPT_FMT ": input length is too large\n", FUNC_ADPT_ARG(padapter));
+		RTW_ERR(FUNC_ADPT_FMT ": input length is too large\n", FUNC_ADPT_ARG(padapter));
 		rtw_warn_on(1);
 		return -EFAULT;
 	}
@@ -5742,11 +5742,11 @@ ssize_t proc_set_mcc_ap_bw80_target_tp(struct file *file, const char __user *buf
 		int num = sscanf(tmp, "%u", &mcc_ap_bw80_target_tp);
 
 		if (num < 1) {
-			RTW_INFO(FUNC_ADPT_FMT ": input parameters < 1\n", FUNC_ADPT_ARG(padapter));
+			RTW_ERR(FUNC_ADPT_FMT ": input parameters < 1\n", FUNC_ADPT_ARG(padapter));
 			return -EINVAL;
 		}
 
-		RTW_INFO("%s: mcc_ap_bw80_target_tp = %d\n", __func__, mcc_ap_bw80_target_tp);
+		RTW_DBG("%s: mcc_ap_bw80_target_tp = %d\n", __func__, mcc_ap_bw80_target_tp);
 
 		padapter->registrypriv.rtw_mcc_ap_bw80_target_tx_tp = mcc_ap_bw80_target_tp;
 
@@ -5764,17 +5764,17 @@ ssize_t proc_set_mcc_sta_bw20_target_tp(struct file *file, const char __user *bu
 	u32 mcc_sta_bw20_target_tp = 0;
 
 	if (NULL == buffer) {
-		RTW_INFO(FUNC_ADPT_FMT ": input buffer is NULL!\n", FUNC_ADPT_ARG(padapter));
+		RTW_ERR(FUNC_ADPT_FMT ": input buffer is NULL!\n", FUNC_ADPT_ARG(padapter));
 		return -EFAULT;
 	}
 
 	if (count < 1) {
-		RTW_INFO(FUNC_ADPT_FMT ": input length is 0!\n", FUNC_ADPT_ARG(padapter));
+		RTW_ERR(FUNC_ADPT_FMT ": input length is 0!\n", FUNC_ADPT_ARG(padapter));
 		return -EFAULT;
 	}
 
 	if (count > sizeof(tmp)) {
-		RTW_INFO(FUNC_ADPT_FMT ": input length is too large\n", FUNC_ADPT_ARG(padapter));
+		RTW_ERR(FUNC_ADPT_FMT ": input length is too large\n", FUNC_ADPT_ARG(padapter));
 		rtw_warn_on(1);
 		return -EFAULT;
 	}
@@ -5783,11 +5783,11 @@ ssize_t proc_set_mcc_sta_bw20_target_tp(struct file *file, const char __user *bu
 		int num = sscanf(tmp, "%u", &mcc_sta_bw20_target_tp);
 
 		if (num < 1) {
-			RTW_INFO(FUNC_ADPT_FMT ": input parameters < 1\n", FUNC_ADPT_ARG(padapter));
+			RTW_ERR(FUNC_ADPT_FMT ": input parameters < 1\n", FUNC_ADPT_ARG(padapter));
 			return -EINVAL;
 		}
 
-		RTW_INFO("%s: mcc_sta_bw20_target_tp = %d\n", __func__, mcc_sta_bw20_target_tp);
+		RTW_DBG("%s: mcc_sta_bw20_target_tp = %d\n", __func__, mcc_sta_bw20_target_tp);
 
 		padapter->registrypriv.rtw_mcc_sta_bw20_target_tx_tp = mcc_sta_bw20_target_tp;
 
@@ -5805,17 +5805,17 @@ ssize_t proc_set_mcc_sta_bw40_target_tp(struct file *file, const char __user *bu
 	u32 mcc_sta_bw40_target_tp = 0;
 
 	if (NULL == buffer) {
-		RTW_INFO(FUNC_ADPT_FMT ": input buffer is NULL!\n", FUNC_ADPT_ARG(padapter));
+		RTW_ERR(FUNC_ADPT_FMT ": input buffer is NULL!\n", FUNC_ADPT_ARG(padapter));
 		return -EFAULT;
 	}
 
 	if (count < 1) {
-		RTW_INFO(FUNC_ADPT_FMT ": input length is 0!\n", FUNC_ADPT_ARG(padapter));
+		RTW_ERR(FUNC_ADPT_FMT ": input length is 0!\n", FUNC_ADPT_ARG(padapter));
 		return -EFAULT;
 	}
 
 	if (count > sizeof(tmp)) {
-		RTW_INFO(FUNC_ADPT_FMT ": input length is too large\n", FUNC_ADPT_ARG(padapter));
+		RTW_ERR(FUNC_ADPT_FMT ": input length is too large\n", FUNC_ADPT_ARG(padapter));
 		rtw_warn_on(1);
 		return -EFAULT;
 	}
@@ -5824,11 +5824,11 @@ ssize_t proc_set_mcc_sta_bw40_target_tp(struct file *file, const char __user *bu
 		int num = sscanf(tmp, "%u", &mcc_sta_bw40_target_tp);
 
 		if (num < 1) {
-			RTW_INFO(FUNC_ADPT_FMT ": input parameters < 1\n", FUNC_ADPT_ARG(padapter));
+			RTW_ERR(FUNC_ADPT_FMT ": input parameters < 1\n", FUNC_ADPT_ARG(padapter));
 			return -EINVAL;
 		}
 
-		RTW_INFO("%s: mcc_sta_bw40_target_tp = %d\n", __func__, mcc_sta_bw40_target_tp);
+		RTW_DBG("%s: mcc_sta_bw40_target_tp = %d\n", __func__, mcc_sta_bw40_target_tp);
 
 		padapter->registrypriv.rtw_mcc_sta_bw40_target_tx_tp = mcc_sta_bw40_target_tp;
 
@@ -5846,17 +5846,17 @@ ssize_t proc_set_mcc_sta_bw80_target_tp(struct file *file, const char __user *bu
 	u32 mcc_sta_bw80_target_tp = 0;
 
 	if (NULL == buffer) {
-		RTW_INFO(FUNC_ADPT_FMT ": input buffer is NULL!\n", FUNC_ADPT_ARG(padapter));
+		RTW_ERR(FUNC_ADPT_FMT ": input buffer is NULL!\n", FUNC_ADPT_ARG(padapter));
 		return -EFAULT;
 	}
 
 	if (count < 1) {
-		RTW_INFO(FUNC_ADPT_FMT ": input length is 0!\n", FUNC_ADPT_ARG(padapter));
+		RTW_ERR(FUNC_ADPT_FMT ": input length is 0!\n", FUNC_ADPT_ARG(padapter));
 		return -EFAULT;
 	}
 
 	if (count > sizeof(tmp)) {
-		RTW_INFO(FUNC_ADPT_FMT ": input length is too large\n", FUNC_ADPT_ARG(padapter));
+		RTW_ERR(FUNC_ADPT_FMT ": input length is too large\n", FUNC_ADPT_ARG(padapter));
 		rtw_warn_on(1);
 		return -EFAULT;
 	}
@@ -5865,11 +5865,11 @@ ssize_t proc_set_mcc_sta_bw80_target_tp(struct file *file, const char __user *bu
 		int num = sscanf(tmp, "%u", &mcc_sta_bw80_target_tp);
 
 		if (num < 1) {
-			RTW_INFO(FUNC_ADPT_FMT ": input parameters < 1\n", FUNC_ADPT_ARG(padapter));
+			RTW_ERR(FUNC_ADPT_FMT ": input parameters < 1\n", FUNC_ADPT_ARG(padapter));
 			return -EINVAL;
 		}
 
-		RTW_INFO("%s: mcc_sta_bw80_target_tp = %d\n", __func__, mcc_sta_bw80_target_tp);
+		RTW_DBG("%s: mcc_sta_bw80_target_tp = %d\n", __func__, mcc_sta_bw80_target_tp);
 
 		padapter->registrypriv.rtw_mcc_sta_bw80_target_tx_tp = mcc_sta_bw80_target_tp;
 

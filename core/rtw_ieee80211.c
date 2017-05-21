@@ -914,7 +914,7 @@ u8 rtw_is_wps_ie(u8 *ie_ptr, uint *wps_ielen)
 	eid = ie_ptr[0];
 
 	if ((eid == _WPA_IE_ID_) && (_rtw_memcmp(&ie_ptr[2], wps_oui, 4) == _TRUE)) {
-		/* RTW_INFO("==> found WPS_IE.....\n"); */
+		/* RTW_DBG("==> found WPS_IE.....\n"); */
 		*wps_ielen = ie_ptr[1] + 2;
 		match = _TRUE;
 	}
@@ -925,7 +925,7 @@ u8 *rtw_get_wps_ie_from_scan_queue(u8 *in_ie, uint in_len, u8 *wps_ie, uint *wps
 {
 	u8	*wps = NULL;
 
-	RTW_INFO("[%s] frame_type = %d\n", __FUNCTION__, frame_type);
+	RTW_DBG("[%s] frame_type = %d\n", __FUNCTION__, frame_type);
 	switch (frame_type) {
 	case BSS_TYPE_BCN:
 	case BSS_TYPE_PROB_RSP: {
@@ -1031,7 +1031,7 @@ u8 *rtw_get_wps_attr(u8 *wps_ie, uint wps_ielen, u16 target_attr_id , u8 *buf_at
 		u16 attr_data_len = RTW_GET_BE16(attr_ptr + 2);
 		u16 attr_len = attr_data_len + 4;
 
-		/* RTW_INFO("%s attr_ptr:%p, id:%u, length:%u\n", __FUNCTION__, attr_ptr, attr_id, attr_data_len); */
+		/* RTW_DBG("%s attr_ptr:%p, id:%u, length:%u\n", __FUNCTION__, attr_ptr, attr_id, attr_data_len); */
 		if (attr_id == target_attr_id) {
 			target_attr_ptr = attr_ptr;
 
@@ -1095,7 +1095,7 @@ static int rtw_ieee802_11_parse_vendor_specific(u8 *pos, uint elen,
 	 * sub-type. */
 	if (elen < 4) {
 		if (show_errors) {
-			RTW_INFO("short vendor specific "
+			RTW_DBG("short vendor specific "
 				 "information element ignored (len=%lu)\n",
 				 (unsigned long) elen);
 		}
@@ -1208,7 +1208,7 @@ ParseRes rtw_ieee802_11_parse_elems(u8 *start, uint len,
 
 		if (elen > left) {
 			if (show_errors) {
-				RTW_INFO("IEEE 802.11 element "
+				RTW_DBG("IEEE 802.11 element "
 					 "parse failed (id=%d elen=%d "
 					 "left=%lu)\n",
 					 id, elen, (unsigned long) left);
@@ -1401,7 +1401,7 @@ int rtw_get_mac_addr_intel(unsigned char *buf)
 	char fname[] = "/config/wifi/mac.txt";
 	int jj, kk;
 
-	RTW_INFO("%s Enter\n", __FUNCTION__);
+	RTW_DBG("%s Enter\n", __FUNCTION__);
 
 	ret = rtw_retrieve_from_file(fname, c_mac, MAC_ADDRESS_LEN);
 	if (ret < MAC_ADDRESS_LEN)
@@ -1410,7 +1410,7 @@ int rtw_get_mac_addr_intel(unsigned char *buf)
 	for (jj = 0, kk = 0; jj < ETH_ALEN; jj++, kk += 2)
 		buf[jj] = key_2char2num(c_mac[kk], c_mac[kk + 1]);
 
-	RTW_INFO("%s: read from file mac address: "MAC_FMT"\n",
+	RTW_DBG("%s: read from file mac address: "MAC_FMT"\n",
 		 __FUNCTION__, MAC_ARG(buf));
 
 	return 0;
@@ -1522,7 +1522,7 @@ err_chk:
 	}
 
 	_rtw_memcpy(out, mac, ETH_ALEN);
-	RTW_INFO("%s mac addr:"MAC_FMT"\n", __func__, MAC_ARG(out));
+	RTW_DBG("%s mac addr:"MAC_FMT"\n", __func__, MAC_ARG(out));
 }
 
 #ifdef CONFIG_80211N_HT
@@ -1689,7 +1689,7 @@ void rtw_ies_get_chbw(u8 *ies, int ies_len, u8 *ch, u8 *bw, u8 *offset, u8 ht, u
 			if (*ch == 0)
 				*ch = GET_HT_OP_ELE_PRI_CHL(ht_op_ie + 2);
 			else if (*ch != 0 && *ch != GET_HT_OP_ELE_PRI_CHL(ht_op_ie + 2)) {
-				RTW_INFO("%s ch inconsistent, DSSS:%u, HT primary:%u\n"
+				RTW_DBG("%s ch inconsistent, DSSS:%u, HT primary:%u\n"
 					, __func__, *ch, GET_HT_OP_ELE_PRI_CHL(ht_op_ie + 2));
 			}
 
@@ -1734,7 +1734,7 @@ void rtw_bss_get_chbw(WLAN_BSSID_EX *bss, u8 *ch, u8 *bw, u8 *offset, u8 ht, u8 
 	if (*ch == 0)
 		*ch = bss->Configuration.DSConfig;
 	else if (*ch != bss->Configuration.DSConfig) {
-		RTW_INFO("inconsistent ch - ies:%u bss->Configuration.DSConfig:%u\n"
+		RTW_DBG("inconsistent ch - ies:%u bss->Configuration.DSConfig:%u\n"
 			 , *ch, bss->Configuration.DSConfig);
 		*ch = bss->Configuration.DSConfig;
 		rtw_warn_on(1);
@@ -2097,12 +2097,12 @@ uint rtw_del_p2p_ie(u8 *ies, uint ies_len_ori, const char *msg)
 			uint remain_len = ies_len - (next_ie - ies);
 
 			if (DBG_DEL_P2P_IE && msg) {
-				RTW_INFO("%s %d before\n", __func__, index);
+				RTW_DBG("%s %d before\n", __func__, index);
 				dump_ies(RTW_DBGDUMP, ies, ies_len);
 
-				RTW_INFO("ies:%p, ies_len:%u\n", ies, ies_len);
-				RTW_INFO("target_ie:%p, target_ie_len:%u\n", target_ie, target_ie_len);
-				RTW_INFO("next_ie:%p, remain_len:%u\n", next_ie, remain_len);
+				RTW_DBG("ies:%p, ies_len:%u\n", ies, ies_len);
+				RTW_DBG("target_ie:%p, target_ie_len:%u\n", target_ie, target_ie_len);
+				RTW_DBG("next_ie:%p, remain_len:%u\n", next_ie, remain_len);
 			}
 
 			_rtw_memmove(target_ie, next_ie, remain_len);
@@ -2110,7 +2110,7 @@ uint rtw_del_p2p_ie(u8 *ies, uint ies_len_ori, const char *msg)
 			ies_len -= target_ie_len;
 
 			if (DBG_DEL_P2P_IE && msg) {
-				RTW_INFO("%s %d after\n", __func__, index);
+				RTW_DBG("%s %d after\n", __func__, index);
 				dump_ies(RTW_DBGDUMP, ies, ies_len);
 			}
 
@@ -2138,12 +2138,12 @@ uint rtw_del_p2p_attr(u8 *ie, uint ielen_ori, u8 attr_id)
 			uint remain_len = ielen - (next_attr - ie);
 
 			if (DBG_DEL_P2P_ATTR) {
-				RTW_INFO("%s %d before\n", __func__, index);
+				RTW_DBG("%s %d before\n", __func__, index);
 				dump_ies(RTW_DBGDUMP, ie, ielen);
 
-				RTW_INFO("ie:%p, ielen:%u\n", ie, ielen);
-				RTW_INFO("target_attr:%p, target_attr_len:%u\n", target_attr, target_attr_len);
-				RTW_INFO("next_attr:%p, remain_len:%u\n", next_attr, remain_len);
+				RTW_DBG("ie:%p, ielen:%u\n", ie, ielen);
+				RTW_DBG("target_attr:%p, target_attr_len:%u\n", target_attr, target_attr_len);
+				RTW_DBG("next_attr:%p, remain_len:%u\n", next_attr, remain_len);
 			}
 
 			_rtw_memmove(target_attr, next_attr, remain_len);
@@ -2152,7 +2152,7 @@ uint rtw_del_p2p_attr(u8 *ie, uint ielen_ori, u8 attr_id)
 			ielen -= target_attr_len;
 
 			if (DBG_DEL_P2P_ATTR) {
-				RTW_INFO("%s %d after\n", __func__, index);
+				RTW_DBG("%s %d after\n", __func__, index);
 				dump_ies(RTW_DBGDUMP, ie, ielen);
 			}
 
@@ -2202,12 +2202,12 @@ void rtw_bss_ex_del_p2p_attr(WLAN_BSSID_EX *bss_ex, u8 attr_id)
 
 			if (DBG_BSS_EX_DEL_P2P_ATTR) {
 				if (rtw_get_p2p_attr(ie, ie_len_ori, attr_id, NULL, NULL)) {
-					RTW_INFO("%s %d before\n", __func__, index);
+					RTW_DBG("%s %d before\n", __func__, index);
 					dump_ies(RTW_DBGDUMP, BSS_EX_TLV_IES(bss_ex), BSS_EX_TLV_IES_LEN(bss_ex));
 
-					RTW_INFO("ies:%p, ies_len:%u\n", ies, ies_len);
-					RTW_INFO("ie:%p, ie_len_ori:%u\n", ie, ie_len_ori);
-					RTW_INFO("next_ie_ori:%p, remain_len:%u\n", next_ie_ori, remain_len);
+					RTW_DBG("ies:%p, ies_len:%u\n", ies, ies_len);
+					RTW_DBG("ie:%p, ie_len_ori:%u\n", ie, ie_len_ori);
+					RTW_DBG("next_ie_ori:%p, remain_len:%u\n", next_ie_ori, remain_len);
 					has_target_attr = 1;
 				}
 			}
@@ -2226,7 +2226,7 @@ void rtw_bss_ex_del_p2p_attr(WLAN_BSSID_EX *bss_ex, u8 attr_id)
 
 			if (DBG_BSS_EX_DEL_P2P_ATTR) {
 				if (has_target_attr) {
-					RTW_INFO("%s %d after\n", __func__, index);
+					RTW_DBG("%s %d after\n", __func__, index);
 					dump_ies(RTW_DBGDUMP, BSS_EX_TLV_IES(bss_ex), BSS_EX_TLV_IES_LEN(bss_ex));
 				}
 			}
@@ -2423,12 +2423,12 @@ uint rtw_del_wfd_ie(u8 *ies, uint ies_len_ori, const char *msg)
 			uint remain_len = ies_len - (next_ie - ies);
 
 			if (DBG_DEL_WFD_IE && msg) {
-				RTW_INFO("%s %d before\n", __func__, index);
+				RTW_DBG("%s %d before\n", __func__, index);
 				dump_ies(RTW_DBGDUMP, ies, ies_len);
 
-				RTW_INFO("ies:%p, ies_len:%u\n", ies, ies_len);
-				RTW_INFO("target_ie:%p, target_ie_len:%u\n", target_ie, target_ie_len);
-				RTW_INFO("next_ie:%p, remain_len:%u\n", next_ie, remain_len);
+				RTW_DBG("ies:%p, ies_len:%u\n", ies, ies_len);
+				RTW_DBG("target_ie:%p, target_ie_len:%u\n", target_ie, target_ie_len);
+				RTW_DBG("next_ie:%p, remain_len:%u\n", next_ie, remain_len);
 			}
 
 			_rtw_memmove(target_ie, next_ie, remain_len);
@@ -2436,7 +2436,7 @@ uint rtw_del_wfd_ie(u8 *ies, uint ies_len_ori, const char *msg)
 			ies_len -= target_ie_len;
 
 			if (DBG_DEL_WFD_IE && msg) {
-				RTW_INFO("%s %d after\n", __func__, index);
+				RTW_DBG("%s %d after\n", __func__, index);
 				dump_ies(RTW_DBGDUMP, ies, ies_len);
 			}
 
@@ -2464,12 +2464,12 @@ uint rtw_del_wfd_attr(u8 *ie, uint ielen_ori, u8 attr_id)
 			uint remain_len = ielen - (next_attr - ie);
 
 			if (DBG_DEL_WFD_ATTR) {
-				RTW_INFO("%s %d before\n", __func__, index);
+				RTW_DBG("%s %d before\n", __func__, index);
 				dump_ies(RTW_DBGDUMP, ie, ielen);
 
-				RTW_INFO("ie:%p, ielen:%u\n", ie, ielen);
-				RTW_INFO("target_attr:%p, target_attr_len:%u\n", target_attr, target_attr_len);
-				RTW_INFO("next_attr:%p, remain_len:%u\n", next_attr, remain_len);
+				RTW_DBG("ie:%p, ielen:%u\n", ie, ielen);
+				RTW_DBG("target_attr:%p, target_attr_len:%u\n", target_attr, target_attr_len);
+				RTW_DBG("next_attr:%p, remain_len:%u\n", next_attr, remain_len);
 			}
 
 			_rtw_memmove(target_attr, next_attr, remain_len);
@@ -2478,7 +2478,7 @@ uint rtw_del_wfd_attr(u8 *ie, uint ielen_ori, u8 attr_id)
 			ielen -= target_attr_len;
 
 			if (DBG_DEL_WFD_ATTR) {
-				RTW_INFO("%s %d after\n", __func__, index);
+				RTW_DBG("%s %d after\n", __func__, index);
 				dump_ies(RTW_DBGDUMP, ie, ielen);
 			}
 
@@ -2527,12 +2527,12 @@ void rtw_bss_ex_del_wfd_attr(WLAN_BSSID_EX *bss_ex, u8 attr_id)
 
 			if (DBG_BSS_EX_DEL_WFD_ATTR) {
 				if (rtw_get_wfd_attr(ie, ie_len_ori, attr_id, NULL, NULL)) {
-					RTW_INFO("%s %d before\n", __func__, index);
+					RTW_DBG("%s %d before\n", __func__, index);
 					dump_ies(RTW_DBGDUMP, BSS_EX_TLV_IES(bss_ex), BSS_EX_TLV_IES_LEN(bss_ex));
 
-					RTW_INFO("ies:%p, ies_len:%u\n", ies, ies_len);
-					RTW_INFO("ie:%p, ie_len_ori:%u\n", ie, ie_len_ori);
-					RTW_INFO("next_ie_ori:%p, remain_len:%u\n", next_ie_ori, remain_len);
+					RTW_DBG("ies:%p, ies_len:%u\n", ies, ies_len);
+					RTW_DBG("ie:%p, ie_len_ori:%u\n", ie, ie_len_ori);
+					RTW_DBG("next_ie_ori:%p, remain_len:%u\n", next_ie_ori, remain_len);
 					has_target_attr = 1;
 				}
 			}
@@ -2551,7 +2551,7 @@ void rtw_bss_ex_del_wfd_attr(WLAN_BSSID_EX *bss_ex, u8 attr_id)
 
 			if (DBG_BSS_EX_DEL_WFD_ATTR) {
 				if (has_target_attr) {
-					RTW_INFO("%s %d after\n", __func__, index);
+					RTW_DBG("%s %d after\n", __func__, index);
 					dump_ies(RTW_DBGDUMP, BSS_EX_TLV_IES(bss_ex), BSS_EX_TLV_IES_LEN(bss_ex));
 				}
 			}
@@ -2701,8 +2701,8 @@ u8	rtw_ht_mcsset_to_nss(u8 *supp_mcs_set)
 	else if (supp_mcs_set[0])
 		nss = 1;
 	else
-		RTW_INFO("%s,%d, warning! supp_mcs_set is zero\n", __func__, __LINE__);
-	/* RTW_INFO("%s HT: %dSS\n", __FUNCTION__, nss); */
+		RTW_DBG("%s,%d, warning! supp_mcs_set is zero\n", __func__, __LINE__);
+	/* RTW_DBG("%s HT: %dSS\n", __FUNCTION__, nss); */
 	return nss;
 }
 

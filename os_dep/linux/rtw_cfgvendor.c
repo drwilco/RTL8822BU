@@ -55,7 +55,7 @@ struct sk_buff *dbg_rtw_cfg80211_vendor_event_alloc(struct wiphy *wiphy, struct 
 		truesize = skb->truesize;
 
 	if (!skb || truesize < len || match_mstat_sniff_rules(flags, truesize))
-		RTW_INFO("DBG_MEM_ALLOC %s:%d %s(%d), skb:%p, truesize=%u\n", func, line, __FUNCTION__, len, skb, truesize);
+		RTW_DBG("DBG_MEM_ALLOC %s:%d %s(%d), skb:%p, truesize=%u\n", func, line, __FUNCTION__, len, skb, truesize);
 
 	rtw_mstat_update(
 		flags
@@ -72,7 +72,7 @@ void dbg_rtw_cfg80211_vendor_event(struct sk_buff *skb, gfp_t gfp
 	unsigned int truesize = skb->truesize;
 
 	if (match_mstat_sniff_rules(flags, truesize))
-		RTW_INFO("DBG_MEM_ALLOC %s:%d %s, truesize=%u\n", func, line, __FUNCTION__, truesize);
+		RTW_DBG("DBG_MEM_ALLOC %s:%d %s, truesize=%u\n", func, line, __FUNCTION__, truesize);
 
 	cfg80211_vendor_event(skb, gfp);
 
@@ -95,7 +95,7 @@ struct sk_buff *dbg_rtw_cfg80211_vendor_cmd_alloc_reply_skb(struct wiphy *wiphy,
 		truesize = skb->truesize;
 
 	if (!skb || truesize < len || match_mstat_sniff_rules(flags, truesize))
-		RTW_INFO("DBG_MEM_ALLOC %s:%d %s(%d), skb:%p, truesize=%u\n", func, line, __FUNCTION__, len, skb, truesize);
+		RTW_DBG("DBG_MEM_ALLOC %s:%d %s(%d), skb:%p, truesize=%u\n", func, line, __FUNCTION__, len, skb, truesize);
 
 	rtw_mstat_update(
 		flags
@@ -113,7 +113,7 @@ int dbg_rtw_cfg80211_vendor_cmd_reply(struct sk_buff *skb
 	int ret;
 
 	if (match_mstat_sniff_rules(flags, truesize))
-		RTW_INFO("DBG_MEM_ALLOC %s:%d %s, truesize=%u\n", func, line, __FUNCTION__, truesize);
+		RTW_DBG("DBG_MEM_ALLOC %s:%d %s, truesize=%u\n", func, line, __FUNCTION__, truesize);
 
 	ret = cfg80211_vendor_cmd_reply(skb);
 
@@ -1455,7 +1455,7 @@ static const struct  nl80211_vendor_cmd_info rtw_vendor_events[] = {
 int rtw_cfgvendor_attach(struct wiphy *wiphy)
 {
 
-	RTW_INFO("Register RTW cfg80211 vendor cmd(0x%x) interface\n", NL80211_CMD_VENDOR);
+	RTW_DBG("Register RTW cfg80211 vendor cmd(0x%x) interface\n", NL80211_CMD_VENDOR);
 
 	wiphy->vendor_commands	= rtw_vendor_cmds;
 	wiphy->n_vendor_commands = ARRAY_SIZE(rtw_vendor_cmds);
@@ -1467,7 +1467,7 @@ int rtw_cfgvendor_attach(struct wiphy *wiphy)
 
 int rtw_cfgvendor_detach(struct wiphy *wiphy)
 {
-	RTW_INFO("Vendor: Unregister RTW cfg80211 vendor interface\n");
+	RTW_DBG("Vendor: Unregister RTW cfg80211 vendor interface\n");
 
 	wiphy->vendor_commands  = NULL;
 	wiphy->vendor_events    = NULL;

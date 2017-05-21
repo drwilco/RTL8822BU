@@ -27,22 +27,22 @@ static void usb_write_port_complete_not_xmitframe(struct urb *purb, struct pt_re
 	if (purb->status == 0) {
 		;
 	} else {
-		RTW_INFO("###=> urb_write_port_complete status(%d)\n", purb->status);
+		RTW_DBG("###=> urb_write_port_complete status(%d)\n", purb->status);
 		if ((purb->status == -EPIPE) || (purb->status == -EPROTO)) {
 			;
 		} else if (purb->status == -EINPROGRESS) {
 			goto check_completion;
 
 		} else if (purb->status == -ENOENT) {
-			RTW_INFO("%s: -ENOENT\n", __func__);
+			RTW_DBG("%s: -ENOENT\n", __func__);
 			goto check_completion;
 
 		} else if (purb->status == -ECONNRESET) {
-			RTW_INFO("%s: -ECONNRESET\n", __func__);
+			RTW_DBG("%s: -ECONNRESET\n", __func__);
 			goto check_completion;
 
 		} else if (purb->status == -ESHUTDOWN) {
-			RTW_INFO("%s: -ESHUTDOWN\n", __func__);
+			RTW_DBG("%s: -ESHUTDOWN\n", __func__);
 			goto check_completion;
 		} else {
 			goto check_completion;
@@ -104,7 +104,7 @@ static u32 usb_write_port_not_xmitframe(struct dvobj_priv *d, u8 addr, u32 cnt, 
 		}
 		#endif
 	} else {
-		RTW_INFO("usb_write_port, status=%d\n", status);
+		RTW_DBG("usb_write_port, status=%d\n", status);
 
 		switch (status) {
 		case -ENODEV:
@@ -207,7 +207,7 @@ static u8 usb_write_data_rsvd_page_normal(void *d, u8 *pBuf, u32 size)
 	u8 *buf = NULL;
 
 	if (size + TXDESC_OFFSET > MAX_CMDBUF_SZ) {
-		RTW_INFO("%s: total buffer size(%d) > MAX_CMDSZE(%d)\n"
+		RTW_DBG("%s: total buffer size(%d) > MAX_CMDSZE(%d)\n"
 			 , __func__, size + TXDESC_OFFSET, MAX_CMDSZ);
 		return _FALSE;
 	}
@@ -215,7 +215,7 @@ static u8 usb_write_data_rsvd_page_normal(void *d, u8 *pBuf, u32 size)
 	pcmdframe = rtw_alloc_cmdxmitframe(pxmitpriv);
 
 	if (pcmdframe == NULL) {
-		RTW_INFO("%s: alloc cmd frame fail!\n", __func__);
+		RTW_DBG("%s: alloc cmd frame fail!\n", __func__);
 		return _FALSE;
 	}
 
@@ -247,7 +247,7 @@ static u8 usb_write_data_h2c_normal(void *d, u8 *pBuf, u32 size)
 	u8 *buf = NULL;
 
 	if (size + TXDESC_OFFSET > MAX_XMIT_EXTBUF_SZ) {
-		RTW_INFO("%s: total buffer size(%d) > MAX_XMIT_EXTBUF_SZ(%d)\n"
+		RTW_DBG("%s: total buffer size(%d) > MAX_XMIT_EXTBUF_SZ(%d)\n"
 			 , __func__, size + TXDESC_OFFSET, MAX_XMIT_EXTBUF_SZ);
 		return _FALSE;
 	}
@@ -255,7 +255,7 @@ static u8 usb_write_data_h2c_normal(void *d, u8 *pBuf, u32 size)
 	pcmdframe = alloc_mgtxmitframe(pxmitpriv);
 
 	if (pcmdframe == NULL) {
-		RTW_INFO("%s: alloc cmd frame fail!\n", __func__);
+		RTW_DBG("%s: alloc cmd frame fail!\n", __func__);
 		return _FALSE;
 	}
 

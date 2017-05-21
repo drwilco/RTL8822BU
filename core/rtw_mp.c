@@ -369,14 +369,14 @@ static VOID PHY_IQCalibrate_default(
 	IN	BOOLEAN	bReCovery
 )
 {
-	RTW_INFO("%s\n", __func__);
+	RTW_DBG("%s\n", __func__);
 }
 
 static VOID PHY_LCCalibrate_default(
 	IN	PADAPTER	pAdapter
 )
 {
-	RTW_INFO("%s\n", __func__);
+	RTW_DBG("%s\n", __func__);
 }
 
 static VOID PHY_SetRFPathSwitch_default(
@@ -384,7 +384,7 @@ static VOID PHY_SetRFPathSwitch_default(
 	IN	BOOLEAN		bMain
 )
 {
-	RTW_INFO("%s\n", __func__);
+	RTW_DBG("%s\n", __func__);
 }
 
 
@@ -442,11 +442,11 @@ void mpt_InitHWConfig(PADAPTER Adapter)
 		PlatformEFIOWrite2Byte(Adapter, REG_RXFLTMAP1_8822B, 0x2000);
 		/* fixed wifi can't 2.4g tx suggest by Szuyitasi 20160504 */
 		phy_set_bb_reg(Adapter, 0x70, bMaskByte3, 0x0e);
-		RTW_INFO(" 0x73 = 0x%x\n", phy_query_bb_reg(Adapter, 0x70, bMaskByte3));
+		RTW_DBG(" 0x73 = 0x%x\n", phy_query_bb_reg(Adapter, 0x70, bMaskByte3));
 		phy_set_bb_reg(Adapter, 0x1704, bMaskDWord, 0x0000ff00);
-		RTW_INFO(" 0x1704 = 0x%x\n", phy_query_bb_reg(Adapter, 0x1704, bMaskDWord));
+		RTW_DBG(" 0x1704 = 0x%x\n", phy_query_bb_reg(Adapter, 0x1704, bMaskDWord));
 		phy_set_bb_reg(Adapter, 0x1700, bMaskDWord, 0xc00f0038);
-		RTW_INFO(" 0x1700 = 0x%x\n", phy_query_bb_reg(Adapter, 0x1700, bMaskDWord));
+		RTW_DBG(" 0x1700 = 0x%x\n", phy_query_bb_reg(Adapter, 0x1700, bMaskDWord));
 	}
 #endif /* CONFIG_RTL8822B */
 #ifdef CONFIG_RTL8821C
@@ -800,7 +800,7 @@ void MPT_PwrCtlDM(PADAPTER padapter, u32 bstart)
 	u32	rf_ability;
 
 	if (bstart == 1) {
-		RTW_INFO("in MPT_PwrCtlDM start\n");
+		RTW_DBG("in MPT_PwrCtlDM start\n");
 
 		rf_ability = ((u32)halrf_cmn_info_get(pDM_Odm, HALRF_CMNINFO_ABILITY)) | HAL_RF_TX_PWR_TRACK;
 		halrf_cmn_info_set(pDM_Odm, HALRF_CMNINFO_ABILITY, rf_ability);
@@ -809,7 +809,7 @@ void MPT_PwrCtlDM(PADAPTER padapter, u32 bstart)
 		padapter->mppriv.mp_dm = 1;
 
 	} else {
-		RTW_INFO("in MPT_PwrCtlDM stop\n");
+		RTW_DBG("in MPT_PwrCtlDM stop\n");
 		rf_ability = ((u32)halrf_cmn_info_get(pDM_Odm, HALRF_CMNINFO_ABILITY)) & ~HAL_RF_TX_PWR_TRACK;
 		halrf_cmn_info_set(pDM_Odm, HALRF_CMNINFO_ABILITY, rf_ability);
 		pDM_Odm->rf_calibrate_info.txpowertrack_control = _FALSE;
@@ -858,7 +858,7 @@ u32 mp_join(PADAPTER padapter, u8 mode)
 #endif /* #ifdef CONFIG_IOCTL_CFG80211 */
 	/* 1. initialize a new WLAN_BSSID_EX */
 	_rtw_memset(&bssid, 0, sizeof(WLAN_BSSID_EX));
-	RTW_INFO("%s ,pmppriv->network_macaddr=%x %x %x %x %x %x\n", __func__,
+	RTW_DBG("%s ,pmppriv->network_macaddr=%x %x %x %x %x %x\n", __func__,
 		pmppriv->network_macaddr[0], pmppriv->network_macaddr[1], pmppriv->network_macaddr[2], pmppriv->network_macaddr[3], pmppriv->network_macaddr[4],
 		 pmppriv->network_macaddr[5]);
 	_rtw_memcpy(bssid.MacAddress, pmppriv->network_macaddr, ETH_ALEN);
@@ -948,7 +948,7 @@ end_of_mp_start_test:
 		} else {
 			Set_MSR(padapter, WIFI_FW_STATION_STATE);
 
-			RTW_INFO("%s , pmppriv->network_macaddr =%x %x %x %x %x %x\n", __func__,
+			RTW_DBG("%s , pmppriv->network_macaddr =%x %x %x %x %x %x\n", __func__,
 				pmppriv->network_macaddr[0], pmppriv->network_macaddr[1], pmppriv->network_macaddr[2], pmppriv->network_macaddr[3], pmppriv->network_macaddr[4],
 				 pmppriv->network_macaddr[5]);
 
@@ -1370,7 +1370,7 @@ static thread_return mp_xmit_packet_thread(thread_context context)
 
 	thread_enter("RTW_MP_THREAD");
 
-	RTW_INFO("%s:pkTx Start\n", __func__);
+	RTW_DBG("%s:pkTx Start\n", __func__);
 	while (1) {
 		pxmitframe = alloc_mp_xmitframe(pxmitpriv);
 #ifdef CONFIG_PCIE_HCI
@@ -1409,7 +1409,7 @@ static thread_return mp_xmit_packet_thread(thread_context context)
 	}
 
 exit:
-	/* RTW_INFO("%s:pkTx Exit\n", __func__); */
+	/* RTW_DBG("%s:pkTx Exit\n", __func__); */
 	rtw_mfree(pmptx->pallocated_buf, pmptx->buf_size);
 	pmptx->pallocated_buf = NULL;
 	pmptx->stop = 1;
@@ -1525,7 +1525,7 @@ void fill_tx_desc_8814a(PADAPTER padapter)
 	if (pmp_priv->bandwidth <= CHANNEL_WIDTH_160)
 		SET_TX_DESC_DATA_BW_8814A(pDesc, pmp_priv->bandwidth);
 	else {
-		RTW_INFO("%s:Err: unknown bandwidth %d, use 20M\n", __func__, pmp_priv->bandwidth);
+		RTW_DBG("%s:Err: unknown bandwidth %d, use 20M\n", __func__, pmp_priv->bandwidth);
 		SET_TX_DESC_DATA_BW_8814A(pDesc, CHANNEL_WIDTH_20);
 	}
 
@@ -1580,7 +1580,7 @@ void fill_tx_desc_8812a(PADAPTER padapter)
 	if (pmp_priv->bandwidth <= CHANNEL_WIDTH_160)
 		SET_TX_DESC_DATA_BW_8812(pDesc, pmp_priv->bandwidth);
 	else {
-		RTW_INFO("%s:Err: unknown bandwidth %d, use 20M\n", __func__, pmp_priv->bandwidth);
+		RTW_DBG("%s:Err: unknown bandwidth %d, use 20M\n", __func__, pmp_priv->bandwidth);
 		SET_TX_DESC_DATA_BW_8812(pDesc, CHANNEL_WIDTH_20);
 	}
 
@@ -1633,7 +1633,7 @@ void fill_tx_desc_8192e(PADAPTER padapter)
 	if ((pmp_priv->bandwidth == CHANNEL_WIDTH_20) || (pmp_priv->bandwidth == CHANNEL_WIDTH_40))
 		SET_TX_DESC_DATA_BW_92E(pDesc, pmp_priv->bandwidth);
 	else {
-		RTW_INFO("%s:Err: unknown bandwidth %d, use 20M\n", __func__, pmp_priv->bandwidth);
+		RTW_DBG("%s:Err: unknown bandwidth %d, use 20M\n", __func__, pmp_priv->bandwidth);
 		SET_TX_DESC_DATA_BW_92E(pDesc, CHANNEL_WIDTH_20);
 	}
 
@@ -1777,14 +1777,14 @@ static void Rtw_MPSetMacTxEDCA(PADAPTER padapter)
 {
 
 	rtw_write32(padapter, 0x508 , 0x00a422); /* Disable EDCA BE Txop for MP pkt tx adjust Packet interval */
-	/* RTW_INFO("%s:write 0x508~~~~~~ 0x%x\n", __func__,rtw_read32(padapter, 0x508)); */
+	/* RTW_DBG("%s:write 0x508~~~~~~ 0x%x\n", __func__,rtw_read32(padapter, 0x508)); */
 	phy_set_mac_reg(padapter, 0x458 , bMaskDWord , 0x0);
-	/*RTW_INFO("%s()!!!!! 0x460 = 0x%x\n" ,__func__, phy_query_bb_reg(padapter, 0x460, bMaskDWord));*/
+	/*RTW_DBG("%s()!!!!! 0x460 = 0x%x\n" ,__func__, phy_query_bb_reg(padapter, 0x460, bMaskDWord));*/
 	phy_set_mac_reg(padapter, 0x460 , bMaskLWord , 0x0); /* fast EDCA queue packet interval & time out value*/
 	/*phy_set_mac_reg(padapter, ODM_EDCA_VO_PARAM ,bMaskLWord , 0x431C);*/
 	/*phy_set_mac_reg(padapter, ODM_EDCA_BE_PARAM ,bMaskLWord , 0x431C);*/
 	/*phy_set_mac_reg(padapter, ODM_EDCA_BK_PARAM ,bMaskLWord , 0x431C);*/
-	RTW_INFO("%s()!!!!! 0x460 = 0x%x\n" , __func__, phy_query_bb_reg(padapter, 0x460, bMaskDWord));
+	RTW_DBG("%s()!!!!! 0x460 = 0x%x\n" , __func__, phy_query_bb_reg(padapter, 0x460, bMaskDWord));
 
 }
 
@@ -1831,7 +1831,7 @@ void SetPacketTx(PADAPTER padapter)
 	pmp_priv->tx.buf_size = pkt_size + XMITBUF_ALIGN_SZ;
 	pmp_priv->tx.pallocated_buf = rtw_zmalloc(pmp_priv->tx.buf_size);
 	if (pmp_priv->tx.pallocated_buf == NULL) {
-		RTW_INFO("%s: malloc(%d) fail!!\n", __func__, pmp_priv->tx.buf_size);
+		RTW_DBG("%s: malloc(%d) fail!!\n", __func__, pmp_priv->tx.buf_size);
 		return;
 	}
 	pmp_priv->tx.buf = (u8 *)N_BYTE_ALIGMENT((SIZE_PTR)(pmp_priv->tx.pallocated_buf), XMITBUF_ALIGN_SZ);
@@ -1920,7 +1920,7 @@ void SetPacketTx(PADAPTER padapter)
 	}
 	pmp_priv->TXradomBuffer = rtw_zmalloc(4096);
 	if (pmp_priv->TXradomBuffer == NULL) {
-		RTW_INFO("mp create random buffer fail!\n");
+		RTW_DBG("mp create random buffer fail!\n");
 		goto exit;
 	}
 
@@ -1949,7 +1949,7 @@ void SetPacketTx(PADAPTER padapter)
 			&p, &td, RFHIGHPID, 0, "MPXmitThread", "MPXmitThread");
 
 		if (pmp_priv->tx.PktTxThread < 0)
-			RTW_INFO("Create PktTx Thread Fail !!!!!\n");
+			RTW_DBG("Create PktTx Thread Fail !!!!!\n");
 	}
 #endif
 
@@ -1974,7 +1974,7 @@ void SetPacketRx(PADAPTER pAdapter, u8 bStartRx, u8 bAB)
 		pHalData->ReceiveConfig |= RCR_APP_PHYST_RXFF | RCR_APP_ICV | RCR_APP_MIC;
 
 		if (pmppriv->bSetRxBssid == _TRUE) {
-			RTW_INFO("%s: pmppriv->network_macaddr=" MAC_FMT "\n", __func__,
+			RTW_DBG("%s: pmppriv->network_macaddr=" MAC_FMT "\n", __func__,
 				 MAC_ARG(pmppriv->network_macaddr));
 			pHalData->ReceiveConfig = 0;
 			pHalData->ReceiveConfig |= RCR_CBSSID_DATA | RCR_CBSSID_BCN |RCR_APM | RCR_AM | RCR_AB |RCR_AMF;
@@ -2413,7 +2413,7 @@ mpt_to_mgnt_rate(
 
 	case	MPT_RATE_LAST:	/* fully automatiMGN_VHT2SS_MCS1;	 */
 	default:
-		RTW_INFO("<===mpt_to_mgnt_rate(), Invalid Rate: %d!!\n", MptRateIdx);
+		RTW_DBG("<===mpt_to_mgnt_rate(), Invalid Rate: %d!!\n", MptRateIdx);
 		return 0x0;
 	}
 }
@@ -2678,7 +2678,7 @@ u8 HwRateToMPTRate(u8 rate)
 		break;
 
 	default:
-		RTW_INFO("hw_rate_to_m_rate(): Non supported Rate [%x]!!!\n", rate);
+		RTW_DBG("hw_rate_to_m_rate(): Non supported Rate [%x]!!!\n", rate);
 		break;
 	}
 	return ret_rate;
@@ -2700,7 +2700,7 @@ u8 rtw_mpRateParseFunc(PADAPTER pAdapter, u8 *targetStr)
 
 	for (i = 0; i <= 83; i++) {
 		if (strcmp(targetStr, rateindex_Array[i]) == 0) {
-			RTW_INFO("%s , index = %d\n", __func__ , i);
+			RTW_DBG("%s , index = %d\n", __func__ , i);
 			return i;
 		}
 	}
@@ -2741,7 +2741,7 @@ ULONG mpt_ProQueryCalTxPower(
 
 	TxPower = rtw_hal_get_tx_power_index(pAdapter, RfPath, mgn_rate, pHalData->current_channel_bw, pHalData->current_channel, &tic);
 
-	RTW_INFO("bw=%d, ch=%d, rate=%d, txPower:%u = %u + (%d=%d:%d) + (%d) + (%d)\n",
+	RTW_DBG("bw=%d, ch=%d, rate=%d, txPower:%u = %u + (%d=%d:%d) + (%d) + (%d)\n",
 		pHalData->current_channel_bw, pHalData->current_channel, mgn_rate
 		, TxPower, tic.base, (tic.by_rate > tic.limit ? tic.limit : tic.by_rate), tic.by_rate, tic.limit, tic.tpt, tic.ebias);
 
@@ -2760,10 +2760,10 @@ static inline void dump_buf(u8 *buf, u32 len)
 {
 	u32 i;
 
-	RTW_INFO("-----------------Len %d----------------\n", len);
+	RTW_DBG("-----------------Len %d----------------\n", len);
 	for (i = 0; i < len; i++)
-		RTW_INFO("%2.2x-", *(buf + i));
-	RTW_INFO("\n");
+		RTW_DBG("%2.2x-", *(buf + i));
+	RTW_DBG("\n");
 }
 
 void ByteToBit(
@@ -2918,7 +2918,7 @@ void PMAC_Get_Pkt_Param(
 	else
 		pPMacPktInfo->Nss = 1;
 
-	RTW_INFO("PMacTxInfo.Nss =%d\n", pPMacPktInfo->Nss);
+	RTW_DBG("PMacTxInfo.Nss =%d\n", pPMacPktInfo->Nss);
 
 	/*	MCS & TX_RATE_HEX*/
 	if (MPT_IS_CCK_RATE(TX_RATE)) {
@@ -2958,7 +2958,7 @@ void PMAC_Get_Pkt_Param(
 	pPMacPktInfo->MCS = MCS;
 	pPMacTxInfo->TX_RATE_HEX = TX_RATE_HEX;
 
-	RTW_INFO(" MCS=%d, TX_RATE_HEX =0x%x\n", MCS, pPMacTxInfo->TX_RATE_HEX);
+	RTW_DBG(" MCS=%d, TX_RATE_HEX =0x%x\n", MCS, pPMacTxInfo->TX_RATE_HEX);
 	/*	mSTBC & Nsts*/
 	pPMacPktInfo->Nsts = pPMacPktInfo->Nss;
 	if (pPMacTxInfo->bSTBC) {
@@ -3065,7 +3065,7 @@ void PMAC_Nsym_generator(
 	UINT N_BPSC = 0, N_CBPS = 0, N_DBPS = 0, N_ES = 0, N_SYM = 0, N_pld = 0, N_TCB = 0;
 	int D_R = 0;
 
-	RTW_INFO("TX_RATE = %d\n", TX_RATE);
+	RTW_DBG("TX_RATE = %d\n", TX_RATE);
 	/*	N_SD*/
 	if (pPMacTxInfo->BandWidth == 0)
 		N_SD = 52;
@@ -3109,7 +3109,7 @@ void PMAC_Nsym_generator(
 
 		if (pPMacTxInfo->bLDPC == FALSE) {
 			N_ES = (UINT)ceil((double)(N_DBPS * pPMacPktInfo->Nss) / 4. / 300.);
-			RTW_INFO("N_ES = %d\n", N_ES);
+			RTW_DBG("N_ES = %d\n", N_ES);
 
 			/*	N_SYM = m_STBC* (8*length+16+6*N_ES) / (m_STBC*N_DBPS)*/
 			N_SYM = pPMacTxInfo->m_STBC * (UINT)ceil((double)(pPMacTxInfo->PacketLength * 8 + 16 + N_ES * 6) /
@@ -3119,17 +3119,17 @@ void PMAC_Nsym_generator(
 			N_ES = 1;
 			/*	N_pld = length * 8 + 16*/
 			N_pld = pPMacTxInfo->PacketLength * 8 + 16;
-			RTW_INFO("N_pld = %d\n", N_pld);
+			RTW_DBG("N_pld = %d\n", N_pld);
 			N_SYM = pPMacTxInfo->m_STBC * (UINT)ceil((double)(N_pld) /
 					(double)(N_DBPS * pPMacTxInfo->m_STBC));
-			RTW_INFO("N_SYM = %d\n", N_SYM);
+			RTW_DBG("N_SYM = %d\n", N_SYM);
 			/*	N_avbits = N_CBPS *m_STBC *(N_pld/N_CBPS*R*m_STBC)*/
 			N_TCB = N_CBPS * N_SYM;
-			RTW_INFO("N_TCB = %d\n", N_TCB);
+			RTW_DBG("N_TCB = %d\n", N_TCB);
 			SIGA2B3 = LDPC_parameter_generator(N_pld, N_CBPS, pPMacPktInfo->Nss, R, pPMacTxInfo->m_STBC, N_TCB);
-			RTW_INFO("SIGA2B3 = %d\n", SIGA2B3);
+			RTW_DBG("SIGA2B3 = %d\n", SIGA2B3);
 			N_SYM = N_SYM + SIGA2B3 * pPMacTxInfo->m_STBC;
-			RTW_INFO("N_SYM = %d\n", N_SYM);
+			RTW_DBG("N_SYM = %d\n", N_SYM);
 		}
 	} else if (MPT_IS_VHT_RATE(TX_RATE)) {
 		R = R_list[pPMacPktInfo->MCS];
@@ -3187,11 +3187,11 @@ void PMAC_Nsym_generator(
 		}
 
 		if (((N_CBPS / N_ES) % D_R) != 0) {
-			RTW_INFO("MCS= %d is not supported when Nss=%d and BW= %d !!\n",  pPMacPktInfo->MCS, pPMacPktInfo->Nss, pPMacTxInfo->BandWidth);
+			RTW_DBG("MCS= %d is not supported when Nss=%d and BW= %d !!\n",  pPMacPktInfo->MCS, pPMacPktInfo->Nss, pPMacTxInfo->BandWidth);
 			return;
 		}
 
-		RTW_INFO("MCS= %d Nss=%d and BW= %d !!\n",  pPMacPktInfo->MCS, pPMacPktInfo->Nss, pPMacTxInfo->BandWidth);
+		RTW_DBG("MCS= %d Nss=%d and BW= %d !!\n",  pPMacPktInfo->MCS, pPMacPktInfo->Nss, pPMacTxInfo->BandWidth);
 	}
 
 	pPMacPktInfo->N_sym = N_SYM;
@@ -3239,9 +3239,9 @@ void L_SIG_generator(
 		else
 			OFDM_symbol = (UINT)ceil((double)(8 + 4 + N_LTF * 4 + N_SYM * T_data) / 4.);
 
-		RTW_INFO("%s , OFDM_symbol =%d\n", __func__, OFDM_symbol);
+		RTW_DBG("%s , OFDM_symbol =%d\n", __func__, OFDM_symbol);
 		LENGTH = OFDM_symbol * 3 - 3;
-		RTW_INFO("%s , LENGTH =%d\n", __func__, LENGTH);
+		RTW_DBG("%s , LENGTH =%d\n", __func__, LENGTH);
 
 	}
 	/*	Rate Field*/

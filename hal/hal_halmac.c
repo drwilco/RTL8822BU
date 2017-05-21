@@ -502,43 +502,43 @@ static inline u8 is_valid_id_status(enum halmac_feature_id id, enum halmac_cmd_p
 		RTW_DBG("%s: %s\n", __FUNCTION__, RTW_HALMAC_FEATURE_NAME[id]);
 		break;
 	case HALMAC_FEATURE_DUMP_PHYSICAL_EFUSE:
-		RTW_INFO("%s: %s\n", __FUNCTION__, RTW_HALMAC_FEATURE_NAME[id]);
+		RTW_DBG("%s: %s\n", __FUNCTION__, RTW_HALMAC_FEATURE_NAME[id]);
 		if (HALMAC_CMD_PROCESS_DONE != status)
-			RTW_INFO("%s: id(%d) unspecified status(%d)!\n",
+			RTW_WARN("%s: id(%d) unspecified status(%d)!\n",
 				 __FUNCTION__, id, status);
 		break;
 	case HALMAC_FEATURE_DUMP_LOGICAL_EFUSE:
-		RTW_INFO("%s: %s\n", __FUNCTION__, RTW_HALMAC_FEATURE_NAME[id]);
+		RTW_DBG("%s: %s\n", __FUNCTION__, RTW_HALMAC_FEATURE_NAME[id]);
 		if (HALMAC_CMD_PROCESS_DONE != status)
-			RTW_INFO("%s: id(%d) unspecified status(%d)!\n",
+			RTW_WARN("%s: id(%d) unspecified status(%d)!\n",
 				 __FUNCTION__, id, status);
 		break;
 	case HALMAC_FEATURE_UPDATE_PACKET:
-		RTW_INFO("%s: %s\n", __FUNCTION__, RTW_HALMAC_FEATURE_NAME[id]);
+		RTW_DBG("%s: %s\n", __FUNCTION__, RTW_HALMAC_FEATURE_NAME[id]);
 		break;
 	case HALMAC_FEATURE_UPDATE_DATAPACK:
-		RTW_INFO("%s: %s\n", __FUNCTION__, RTW_HALMAC_FEATURE_NAME[id]);
+		RTW_DBG("%s: %s\n", __FUNCTION__, RTW_HALMAC_FEATURE_NAME[id]);
 		break;
 	case HALMAC_FEATURE_RUN_DATAPACK:
-		RTW_INFO("%s: %s\n", __FUNCTION__, RTW_HALMAC_FEATURE_NAME[id]);
+		RTW_DBG("%s: %s\n", __FUNCTION__, RTW_HALMAC_FEATURE_NAME[id]);
 		break;
 	case HALMAC_FEATURE_CHANNEL_SWITCH:
-		RTW_INFO("%s: %s\n", __FUNCTION__, RTW_HALMAC_FEATURE_NAME[id]);
+		RTW_DBG("%s: %s\n", __FUNCTION__, RTW_HALMAC_FEATURE_NAME[id]);
 		break;
 	case HALMAC_FEATURE_IQK:
-		RTW_INFO("%s: %s\n", __FUNCTION__, RTW_HALMAC_FEATURE_NAME[id]);
+		RTW_DBG("%s: %s\n", __FUNCTION__, RTW_HALMAC_FEATURE_NAME[id]);
 		break;
 	case HALMAC_FEATURE_POWER_TRACKING:
-		RTW_INFO("%s: %s\n", __FUNCTION__, RTW_HALMAC_FEATURE_NAME[id]);
+		RTW_DBG("%s: %s\n", __FUNCTION__, RTW_HALMAC_FEATURE_NAME[id]);
 		break;
 	case HALMAC_FEATURE_PSD:
-		RTW_INFO("%s: %s\n", __FUNCTION__, RTW_HALMAC_FEATURE_NAME[id]);
+		RTW_DBG("%s: %s\n", __FUNCTION__, RTW_HALMAC_FEATURE_NAME[id]);
 		break;
 	case HALMAC_FEATURE_FW_SNDING:
 		RTW_INFO("%s: %s\n", __FUNCTION__, RTW_HALMAC_FEATURE_NAME[id]);
 		break;
 	case HALMAC_FEATURE_ALL:
-		RTW_INFO("%s: %s\n", __FUNCTION__, RTW_HALMAC_FEATURE_NAME[id]);
+		RTW_DBG("%s: %s\n", __FUNCTION__, RTW_HALMAC_FEATURE_NAME[id]);
 		break;
 	default:
 		RTW_ERR("%s: unknown feature id(%d)\n", __FUNCTION__, id);
@@ -4125,9 +4125,9 @@ int rtw_halmac_dump_fifo(struct dvobj_priv *d, u8 fifo_sel, u32 addr, u32 size, 
 			"TX", "RX", "RSVD_PAGE", "REPORT", "LLT", "RXBUF_FW"
 		};
 
-		RTW_INFO("%s FIFO DUMP [start_addr:0x%04x , size:%d]\n", fifo_sel_str[halmac_fifo_sel], addr, fifo_size);
+		RTW_DBG("%s FIFO DUMP [start_addr:0x%04x , size:%d]\n", fifo_sel_str[halmac_fifo_sel], addr, fifo_size);
 		RTW_INFO_DUMP("\n", pfifo_map, fifo_size);
-		RTW_INFO(" ==================================================\n");
+		RTW_DBG(" ==================================================\n");
 	}
 #endif /* CONFIG_HALMAC_FIFO_DUMP */
 

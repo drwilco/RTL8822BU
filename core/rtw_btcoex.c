@@ -110,7 +110,7 @@ void rtw_btcoex_ConnectNotify(PADAPTER padapter, u8 action)
 
 #ifdef DBG_CONFIG_ERROR_RESET
 	if (_TRUE == rtw_hal_sreset_inprogress(padapter)) {
-		RTW_INFO(FUNC_ADPT_FMT ": [BTCoex] under reset, skip notify!\n",
+		RTW_DBG(FUNC_ADPT_FMT ": [BTCoex] under reset, skip notify!\n",
 			 FUNC_ADPT_ARG(padapter));
 		return;
 	}
@@ -136,7 +136,7 @@ void rtw_btcoex_MediaStatusNotify(PADAPTER padapter, u8 mediaStatus)
 
 #ifdef DBG_CONFIG_ERROR_RESET
 	if (_TRUE == rtw_hal_sreset_inprogress(padapter)) {
-		RTW_INFO(FUNC_ADPT_FMT ": [BTCoex] under reset, skip notify!\n",
+		RTW_DBG(FUNC_ADPT_FMT ": [BTCoex] under reset, skip notify!\n",
 			 FUNC_ADPT_ARG(padapter));
 		return;
 	}
@@ -224,13 +224,13 @@ void rtw_btcoex_HaltNotify(PADAPTER padapter)
 		do_halt = 0;
 
 	if (_FALSE == padapter->bup) {
-		RTW_INFO(FUNC_ADPT_FMT ": bup=%d Skip!\n",
+		RTW_DBG(FUNC_ADPT_FMT ": bup=%d Skip!\n",
 			 FUNC_ADPT_ARG(padapter), padapter->bup);
 		do_halt = 0;
 	}
 
 	if (rtw_is_surprise_removed(padapter)) {
-		RTW_INFO(FUNC_ADPT_FMT ": bSurpriseRemoved=%s Skip!\n",
+		RTW_DBG(FUNC_ADPT_FMT ": bSurpriseRemoved=%s Skip!\n",
 			FUNC_ADPT_ARG(padapter), rtw_is_surprise_removed(padapter) ? "True" : "False");
 		do_halt = 0;
 	}
@@ -619,10 +619,10 @@ u8 rtw_btcoex_parse_BT_info_notify_cmd(_adapter *padapter, u8 *pcmd, u16 cmdlen)
 	RTW_HCI_STATUS status = HCI_STATUS_SUCCESS;
 	rtw_HCI_event *pEvent;
 
-	/* RTW_INFO("%s\n",__func__);
-	RTW_INFO("current Poll Enable: %d, currrent Poll Time: %d\n",curPollEnable,curPollTime);
-	RTW_INFO("BT Info reason: %d, BT Info length: %d\n",btInfoReason,btInfoLen);
-	RTW_INFO("%02x:%02x:%02x:%02x:%02x:%02x:%02x:%02x\n"
+	/* RTW_DBG("%s\n",__func__);
+	RTW_DBG("current Poll Enable: %d, currrent Poll Time: %d\n",curPollEnable,curPollTime);
+	RTW_DBG("BT Info reason: %d, BT Info length: %d\n",btInfoReason,btInfoLen);
+	RTW_DBG("%02x:%02x:%02x:%02x:%02x:%02x:%02x:%02x\n"
 		,pcmd[4],pcmd[5],pcmd[6],pcmd[7],pcmd[8],pcmd[9],pcmd[10],pcmd[11]);*/
 
 	_rtw_memset(btinfo, 0, BT_INFO_LENGTH);
@@ -630,7 +630,7 @@ u8 rtw_btcoex_parse_BT_info_notify_cmd(_adapter *padapter, u8 *pcmd, u16 cmdlen)
 #if 1
 	if (BT_INFO_LENGTH != btInfoLen) {
 		status = HCI_STATUS_INVALID_HCI_CMD_PARA_VALUE;
-		RTW_INFO("Error BT Info Length: %d\n", btInfoLen);
+		RTW_ERR("Error BT Info Length: %d\n", btInfoLen);
 		/* return _FAIL; */
 	} else
 #endif
@@ -640,7 +640,7 @@ u8 rtw_btcoex_parse_BT_info_notify_cmd(_adapter *padapter, u8 *pcmd, u16 cmdlen)
 			btinfo[0] = btInfoReason;
 			rtw_btcoex_btinfo_cmd(padapter, btinfo, btInfoLen);
 		} else
-			RTW_INFO("Other BT info reason\n");
+			RTW_DBG("Other BT info reason\n");
 	}
 
 	/* send complete event to BT */
@@ -688,8 +688,8 @@ u8 rtw_btcoex_parse_BT_patch_ver_info_cmd(_adapter *padapter, u8 *pcmd, u16 cmdl
 	btPatchVer = pcmd[2] | pcmd[3] << 8;
 
 
-	RTW_INFO("%s, cmd:%02x %02x %02x %02x\n", __func__, pcmd[0] , pcmd[1] , pcmd[2] , pcmd[3]);
-	RTW_INFO("%s, HCI Ver:%d, Patch Ver:%d\n", __func__, btHciVer, btPatchVer);
+	RTW_DBG("%s, cmd:%02x %02x %02x %02x\n", __func__, pcmd[0] , pcmd[1] , pcmd[2] , pcmd[3]);
+	RTW_DBG("%s, HCI Ver:%d, Patch Ver:%d\n", __func__, btHciVer, btPatchVer);
 
 	rtw_btcoex_SetBtPatchVersion(padapter, btHciVer, btPatchVer);
 
@@ -736,10 +736,10 @@ u8 rtw_btcoex_parse_HCI_Ver_notify_cmd(_adapter *padapter, u8 *pcmd, u16 cmdlen)
 	struct bt_coex_info *pcoex_info = &padapter->coex_info;
 	PBT_MGNT	pBtMgnt = &pcoex_info->BtMgnt;
 	pBtMgnt->ExtConfig.HCIExtensionVer = hciver;
-	RTW_INFO("%s, HCI Version: %d\n", __func__, pBtMgnt->ExtConfig.HCIExtensionVer);
+	RTW_DBG("%s, HCI Version: %d\n", __func__, pBtMgnt->ExtConfig.HCIExtensionVer);
 	if (pBtMgnt->ExtConfig.HCIExtensionVer  < 4) {
 		status = HCI_STATUS_INVALID_HCI_CMD_PARA_VALUE;
-		RTW_INFO("%s, Version = %d, HCI Version < 4\n", __func__, pBtMgnt->ExtConfig.HCIExtensionVer);
+		RTW_DBG("%s, Version = %d, HCI Version < 4\n", __func__, pBtMgnt->ExtConfig.HCIExtensionVer);
 	} else
 		rtw_btcoex_SetHciVersion(padapter, hciver);
 	/* send complete event to BT */
@@ -782,7 +782,7 @@ u8 rtw_btcoex_parse_WIFI_scan_notify_cmd(_adapter *padapter, u8 *pcmd, u16 cmdle
 	struct bt_coex_info *pcoex_info = &padapter->coex_info;
 	PBT_MGNT	pBtMgnt = &pcoex_info->BtMgnt;
 	pBtMgnt->ExtConfig.bEnableWifiScanNotify = pcmd[0];
-	RTW_INFO("%s, bEnableWifiScanNotify: %d\n", __func__, pBtMgnt->ExtConfig.bEnableWifiScanNotify);
+	RTW_DBG("%s, bEnableWifiScanNotify: %d\n", __func__, pBtMgnt->ExtConfig.bEnableWifiScanNotify);
 
 	/* send complete event to BT */
 	{
@@ -831,7 +831,7 @@ u8 rtw_btcoex_parse_HCI_link_status_notify_cmd(_adapter *padapter, u8 *pcmd, u16
 	/* RT_DISP_DATA(FIOCTL, IOCTL_BT_HCICMD_EXT, "LinkStatusNotify, Hex Data :\n",  */
 	/*		&pHciCmd->Data[0], pHciCmd->Length); */
 
-	RTW_INFO("BTLinkStatusNotify\n");
+	RTW_DBG("BTLinkStatusNotify\n");
 
 	/* Current only RTL8723 support this command. */
 	/* pBtMgnt->bSupportProfile = TRUE; */
@@ -843,8 +843,8 @@ u8 rtw_btcoex_parse_HCI_link_status_notify_cmd(_adapter *padapter, u8 *pcmd, u16
 	numOfHandle = pcmd[0];
 	/* RT_DISP(FIOCTL, IOCTL_BT_HCICMD_EXT, ("numOfHandle = 0x%x\n", numOfHandle)); */
 	/* RT_DISP(FIOCTL, IOCTL_BT_HCICMD_EXT, ("HCIExtensionVer = %d\n", pBtMgnt->ExtConfig.HCIExtensionVer)); */
-	RTW_INFO("numOfHandle = 0x%x\n", numOfHandle);
-	RTW_INFO("HCIExtensionVer = %d\n", pBtMgnt->ExtConfig.HCIExtensionVer);
+	RTW_DBG("numOfHandle = 0x%x\n", numOfHandle);
+	RTW_DBG("HCIExtensionVer = %d\n", pBtMgnt->ExtConfig.HCIExtensionVer);
 
 	pTriple = &pcmd[1];
 	for (i = 0; i < numOfHandle; i++) {
@@ -863,7 +863,7 @@ u8 rtw_btcoex_parse_HCI_link_status_notify_cmd(_adapter *padapter, u8 *pcmd, u16
 			/* RT_DISP(FIOCTL, IOCTL_BT_HCICMD_EXT, */
 			/*	("Connection_Handle=0x%x, BTProfile=%d, BTSpec=%d\n", */
 			/*		conHandle, btProfile, btCoreSpec)); */
-			RTW_INFO("Connection_Handle=0x%x, BTProfile=%d, BTSpec=%d\n", conHandle, btProfile, btCoreSpec);
+			RTW_DBG("Connection_Handle=0x%x, BTProfile=%d, BTSpec=%d\n", conHandle, btProfile, btCoreSpec);
 			pTriple += 4;
 		} else if (pBtMgnt->ExtConfig.HCIExtensionVer >= 1) {
 			conHandle = *((pu2Byte)&pTriple[0]);
@@ -880,7 +880,7 @@ u8 rtw_btcoex_parse_HCI_link_status_notify_cmd(_adapter *padapter, u8 *pcmd, u16
 				pBtMgnt->ExtConfig.aclLink[i].linkRole = linkRole;
 			}
 			/* RT_DISP(FIOCTL, IOCTL_BT_HCICMD_EXT, */
-			RTW_INFO("Connection_Handle=0x%x, BTProfile=%d, BTSpec=%d, LinkRole=%d\n",
+			RTW_DBG("Connection_Handle=0x%x, BTProfile=%d, BTSpec=%d, LinkRole=%d\n",
 				 conHandle, btProfile, btCoreSpec, linkRole);
 			pTriple += 5;
 		}
@@ -958,41 +958,41 @@ u8 rtw_btcoex_parse_HCI_BT_operation_notify_cmd(_adapter *padapter, u8 *pcmd, u1
 	rtw_HCI_event *pEvent;
 	RTW_HCI_STATUS	status = HCI_STATUS_SUCCESS;
 
-	RTW_INFO("%s, OP code: %d\n", __func__, pcmd[0]);
+	RTW_DBG("%s, OP code: %d\n", __func__, pcmd[0]);
 
 	switch (pcmd[0]) {
 	case HCI_BT_OP_NONE:
-		RTW_INFO("[bt operation] : Operation None!!\n");
+		RTW_DBG("[bt operation] : Operation None!!\n");
 		break;
 	case HCI_BT_OP_INQUIRY_START:
-		RTW_INFO("[bt operation] : Inquiry start!!\n");
+		RTW_DBG("[bt operation] : Inquiry start!!\n");
 		break;
 	case HCI_BT_OP_INQUIRY_FINISH:
-		RTW_INFO("[bt operation] : Inquiry finished!!\n");
+		RTW_DBG("[bt operation] : Inquiry finished!!\n");
 		break;
 	case HCI_BT_OP_PAGING_START:
-		RTW_INFO("[bt operation] : Paging is started!!\n");
+		RTW_DBG("[bt operation] : Paging is started!!\n");
 		break;
 	case HCI_BT_OP_PAGING_SUCCESS:
-		RTW_INFO("[bt operation] : Paging complete successfully!!\n");
+		RTW_DBG("[bt operation] : Paging complete successfully!!\n");
 		break;
 	case HCI_BT_OP_PAGING_UNSUCCESS:
-		RTW_INFO("[bt operation] : Paging complete unsuccessfully!!\n");
+		RTW_DBG("[bt operation] : Paging complete unsuccessfully!!\n");
 		break;
 	case HCI_BT_OP_PAIRING_START:
-		RTW_INFO("[bt operation] : Pairing start!!\n");
+		RTW_DBG("[bt operation] : Pairing start!!\n");
 		break;
 	case HCI_BT_OP_PAIRING_FINISH:
-		RTW_INFO("[bt operation] : Pairing finished!!\n");
+		RTW_DBG("[bt operation] : Pairing finished!!\n");
 		break;
 	case HCI_BT_OP_BT_DEV_ENABLE:
-		RTW_INFO("[bt operation] : BT Device is enabled!!\n");
+		RTW_DBG("[bt operation] : BT Device is enabled!!\n");
 		break;
 	case HCI_BT_OP_BT_DEV_DISABLE:
-		RTW_INFO("[bt operation] : BT Device is disabled!!\n");
+		RTW_DBG("[bt operation] : BT Device is disabled!!\n");
 		break;
 	default:
-		RTW_INFO("[bt operation] : Unknown, error!!\n");
+		RTW_ERR("[bt operation] : Unknown, error!!\n");
 		break;
 	}
 
@@ -1174,57 +1174,57 @@ u8 rtw_btcoex_parse_HCI_query_RF_status_cmd(_adapter *padapter, u8 *pcmd, u16 cm
 void rtw_btcoex_parse_hci_extend_cmd(_adapter *padapter, u8 *pcmd, u16 len, const u16 hci_OCF)
 {
 
-	RTW_INFO("%s: OCF: %x\n", __func__, hci_OCF);
+	RTW_DBG("%s: OCF: %x\n", __func__, hci_OCF);
 	switch (hci_OCF) {
 	case HCI_EXTENSION_VERSION_NOTIFY:
-		RTW_INFO("HCI_EXTENSION_VERSION_NOTIFY\n");
+		RTW_DBG("HCI_EXTENSION_VERSION_NOTIFY\n");
 		rtw_btcoex_parse_HCI_Ver_notify_cmd(padapter, pcmd, len);
 		break;
 	case HCI_LINK_STATUS_NOTIFY:
-		RTW_INFO("HCI_LINK_STATUS_NOTIFY\n");
+		RTW_DBG("HCI_LINK_STATUS_NOTIFY\n");
 		rtw_btcoex_parse_HCI_link_status_notify_cmd(padapter, pcmd, len);
 		break;
 	case HCI_BT_OPERATION_NOTIFY:
 		/* only for 8723a 2ant */
-		RTW_INFO("HCI_BT_OPERATION_NOTIFY\n");
+		RTW_DBG("HCI_BT_OPERATION_NOTIFY\n");
 		rtw_btcoex_parse_HCI_BT_operation_notify_cmd(padapter, pcmd, len);
 		/*  */
 		break;
 	case HCI_ENABLE_WIFI_SCAN_NOTIFY:
-		RTW_INFO("HCI_ENABLE_WIFI_SCAN_NOTIFY\n");
+		RTW_DBG("HCI_ENABLE_WIFI_SCAN_NOTIFY\n");
 		rtw_btcoex_parse_WIFI_scan_notify_cmd(padapter, pcmd, len);
 		break;
 	case HCI_QUERY_RF_STATUS:
 		/* only for 8723b 2ant */
-		RTW_INFO("HCI_QUERY_RF_STATUS\n");
+		RTW_DBG("HCI_QUERY_RF_STATUS\n");
 		rtw_btcoex_parse_HCI_query_RF_status_cmd(padapter, pcmd, len);
 		break;
 	case HCI_BT_ABNORMAL_NOTIFY:
-		RTW_INFO("HCI_BT_ABNORMAL_NOTIFY\n");
+		RTW_DBG("HCI_BT_ABNORMAL_NOTIFY\n");
 		rtw_btcoex_parse_HCI_BT_abnormal_notify_cmd(padapter, pcmd, len);
 		break;
 	case HCI_BT_INFO_NOTIFY:
-		RTW_INFO("HCI_BT_INFO_NOTIFY\n");
+		RTW_DBG("HCI_BT_INFO_NOTIFY\n");
 		rtw_btcoex_parse_BT_info_notify_cmd(padapter, pcmd, len);
 		break;
 	case HCI_BT_COEX_NOTIFY:
-		RTW_INFO("HCI_BT_COEX_NOTIFY\n");
+		RTW_DBG("HCI_BT_COEX_NOTIFY\n");
 		rtw_btcoex_parse_HCI_BT_coex_notify_cmd(padapter, pcmd, len);
 		break;
 	case HCI_BT_PATCH_VERSION_NOTIFY:
-		RTW_INFO("HCI_BT_PATCH_VERSION_NOTIFY\n");
+		RTW_DBG("HCI_BT_PATCH_VERSION_NOTIFY\n");
 		rtw_btcoex_parse_BT_patch_ver_info_cmd(padapter, pcmd, len);
 		break;
 	case HCI_BT_AFH_MAP_NOTIFY:
-		RTW_INFO("HCI_BT_AFH_MAP_NOTIFY\n");
+		RTW_DBG("HCI_BT_AFH_MAP_NOTIFY\n");
 		rtw_btcoex_parse_BT_AFH_MAP_notify_cmd(padapter, pcmd, len);
 		break;
 	case HCI_BT_REGISTER_VALUE_NOTIFY:
-		RTW_INFO("HCI_BT_REGISTER_VALUE_NOTIFY\n");
+		RTW_DBG("HCI_BT_REGISTER_VALUE_NOTIFY\n");
 		rtw_btcoex_parse_BT_register_val_notify_cmd(padapter, pcmd, len);
 		break;
 	default:
-		RTW_INFO("ERROR!!! Unknown OCF: %x\n", hci_OCF);
+		RTW_ERR("ERROR!!! Unknown OCF: %x\n", hci_OCF);
 		break;
 
 	}
@@ -1238,14 +1238,14 @@ void rtw_btcoex_parse_hci_cmd(_adapter *padapter, u8 *pcmd, u16 len)
 	u8 cmdlen = len - 3;
 	u8 pare_len = pcmd[2];
 
-	RTW_INFO("%s OGF: %x,OCF: %x\n", __func__, hci_OGF, hci_OCF);
+	RTW_DBG("%s OGF: %x,OCF: %x\n", __func__, hci_OGF, hci_OCF);
 	switch (hci_OGF) {
 	case OGF_EXTENSION:
-		RTW_INFO("HCI_EXTENSION_CMD_OGF\n");
+		RTW_DBG("HCI_EXTENSION_CMD_OGF\n");
 		rtw_btcoex_parse_hci_extend_cmd(padapter, &pcmd[3], cmdlen, hci_OCF);
 		break;
 	default:
-		RTW_INFO("Other OGF: %x\n", hci_OGF);
+		RTW_DBG("Other OGF: %x\n", hci_OGF);
 		break;
 	}
 }
@@ -1261,27 +1261,27 @@ u16 rtw_btcoex_parse_recv_data(u8 *msg, u8 msg_size)
 	u8 res = OTHER;
 
 	if (_rtw_memcmp(cmp_msg1, msg, msg_size) == _TRUE) {
-		/*RTW_INFO("%s, msg:%s\n",__func__,msg);*/
+		/*RTW_DBG("%s, msg:%s\n",__func__,msg);*/
 		res = RX_ATTEND_ACK;
 	} else if (_rtw_memcmp(cmp_msg2, msg, msg_size) == _TRUE) {
-		/*RTW_INFO("%s, msg:%s\n",__func__,msg);*/
+		/*RTW_DBG("%s, msg:%s\n",__func__,msg);*/
 		res = RX_LEAVE_ACK;
 	} else if (_rtw_memcmp(cmp_msg3, msg, msg_size) == _TRUE) {
-		/*RTW_INFO("%s, msg:%s\n",__func__,msg);*/
+		/*RTW_DBG("%s, msg:%s\n",__func__,msg);*/
 		res = RX_BT_LEAVE;
 	} else if (_rtw_memcmp(cmp_msg4, msg, msg_size) == _TRUE) {
-		/*RTW_INFO("%s, msg:%s\n",__func__,msg);*/
+		/*RTW_DBG("%s, msg:%s\n",__func__,msg);*/
 		res = RX_INVITE_REQ;
 	} else if (_rtw_memcmp(cmp_msg5, msg, msg_size) == _TRUE)
 		res = RX_ATTEND_REQ;
 	else if (_rtw_memcmp(cmp_msg6, msg, msg_size) == _TRUE)
 		res = RX_INVITE_RSP;
 	else {
-		/*RTW_INFO("%s, %s\n", __func__, msg);*/
+		/*RTW_DBG("%s, %s\n", __func__, msg);*/
 		res = OTHER;
 	}
 
-	/*RTW_INFO("%s, res:%d\n", __func__, res);*/
+	/*RTW_DBG("%s, res:%d\n", __func__, res);*/
 
 	return res;
 }
@@ -1302,10 +1302,10 @@ void rtw_btcoex_recvmsgbysocket(void *data)
 	struct sock *sk = NULL;
 	struct sk_buff *skb = NULL;
 
-	/*RTW_INFO("%s\n",__func__);*/
+	/*RTW_DBG("%s\n",__func__);*/
 
 	if (pbtcoexadapter == NULL) {
-		RTW_INFO("%s: btcoexadapter NULL!\n", __func__);
+		RTW_DBG("%s: btcoexadapter NULL!\n", __func__);
 		return;
 	}
 
@@ -1313,7 +1313,7 @@ void rtw_btcoex_recvmsgbysocket(void *data)
 	sk = pcoex_info->sk_store;
 
 	if (sk == NULL) {
-		RTW_INFO("%s: critical error when receive socket data!\n", __func__);
+		RTW_ERR("%s: critical error when receive socket data!\n", __func__);
 		return;
 	}
 
@@ -1331,30 +1331,30 @@ void rtw_btcoex_recvmsgbysocket(void *data)
 		if (RX_ATTEND_ACK == parse_res) {
 			/* attend ack */
 			pcoex_info->BT_attend = _TRUE;
-			RTW_INFO("RX_ATTEND_ACK!,sock_open:%d, BT_attend:%d\n", pcoex_info->sock_open, pcoex_info->BT_attend);
+			RTW_DBG("RX_ATTEND_ACK!,sock_open:%d, BT_attend:%d\n", pcoex_info->sock_open, pcoex_info->BT_attend);
 		} else if (RX_ATTEND_REQ == parse_res) {
 			/* attend req from BT */
 			pcoex_info->BT_attend = _TRUE;
-			RTW_INFO("RX_BT_ATTEND_REQ!,sock_open:%d, BT_attend:%d\n", pcoex_info->sock_open, pcoex_info->BT_attend);
+			RTW_DBG("RX_BT_ATTEND_REQ!,sock_open:%d, BT_attend:%d\n", pcoex_info->sock_open, pcoex_info->BT_attend);
 			rtw_btcoex_sendmsgbysocket(pbtcoexadapter, attend_ack, sizeof(attend_ack), _FALSE);
 		} else if (RX_INVITE_REQ == parse_res) {
 			/* invite req from BT */
 			pcoex_info->BT_attend = _TRUE;
-			RTW_INFO("RX_INVITE_REQ!,sock_open:%d, BT_attend:%d\n", pcoex_info->sock_open, pcoex_info->BT_attend);
+			RTW_DBG("RX_INVITE_REQ!,sock_open:%d, BT_attend:%d\n", pcoex_info->sock_open, pcoex_info->BT_attend);
 			rtw_btcoex_sendmsgbysocket(pbtcoexadapter, invite_rsp, sizeof(invite_rsp), _FALSE);
 		} else if (RX_INVITE_RSP == parse_res) {
 			/* invite rsp */
 			pcoex_info->BT_attend = _TRUE;
-			RTW_INFO("RX_INVITE_RSP!,sock_open:%d, BT_attend:%d\n", pcoex_info->sock_open, pcoex_info->BT_attend);
+			RTW_DBG("RX_INVITE_RSP!,sock_open:%d, BT_attend:%d\n", pcoex_info->sock_open, pcoex_info->BT_attend);
 		} else if (RX_LEAVE_ACK == parse_res) {
 			/* mean BT know wifi  will leave */
 			pcoex_info->BT_attend = _FALSE;
-			RTW_INFO("RX_LEAVE_ACK!,sock_open:%d, BT_attend:%d\n", pcoex_info->sock_open, pcoex_info->BT_attend);
+			RTW_DBG("RX_LEAVE_ACK!,sock_open:%d, BT_attend:%d\n", pcoex_info->sock_open, pcoex_info->BT_attend);
 		} else if (RX_BT_LEAVE == parse_res) {
 			/* BT leave */
 			rtw_btcoex_sendmsgbysocket(pbtcoexadapter, leave_ack, sizeof(leave_ack), _FALSE); /*  no ack */
 			pcoex_info->BT_attend = _FALSE;
-			RTW_INFO("RX_BT_LEAVE!sock_open:%d, BT_attend:%d\n", pcoex_info->sock_open, pcoex_info->BT_attend);
+			RTW_DBG("RX_BT_LEAVE!sock_open:%d, BT_attend:%d\n", pcoex_info->sock_open, pcoex_info->BT_attend);
 		} else {
 			/* todo: check if recv data are really hci cmds */
 			if (_TRUE == pcoex_info->BT_attend)
@@ -1365,13 +1365,13 @@ void rtw_btcoex_recvmsgbysocket(void *data)
 		case RX_ATTEND_ACK:
 			/* attend ack */
 			pcoex_info->BT_attend = _TRUE;
-			RTW_INFO("RX_ATTEND_ACK!,sock_open:%d, BT_attend:%d\n", pcoex_info->sock_open, pcoex_info->BT_attend);
+			RTW_DBG("RX_ATTEND_ACK!,sock_open:%d, BT_attend:%d\n", pcoex_info->sock_open, pcoex_info->BT_attend);
 			rtw_btcoex_pta_off_on_notify(pbtcoexadapter, pcoex_info->BT_attend);
 			break;
 
 		case RX_ATTEND_REQ:
 			pcoex_info->BT_attend = _TRUE;
-			RTW_INFO("RX_BT_ATTEND_REQ!,sock_open:%d, BT_attend:%d\n", pcoex_info->sock_open, pcoex_info->BT_attend);
+			RTW_DBG("RX_BT_ATTEND_REQ!,sock_open:%d, BT_attend:%d\n", pcoex_info->sock_open, pcoex_info->BT_attend);
 			rtw_btcoex_sendmsgbysocket(pbtcoexadapter, attend_ack, sizeof(attend_ack), _FALSE);
 			rtw_btcoex_pta_off_on_notify(pbtcoexadapter, pcoex_info->BT_attend);
 			break;
@@ -1379,7 +1379,7 @@ void rtw_btcoex_recvmsgbysocket(void *data)
 		case RX_INVITE_REQ:
 			/* invite req from BT */
 			pcoex_info->BT_attend = _TRUE;
-			RTW_INFO("RX_INVITE_REQ!,sock_open:%d, BT_attend:%d\n", pcoex_info->sock_open, pcoex_info->BT_attend);
+			RTW_DBG("RX_INVITE_REQ!,sock_open:%d, BT_attend:%d\n", pcoex_info->sock_open, pcoex_info->BT_attend);
 			rtw_btcoex_sendmsgbysocket(pbtcoexadapter, invite_rsp, sizeof(invite_rsp), _FALSE);
 			rtw_btcoex_pta_off_on_notify(pbtcoexadapter, pcoex_info->BT_attend);
 			break;
@@ -1387,14 +1387,14 @@ void rtw_btcoex_recvmsgbysocket(void *data)
 		case RX_INVITE_RSP:
 			/*invite rsp*/
 			pcoex_info->BT_attend = _TRUE;
-			RTW_INFO("RX_INVITE_RSP!,sock_open:%d, BT_attend:%d\n", pcoex_info->sock_open, pcoex_info->BT_attend);
+			RTW_DBG("RX_INVITE_RSP!,sock_open:%d, BT_attend:%d\n", pcoex_info->sock_open, pcoex_info->BT_attend);
 			rtw_btcoex_pta_off_on_notify(pbtcoexadapter, pcoex_info->BT_attend);
 			break;
 
 		case RX_LEAVE_ACK:
 			/* mean BT know wifi  will leave */
 			pcoex_info->BT_attend = _FALSE;
-			RTW_INFO("RX_LEAVE_ACK!,sock_open:%d, BT_attend:%d\n", pcoex_info->sock_open, pcoex_info->BT_attend);
+			RTW_DBG("RX_LEAVE_ACK!,sock_open:%d, BT_attend:%d\n", pcoex_info->sock_open, pcoex_info->BT_attend);
 			rtw_btcoex_pta_off_on_notify(pbtcoexadapter, pcoex_info->BT_attend);
 			break;
 
@@ -1402,7 +1402,7 @@ void rtw_btcoex_recvmsgbysocket(void *data)
 			/* BT leave */
 			rtw_btcoex_sendmsgbysocket(pbtcoexadapter, leave_ack, sizeof(leave_ack), _FALSE); /* no ack */
 			pcoex_info->BT_attend = _FALSE;
-			RTW_INFO("RX_BT_LEAVE!sock_open:%d, BT_attend:%d\n", pcoex_info->sock_open, pcoex_info->BT_attend);
+			RTW_DBG("RX_BT_LEAVE!sock_open:%d, BT_attend:%d\n", pcoex_info->sock_open, pcoex_info->BT_attend);
 			rtw_btcoex_pta_off_on_notify(pbtcoexadapter, pcoex_info->BT_attend);
 			break;
 
@@ -1410,7 +1410,7 @@ void rtw_btcoex_recvmsgbysocket(void *data)
 			if (_TRUE == pcoex_info->BT_attend)
 				rtw_btcoex_parse_hci_cmd(pbtcoexadapter, recv_data, recv_length);
 			else
-				RTW_INFO("ERROR!! BT is UP\n");
+				RTW_ERR("ERROR!! BT is UP\n");
 			break;
 
 		}
@@ -1429,7 +1429,7 @@ void rtw_btcoex_recvmsgbysocket(void *data)
 	struct bt_coex_info *pcoex_info = NULL;
 
 	if (pbtcoexadapter == NULL) {
-		RTW_INFO("%s: btcoexadapter NULL\n", __func__);
+		RTW_DBG("%s: btcoexadapter NULL\n", __func__);
 		return;
 	}
 	pcoex_info = &pbtcoexadapter->coex_info;
@@ -1437,7 +1437,7 @@ void rtw_btcoex_recvmsgbysocket(void *data)
 	if (pcoex_info->btcoex_wq != NULL)
 		queue_delayed_work(pcoex_info->btcoex_wq, &pcoex_info->recvmsg_work, 0);
 	else
-		RTW_INFO("%s: BTCOEX workqueue NULL\n", __func__);
+		RTW_DBG("%s: BTCOEX workqueue NULL\n", __func__);
 }
 
 u8 rtw_btcoex_sendmsgbysocket(_adapter *padapter, u8 *msg, u8 msg_size, bool force)
@@ -1448,10 +1448,10 @@ u8 rtw_btcoex_sendmsgbysocket(_adapter *padapter, u8 *msg, u8 msg_size, bool for
 	struct iovec	iov;
 	struct bt_coex_info *pcoex_info = &padapter->coex_info;
 
-	/* RTW_INFO("%s: msg:%s, force:%s\n", __func__, msg, force == _TRUE?"TRUE":"FALSE"); */
+	/* RTW_DBG("%s: msg:%s, force:%s\n", __func__, msg, force == _TRUE?"TRUE":"FALSE"); */
 	if (_FALSE == force) {
 		if (_FALSE == pcoex_info->BT_attend) {
-			RTW_INFO("TX Blocked: WiFi-BT disconnected\n");
+			RTW_DBG("TX Blocked: WiFi-BT disconnected\n");
 			return _FAIL;
 		}
 	}
@@ -1484,7 +1484,7 @@ u8 rtw_btcoex_sendmsgbysocket(_adapter *padapter, u8 *msg, u8 msg_size, bool for
 #endif
 	set_fs(oldfs);
 	if (error < 0) {
-		RTW_INFO("Error when sendimg msg, error:%d\n", error);
+		RTW_ERR("Error when sendimg msg, error:%d\n", error);
 		return _FAIL;
 	} else
 		return _SUCCESS;
@@ -1498,17 +1498,17 @@ u8 rtw_btcoex_create_kernel_socket(_adapter *padapter)
 	s32 sock_reuse = 1;
 	u8 status = _FAIL;
 
-	RTW_INFO("%s CONNECT_PORT %d\n", __func__, CONNECT_PORT);
+	RTW_DBG("%s CONNECT_PORT %d\n", __func__, CONNECT_PORT);
 
 	if (NULL == pcoex_info) {
-		RTW_INFO("coex_info: NULL\n");
+		RTW_DBG("coex_info: NULL\n");
 		status =  _FAIL;
 	}
 
 	kernel_socket_err = sock_create(PF_INET, SOCK_DGRAM, 0, &pcoex_info->udpsock);
 
 	if (kernel_socket_err < 0) {
-		RTW_INFO("Error during creation of socket error:%d\n", kernel_socket_err);
+		RTW_ERR("Error during creation of socket error:%d\n", kernel_socket_err);
 		status = _FAIL;
 	} else {
 		_rtw_memset(&(pcoex_info->wifi_sockaddr), 0, sizeof(pcoex_info->wifi_sockaddr));
@@ -1525,17 +1525,17 @@ u8 rtw_btcoex_create_kernel_socket(_adapter *padapter)
 		kernel_socket_err = pcoex_info->udpsock->ops->bind(pcoex_info->udpsock, (struct sockaddr *)&pcoex_info->wifi_sockaddr,
 				    sizeof(pcoex_info->wifi_sockaddr));
 		if (kernel_socket_err == 0) {
-			RTW_INFO("binding socket success\n");
+			RTW_DBG("binding socket success\n");
 			pcoex_info->udpsock->sk->sk_data_ready = rtw_btcoex_recvmsg_init;
 			pcoex_info->sock_open |=  KERNEL_SOCKET_OK;
 			pcoex_info->BT_attend = _FALSE;
-			RTW_INFO("WIFI sending attend_req\n");
+			RTW_DBG("WIFI sending attend_req\n");
 			rtw_btcoex_sendmsgbysocket(padapter, attend_req, sizeof(attend_req), _TRUE);
 			status = _SUCCESS;
 		} else {
 			pcoex_info->BT_attend = _FALSE;
 			sock_release(pcoex_info->udpsock); /* bind fail release socket */
-			RTW_INFO("Error binding socket: %d\n", kernel_socket_err);
+			RTW_ERR("Error binding socket: %d\n", kernel_socket_err);
 			status = _FAIL;
 		}
 
@@ -1548,13 +1548,13 @@ void rtw_btcoex_close_kernel_socket(_adapter *padapter)
 {
 	struct bt_coex_info *pcoex_info = &padapter->coex_info;
 	if (pcoex_info->sock_open & KERNEL_SOCKET_OK) {
-		RTW_INFO("release kernel socket\n");
+		RTW_DBG("release kernel socket\n");
 		sock_release(pcoex_info->udpsock);
 		pcoex_info->sock_open &= ~(KERNEL_SOCKET_OK);
 		if (_TRUE == pcoex_info->BT_attend)
 			pcoex_info->BT_attend = _FALSE;
 
-		RTW_INFO("sock_open:%d, BT_attend:%d\n", pcoex_info->sock_open, pcoex_info->BT_attend);
+		RTW_DBG("sock_open:%d, BT_attend:%d\n", pcoex_info->sock_open, pcoex_info->BT_attend);
 	}
 }
 
@@ -1563,7 +1563,7 @@ void rtw_btcoex_init_socket(_adapter *padapter)
 
 	u8 is_invite = _FALSE;
 	struct bt_coex_info *pcoex_info = &padapter->coex_info;
-	RTW_INFO("%s\n", __func__);
+	RTW_DBG("%s\n", __func__);
 	if (_FALSE == pcoex_info->is_exist) {
 		_rtw_memset(pcoex_info, 0, sizeof(struct bt_coex_info));
 		pcoex_info->btcoex_wq = create_workqueue("BTCOEX");
@@ -1571,7 +1571,7 @@ void rtw_btcoex_init_socket(_adapter *padapter)
 				  (void *)rtw_btcoex_recvmsgbysocket);
 		pbtcoexadapter = padapter;
 		/* We expect BT is off if BT don't send ack to wifi */
-		RTW_INFO("We expect BT is off if BT send ack to wifi\n");
+		RTW_DBG("We expect BT is off if BT send ack to wifi\n");
 		rtw_btcoex_pta_off_on_notify(pbtcoexadapter, _FALSE);
 		if (rtw_btcoex_create_kernel_socket(padapter) == _SUCCESS)
 			pcoex_info->is_exist = _TRUE;
@@ -1580,7 +1580,7 @@ void rtw_btcoex_init_socket(_adapter *padapter)
 			pbtcoexadapter = NULL;
 		}
 
-		RTW_INFO("%s: pbtcoexadapter:%p, coex_info->is_exist: %s\n"
+		RTW_DBG("%s: pbtcoexadapter:%p, coex_info->is_exist: %s\n"
 			, __func__, pbtcoexadapter, pcoex_info->is_exist == _TRUE ? "TRUE" : "FALSE");
 	}
 }
@@ -1589,7 +1589,7 @@ void rtw_btcoex_close_socket(_adapter *padapter)
 {
 	struct bt_coex_info *pcoex_info = &padapter->coex_info;
 
-	RTW_INFO("%s--coex_info->is_exist: %s, pcoex_info->BT_attend:%s\n"
+	RTW_DBG("%s--coex_info->is_exist: %s, pcoex_info->BT_attend:%s\n"
 		, __func__, pcoex_info->is_exist == _TRUE ? "TRUE" : "FALSE", pcoex_info->BT_attend == _TRUE ? "TRUE" : "FALSE");
 
 	if (_TRUE == pcoex_info->is_exist) {
@@ -1613,11 +1613,11 @@ void rtw_btcoex_close_socket(_adapter *padapter)
 void rtw_btcoex_dump_tx_msg(u8 *tx_msg, u8 len, u8 *msg_name)
 {
 	u8	i = 0;
-	RTW_INFO("======> Msg name: %s\n", msg_name);
+	RTW_DBG("======> Msg name: %s\n", msg_name);
 	for (i = 0; i < len; i++)
 		printk("%02x ", tx_msg[i]);
 	printk("\n");
-	RTW_INFO("Msg name: %s <======\n", msg_name);
+	RTW_DBG("Msg name: %s <======\n", msg_name);
 }
 
 /* Porting from Windows team */
@@ -1633,7 +1633,7 @@ void rtw_btcoex_SendEventExtBtCoexControl(PADAPTER padapter, u8 bNeedDbgRsp, u8 
 
 	opCode = pInBuf[0];
 
-	RTW_INFO("%s, OPCode:%02x\n", __func__, opCode);
+	RTW_DBG("%s, OPCode:%02x\n", __func__, opCode);
 
 	pEvent = (rtw_HCI_event *)(&localBuf[0]);
 
@@ -1671,9 +1671,9 @@ void rtw_btcoex_SendEventExtBtInfoControl(PADAPTER padapter, u8 dataLen, void *p
 	struct bt_coex_info *pcoex_info = &padapter->coex_info;
 	PBT_MGNT		pBtMgnt = &pcoex_info->BtMgnt;
 
-	/* RTW_INFO("%s\n",__func__);*/
+	/* RTW_DBG("%s\n",__func__);*/
 	if (pBtMgnt->ExtConfig.HCIExtensionVer < 4) { /* not support */
-		RTW_INFO("ERROR: HCIExtensionVer = %d, HCIExtensionVer<4 !!!!\n", pBtMgnt->ExtConfig.HCIExtensionVer);
+		RTW_ERR("ERROR: HCIExtensionVer = %d, HCIExtensionVer<4 !!!!\n", pBtMgnt->ExtConfig.HCIExtensionVer);
 		return;
 	}
 

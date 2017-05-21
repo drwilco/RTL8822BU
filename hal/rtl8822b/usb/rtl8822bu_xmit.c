@@ -53,7 +53,7 @@ static s32 update_txdesc(struct xmit_frame *pxmitframe, u8 *pmem, s32 sz, u8 bag
 		if ((PACKET_OFFSET_SZ != 0) && (!bagg_pkt)
 		    && (rtw_usb_bulk_size_boundary(padapter, (TXDESC_SIZE + sz)) == _FALSE)) {
 			ptxdesc = (pmem + PACKET_OFFSET_SZ);
-			/* RTW_INFO("==> non-agg-pkt,shift pointer...\n"); */
+			/* RTW_DBG("==> non-agg-pkt,shift pointer...\n"); */
 			pull = 1;
 		}
 	}
@@ -64,7 +64,7 @@ static s32 update_txdesc(struct xmit_frame *pxmitframe, u8 *pmem, s32 sz, u8 bag
 	/* offset 0 */
 	SET_TX_DESC_LS_8822B(ptxdesc, 1);
 
-	/* RTW_INFO("%s==> pkt_len=%d,bagg_pkt=%02x\n",__FUNCTION__,sz,bagg_pkt); */
+	/* RTW_DBG("%s==> pkt_len=%d,bagg_pkt=%02x\n",__FUNCTION__,sz,bagg_pkt); */
 	SET_TX_DESC_TXPKTSIZE_8822B(ptxdesc, sz);
 
 	offset = TXDESC_SIZE + OFFSET_SZ;
@@ -73,7 +73,7 @@ static s32 update_txdesc(struct xmit_frame *pxmitframe, u8 *pmem, s32 sz, u8 bag
 	if (bagg_pkt)
 		offset += EARLY_MODE_INFO_SIZE;
 #endif
-	/* RTW_INFO("%s==>offset(0x%02x)\n",__FUNCTION__,offset); */
+	/* RTW_DBG("%s==>offset(0x%02x)\n",__FUNCTION__,offset); */
 	SET_TX_DESC_OFFSET_8822B(ptxdesc, offset);
 
 	if (bmcst)
@@ -88,7 +88,7 @@ static s32 update_txdesc(struct xmit_frame *pxmitframe, u8 *pmem, s32 sz, u8 bag
 	}
 #endif /* !CONFIG_USE_USB_BUFFER_ALLOC_TX */
 
-	/* RTW_INFO("%s, pkt_offset=0x%02x\n",__FUNCTION__,pxmitframe->pkt_offset); */
+	/* RTW_DBG("%s, pkt_offset=0x%02x\n",__FUNCTION__,pxmitframe->pkt_offset); */
 	/* pkt_offset, unit:8 bytes padding */
 	if (pxmitframe->pkt_offset > 0)
 		SET_TX_DESC_PKT_OFFSET_8822B(ptxdesc, pxmitframe->pkt_offset);
@@ -109,13 +109,13 @@ static s32 update_txdesc(struct xmit_frame *pxmitframe, u8 *pmem, s32 sz, u8 bag
 		SET_TX_DESC_SW_SEQ_8822B(ptxdesc, pattrib->seqnum);
 
 	if ((pxmitframe->frame_tag & 0x0f) == DATA_FRAMETAG) {
-		/* RTW_INFO("pxmitframe->frame_tag == DATA_FRAMETAG\n");	*/
+		/* RTW_DBG("pxmitframe->frame_tag == DATA_FRAMETAG\n");	*/
 		rtl8822b_fill_txdesc_sectype(pattrib, ptxdesc);
 
 		/* offset 20 */
 #ifdef CONFIG_USB_TX_AGGREGATION
 		if (pxmitframe->agg_num > 1) {
-			/* RTW_INFO("%s agg_num:%d\n",__FUNCTION__,pxmitframe->agg_num); */
+			/* RTW_DBG("%s agg_num:%d\n",__FUNCTION__,pxmitframe->agg_num); */
 			SET_TX_DESC_DMA_TXAGG_NUM_8822B(ptxdesc, pxmitframe->agg_num);
 		}
 #endif /* CONFIG_USB_TX_AGGREGATION */
@@ -225,7 +225,7 @@ static s32 update_txdesc(struct xmit_frame *pxmitframe, u8 *pmem, s32 sz, u8 bag
 #endif /* CONFIG_XMIT_ACK */
 #endif
 	} else if ((pxmitframe->frame_tag & 0x0f) == MGNT_FRAMETAG) {
-		/* RTW_INFO("pxmitframe->frame_tag == MGNT_FRAMETAG\n");	*/
+		/* RTW_DBG("pxmitframe->frame_tag == MGNT_FRAMETAG\n");	*/
 
 		SET_TX_DESC_USE_RATE_8822B(ptxdesc, 1);
 		DriverFixedRate = 0x01;
@@ -246,12 +246,12 @@ static s32 update_txdesc(struct xmit_frame *pxmitframe, u8 *pmem, s32 sz, u8 bag
 		if (pxmitframe->ack_report) {
 			SET_TX_DESC_SPE_RPT_8822B(ptxdesc, 1);
 #ifdef DBG_CCX
-			RTW_INFO("%s set tx report\n", __func__);
+			RTW_DBG("%s set tx report\n", __func__);
 #endif
 		}
 #endif /* CONFIG_XMIT_ACK */
 	} else if ((pxmitframe->frame_tag & 0x0f) == TXAGG_FRAMETAG)
-		RTW_INFO("pxmitframe->frame_tag == TXAGG_FRAMETAG\n");
+		RTW_DBG("pxmitframe->frame_tag == TXAGG_FRAMETAG\n");
 
 #ifdef CONFIG_MP_INCLUDED
 	else if (((pxmitframe->frame_tag & 0x0f) == MP_FRAMETAG) &&
@@ -261,7 +261,7 @@ static s32 update_txdesc(struct xmit_frame *pxmitframe, u8 *pmem, s32 sz, u8 bag
 #endif
 
 	else {
-		RTW_INFO("pxmitframe->frame_tag = %d\n", pxmitframe->frame_tag);
+		RTW_DBG("pxmitframe->frame_tag = %d\n", pxmitframe->frame_tag);
 
 		SET_TX_DESC_USE_RATE_8822B(ptxdesc, 1);
 		DriverFixedRate = 0x01;
@@ -419,7 +419,7 @@ static s32 rtw_dump_xframe(PADAPTER padapter, struct xmit_frame *pxmitframe)
 #endif
 		rtw_count_tx_stats(padapter, pxmitframe, sz);
 
-		/* RTW_INFO("rtw_write_port, w_sz=%d, sz=%d, txdesc_sz=%d, tid=%d\n", w_sz, sz, w_sz-sz, pattrib->priority);*/
+		/* RTW_DBG("rtw_write_port, w_sz=%d, sz=%d, txdesc_sz=%d, tid=%d\n", w_sz, sz, w_sz-sz, pattrib->priority);*/
 
 		mem_addr += w_sz;
 
@@ -486,7 +486,7 @@ static s32 rtl8822bu_xmitframe_complete(PADAPTER padapter, struct xmit_priv *pxm
 		pxmitframe = rtw_dequeue_xframe(pxmitpriv, pxmitpriv->hwxmits, pxmitpriv->hwxmit_entry);
 		if (pxmitframe == NULL) {
 			/* no more xmit frame, release xmit buffer */
-			/* RTW_INFO("%s: no more xmit frame\n", __func__); */
+			/* RTW_DBG("%s: no more xmit frame\n", __func__); */
 			rtw_free_xmitbuf(pxmitpriv, pxmitbuf);
 			return _FALSE;
 		}
@@ -517,7 +517,7 @@ static s32 rtl8822bu_xmitframe_complete(PADAPTER padapter, struct xmit_priv *pxm
 #endif
 
 		if (rtw_xmitframe_coalesce(padapter, pxmitframe->pkt, pxmitframe) == _FALSE) {
-			RTW_INFO("%s: coalesce 1st xmitframe failed\n", __func__);
+			RTW_DBG("%s: coalesce 1st xmitframe failed\n", __func__);
 			continue;
 		}
 
@@ -575,7 +575,7 @@ static s32 rtl8822bu_xmitframe_complete(PADAPTER padapter, struct xmit_priv *pxm
 		break;
 	}
 
-	/* RTW_INFO("==> pkt_no=%d,pkt_len=%d,len=%d,RND8_LEN=%d,pkt_offset=0x%02x\n",
+	/* RTW_DBG("==> pkt_no=%d,pkt_len=%d,len=%d,RND8_LEN=%d,pkt_offset=0x%02x\n",
 		pxmitframe->agg_num,pxmitframe->attrib.last_txcmdsz,len,pbuf,pxmitframe->pkt_offset ); */
 
 
@@ -605,7 +605,7 @@ static s32 rtl8822bu_xmitframe_complete(PADAPTER padapter, struct xmit_priv *pxm
 		len = rtw_wlan_pkt_size(pxmitframe) + TXDESC_SIZE + (pxmitframe->pkt_offset * PACKET_OFFSET_SZ);
 
 		if (_RND8(pbuf + len) > MAX_XMITBUF_SZ) {
-			/* RTW_INFO("%s: len> MAX_XMITBUF_SZ\n", __func__); */
+			/* RTW_DBG("%s: len> MAX_XMITBUF_SZ\n", __func__); */
 			pxmitframe->agg_num = 1;
 			pxmitframe->pkt_offset = 1;
 			break;
@@ -632,7 +632,7 @@ static s32 rtl8822bu_xmitframe_complete(PADAPTER padapter, struct xmit_priv *pxm
 		pxmitframe->buf_addr = pxmitbuf->pbuf + pbuf;
 
 		if (rtw_xmitframe_coalesce(padapter, pxmitframe->pkt, pxmitframe) == _FALSE) {
-			RTW_INFO("%s coalesce failed\n", __func__);
+			RTW_DBG("%s coalesce failed\n", __func__);
 			rtw_free_xmitframe(pxmitpriv, pxmitframe);
 			continue;
 		}
@@ -810,7 +810,7 @@ static void rtl8822bu_xmit_tasklet(void *priv)
 
 	while (1) {
 		if (RTW_CANNOT_TX(padapter)) {
-			RTW_INFO("xmit_tasklet => bDriverStopped or bSurpriseRemoved or bWritePortCancel\n");
+			RTW_DBG("xmit_tasklet => bDriverStopped or bSurpriseRemoved or bWritePortCancel\n");
 			break;
 		}
 
@@ -855,7 +855,7 @@ static s32 xmitframe_direct(PADAPTER padapter, struct xmit_frame *pxmitframe)
 	if (res == _SUCCESS)
 		rtw_dump_xframe(padapter, pxmitframe);
 	else
-		RTW_INFO("%s: xmitframe_coalsece failed\n", __func__);
+		RTW_DBG("%s: xmitframe_coalsece failed\n", __func__);
 
 	return res;
 }
@@ -1041,7 +1041,7 @@ s32 rtl8822bu_hostap_mgnt_xmit_entry(PADAPTER padapter, _pkt *pkt)
 	pxmitbuf = pxmitbuf + TXDESC_SIZE;
 	_rtw_memcpy(pxmitbuf, skb->data, len);
 
-	/*RTW_INFO("mgnt_xmit, len=%x\n", pxmit_skb->len); */
+	/*RTW_DBG("mgnt_xmit, len=%x\n", pxmit_skb->len); */
 
 
 	/* ----- prepare urb for submit -----*/

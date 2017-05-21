@@ -124,7 +124,7 @@ extern u1Byte	gl_btc_trace_buf[];
 #define		BTC_TRACE(_MSG_)\
 do {\
 	if (GLBtcDbgType[COMP_COEX] & BIT(DBG_LOUD)) {\
-		RTW_INFO("%s", _MSG_);\
+		RTW_DBG("%s", _MSG_);\
 	} \
 } while (0)
 #define		BT_PrintData(adapter, _MSG_, len, data)	RTW_DBG_DUMP((_MSG_), data, len)

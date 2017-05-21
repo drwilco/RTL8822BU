@@ -60,7 +60,7 @@ enum odm_board_type boardType(u8 InterfaceSel)
 	}
 
 #endif
-	/* RTW_INFO("===> boardType(): (pHalData->InterfaceSel, pDM_Odm->BoardType) = (%d, %d)\n", InterfaceSel, board); */
+	/* RTW_DBG("===> boardType(): (pHalData->InterfaceSel, pDM_Odm->BoardType) = (%d, %d)\n", InterfaceSel, board); */
 
 	return board;
 }

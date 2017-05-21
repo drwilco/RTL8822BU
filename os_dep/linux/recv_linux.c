@@ -23,21 +23,21 @@ int rtw_os_recvframe_duplicate_skb(_adapter *padapter, union recv_frame *pclonef
 	struct rx_pkt_attrib *pattrib = &pcloneframe->u.hdr.attrib;
 
 	if (pskb == NULL) {
-		RTW_INFO("%s [WARN] skb == NULL, drop frag frame\n", __func__);
+		RTW_DBG("%s [WARN] skb == NULL, drop frag frame\n", __func__);
 		return _FAIL;
 	}
 #if 1
 	pkt_copy = rtw_skb_copy(pskb);
 
 	if (pkt_copy == NULL) {
-		RTW_INFO("%s [WARN] rtw_skb_copy fail , drop frag frame\n", __func__);
+		RTW_DBG("%s [WARN] rtw_skb_copy fail , drop frag frame\n", __func__);
 		return _FAIL;
 	}
 #else
 	pkt_copy = rtw_skb_clone(pskb);
 
 	if (pkt_copy == NULL) {
-		RTW_INFO("%s [WARN] rtw_skb_clone fail , drop frag frame\n", __func__);
+		RTW_DBG("%s [WARN] rtw_skb_clone fail , drop frag frame\n", __func__);
 		return _FAIL;
 	}
 #endif
@@ -117,7 +117,7 @@ int rtw_os_alloc_recvframe(_adapter *padapter, union recv_frame *precvframe, u8 
 #endif
 
 #ifdef CONFIG_USE_USB_BUFFER_ALLOC_RX
-		RTW_INFO("%s:can not allocate memory for skb copy\n", __func__);
+		RTW_DBG("%s:can not allocate memory for skb copy\n", __func__);
 
 		precvframe->u.hdr.pkt = NULL;
 
@@ -127,7 +127,7 @@ int rtw_os_alloc_recvframe(_adapter *padapter, union recv_frame *precvframe, u8 
 		res = _FAIL;
 #else
 		if ((pattrib->mfrag == 1) && (pattrib->frag_num == 0)) {
-			RTW_INFO("%s: alloc_skb fail , drop frag frame\n", __FUNCTION__);
+			RTW_DBG("%s: alloc_skb fail , drop frag frame\n", __FUNCTION__);
 			/* rtw_free_recvframe(precvframe, pfree_recv_queue); */
 			res = _FAIL;
 			goto exit_rtw_os_recv_resource_alloc;
@@ -144,7 +144,7 @@ int rtw_os_alloc_recvframe(_adapter *padapter, union recv_frame *precvframe, u8 
 			precvframe->u.hdr.rx_head = precvframe->u.hdr.rx_data = precvframe->u.hdr.rx_tail = pdata;
 			precvframe->u.hdr.rx_end =  pdata + alloc_sz;
 		} else {
-			RTW_INFO("%s: rtw_skb_clone fail\n", __FUNCTION__);
+			RTW_DBG("%s: rtw_skb_clone fail\n", __FUNCTION__);
 			/* rtw_free_recvframe(precvframe, pfree_recv_queue); */
 			/*exit_rtw_os_recv_resource_alloc;*/
 			res = _FAIL;
@@ -305,7 +305,7 @@ _pkt *rtw_os_alloc_msdu_pkt(union recv_frame *prframe, const u8 *da, const u8 *s
 			sub_skb->len = msdu_len;
 			skb_set_tail_pointer(sub_skb, msdu_len);
 		} else {
-			RTW_INFO("%s(): rtw_skb_clone() Fail!!!\n", __FUNCTION__);
+			RTW_DBG("%s(): rtw_skb_clone() Fail!!!\n", __FUNCTION__);
 			return NULL;
 		}
 	}
@@ -434,10 +434,10 @@ void rtw_os_recv_indicate_pkt(_adapter *padapter, _pkt *pkt, union recv_frame *r
 			struct sta_priv *pstapriv = &padapter->stapriv;
 			int bmcast = IS_MCAST(ehdr->h_dest);
 
-			/* RTW_INFO("bmcast=%d\n", bmcast); */
+			/* RTW_DBG("bmcast=%d\n", bmcast); */
 
 			if (_rtw_memcmp(ehdr->h_dest, adapter_mac_addr(padapter), ETH_ALEN) == _FALSE) {
-				/* RTW_INFO("not ap psta=%p, addr=%pM\n", psta, ehdr->h_dest); */
+				/* RTW_DBG("not ap psta=%p, addr=%pM\n", psta, ehdr->h_dest); */
 
 				if (bmcast) {
 					psta = rtw_get_bcmc_stainfo(padapter);
@@ -448,7 +448,7 @@ void rtw_os_recv_indicate_pkt(_adapter *padapter, _pkt *pkt, union recv_frame *r
 				if (psta) {
 					struct net_device *pnetdev = (struct net_device *)padapter->pnetdev;
 
-					/* RTW_INFO("directly forwarding to the rtw_xmit_entry\n"); */
+					/* RTW_DBG("directly forwarding to the rtw_xmit_entry\n"); */
 
 					/* skb->ip_summed = CHECKSUM_NONE; */
 					pkt->dev = pnetdev;
@@ -467,7 +467,7 @@ void rtw_os_recv_indicate_pkt(_adapter *padapter, _pkt *pkt, union recv_frame *r
 					}
 				}
 			} else { /* to APself */
-				/* RTW_INFO("to APSelf\n"); */
+				/* RTW_DBG("to APSelf\n"); */
 				DBG_COUNTER(padapter->rx_logs.os_indicate_ap_self);
 			}
 		}
@@ -612,7 +612,7 @@ void rtw_hostapd_mlme_rx(_adapter *padapter, union recv_frame *precv_frame)
 	/* skb->protocol = __constant_htons(0x0019); ETH_P_80211_RAW */
 	skb->protocol = __constant_htons(0x0003); /*ETH_P_80211_RAW*/
 
-	/* RTW_INFO("(1)data=0x%x, head=0x%x, tail=0x%x, mac_header=0x%x, len=%d\n", skb->data, skb->head, skb->tail, skb->mac_header, skb->len); */
+	/* RTW_DBG("(1)data=0x%x, head=0x%x, tail=0x%x, mac_header=0x%x, len=%d\n", skb->data, skb->head, skb->tail, skb->mac_header, skb->len); */
 
 	/* skb->mac.raw = skb->data; */
 	skb_reset_mac_header(skb);
@@ -644,7 +644,7 @@ int rtw_recv_monitor(_adapter *padapter, union recv_frame *precv_frame)
 
 	skb = precv_frame->u.hdr.pkt;
 	if (skb == NULL) {
-		RTW_INFO("%s :skb==NULL something wrong!!!!\n", __func__);
+		RTW_DBG("%s :skb==NULL something wrong!!!!\n", __func__);
 		goto _recv_drop;
 	}
 

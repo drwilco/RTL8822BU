@@ -1046,7 +1046,7 @@ u8 halbtcoutsrc_Get(void *pBtcContext, u8 getType, void *pOutBuf)
 				*pU4Tmp = BTC_WIFI_BW_HT160;
 				break;
 			default:
-				RTW_INFO("[BTCOEX] unknown bandwidth(%d)\n", pHalData->current_channel_bw);
+				RTW_DBG("[BTCOEX] unknown bandwidth(%d)\n", pHalData->current_channel_bw);
 				*pU4Tmp = BTC_WIFI_BW_HT40;
 				break;
 			}
@@ -5077,7 +5077,7 @@ u32 hal_btcoex_GetDBG(PADAPTER padapter, u8 *pStrBuf, u32 bufSize)
 	count = 0;
 	pstr = pStrBuf;
 	leftSize = bufSize;
-	/*	RTW_INFO(FUNC_ADPT_FMT ": bufsize=%d\n", FUNC_ADPT_ARG(padapter), bufSize); */
+	/*	RTW_DBG(FUNC_ADPT_FMT ": bufsize=%d\n", FUNC_ADPT_ARG(padapter), bufSize); */
 
 	count = rtw_sprintf(pstr, leftSize, "#define DBG\t%d\n", DBG);
 	if ((count < 0) || (count >= leftSize))
@@ -5187,7 +5187,7 @@ u32 hal_btcoex_GetDBG(PADAPTER padapter, u8 *pStrBuf, u32 bufSize)
 
 exit:
 	count = pstr - pStrBuf;
-	/*	RTW_INFO(FUNC_ADPT_FMT ": usedsize=%d\n", FUNC_ADPT_ARG(padapter), count); */
+	/*	RTW_DBG(FUNC_ADPT_FMT ": usedsize=%d\n", FUNC_ADPT_ARG(padapter), count); */
 
 	return count;
 }
@@ -5248,7 +5248,7 @@ void hal_btcoex_SetAntIsolationType(PADAPTER padapter, u8 anttype)
 	PHAL_DATA_TYPE pHalData;
 	PBTC_COEXIST	pBtCoexist = &GLBtCoexist;
 
-	/*RTW_INFO("####%s , anttype = %d  , %d\n" , __func__ , anttype , __LINE__); */
+	/*RTW_DBG("####%s , anttype = %d  , %d\n" , __func__ , anttype , __LINE__); */
 	pHalData = GET_HAL_DATA(padapter);
 
 
@@ -5305,7 +5305,7 @@ hal_btcoex_ParseAntIsolationConfigFile(
 
 
 
-	/* RTW_INFO("===>Hal_ParseAntIsolationConfigFile()\n" ); */
+	/* RTW_DBG("===>Hal_ParseAntIsolationConfigFile()\n" ); */
 
 	ptmp = buffer;
 	for (szLine = GetLineFromBuffer(ptmp) ; szLine != NULL; szLine = GetLineFromBuffer(ptmp)) {
@@ -5313,7 +5313,7 @@ hal_btcoex_ParseAntIsolationConfigFile(
 		if (IsCommentString(szLine))
 			continue;
 
-		/* RTW_INFO("%s : szLine = %s , strlen(szLine) = %d\n" , __func__ , szLine , strlen(szLine));*/
+		/* RTW_DBG("%s : szLine = %s , strlen(szLine) = %d\n" , __func__ , szLine , strlen(szLine));*/
 		for (j = 0 ; ant_isolation_param[j].param_name != NULL ; j++) {
 			if (strstr(szLine , ant_isolation_param[j].param_name) != NULL) {
 				i = 0;
@@ -5323,15 +5323,15 @@ hal_btcoex_ParseAntIsolationConfigFile(
 					else {
 						/* skip only has one " */
 						if (strpbrk(szLine , "\"") == strrchr(szLine , '"')) {
-							RTW_INFO("Fail to parse parameters , format error!\n");
+							RTW_ERR("Fail to parse parameters , format error!\n");
 							break;
 						}
 						_rtw_memset((PVOID)param_value_string , 0 , 10);
 						if (!ParseQualifiedString(szLine , &i , param_value_string , '"' , '"')) {
-							RTW_INFO("Fail to parse parameters\n");
+							RTW_DBG("Fail to parse parameters\n");
 							return _FAIL;
 						} else if (!GetU1ByteIntegerFromStringInDecimal(param_value_string , ant_isolation_param[j].value))
-							RTW_INFO("Fail to GetU1ByteIntegerFromStringInDecimal\n");
+							RTW_DBG("Fail to GetU1ByteIntegerFromStringInDecimal\n");
 
 						break;
 					}
@@ -5359,10 +5359,10 @@ hal_btcoex_ParseAntIsolationConfigFile(
 
 	hal_btcoex_SetAntIsolationType(Adapter, anttype);
 
-	RTW_INFO("%s : ant_num = %d\n" , __func__ , ant_num);
-	RTW_INFO("%s : ant_distance = %d\n" , __func__ , ant_distance);
-	RTW_INFO("%s : rfe_type = %d\n" , __func__ , rfe_type);
-	/* RTW_INFO("<===Hal_ParseAntIsolationConfigFile()\n"); */
+	RTW_DBG("%s : ant_num = %d\n" , __func__ , ant_num);
+	RTW_DBG("%s : ant_distance = %d\n" , __func__ , ant_distance);
+	RTW_DBG("%s : rfe_type = %d\n" , __func__ , rfe_type);
+	/* RTW_DBG("<===Hal_ParseAntIsolationConfigFile()\n"); */
 	return rtStatus;
 }
 
@@ -5387,10 +5387,10 @@ hal_btcoex_AntIsolationConfig_ParaFile(
 
 
 	if (rtStatus == _SUCCESS) {
-		/*RTW_INFO("%s(): read %s ok\n", __func__ , pFileName);*/
+		/*RTW_DBG("%s(): read %s ok\n", __func__ , pFileName);*/
 		rtStatus = hal_btcoex_ParseAntIsolationConfigFile(Adapter , pHalData->para_file_buf);
 	} else
-		RTW_INFO("%s(): No File %s, Load from *** Array!\n" , __func__ , pFileName);
+		RTW_DBG("%s(): No File %s, Load from *** Array!\n" , __func__ , pFileName);
 
 	return rtStatus;
 }
@@ -5452,7 +5452,7 @@ void hal_btcoex_switchband_notify(u8 under_scan, u8 band_type)
 		EXhalbtcoutsrc_switchband_notify(&GLBtCoexist, BTC_SWITCH_TO_5G);
 		break;
 	default:
-		RTW_INFO("[BTCOEX] unkown switch band type\n");
+		RTW_DBG("[BTCOEX] unkown switch band type\n");
 		break;
 	}
 }

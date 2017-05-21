@@ -30,7 +30,7 @@ static void rtl8822bu_interrupt_handler(PADAPTER padapter, u16 pkt_len, u8 *pbuf
 void rtl8822bu_set_hw_type(struct dvobj_priv *pdvobj)
 {
 	pdvobj->HardwareType = HARDWARE_TYPE_RTL8822BU;
-	RTW_INFO("CHIP TYPE: RTL8822B\n");
+	RTW_DBG("CHIP TYPE: RTL8822B\n");
 }
 
 static u8 sethwreg(PADAPTER padapter, u8 variable, u8 *val)
@@ -90,7 +90,7 @@ static u8 sethwreg(PADAPTER padapter, u8 variable, u8 *val)
 			BIT7 value - Toggle bit change.
 			modify by Thomas. 2012/4/2.*/
 			ps_state = ps_state & 0xC1;
-			/* RTW_INFO("##### Change RPWM value to = %x for switch clk #####\n", ps_state); */
+			/* RTW_DBG("##### Change RPWM value to = %x for switch clk #####\n", ps_state); */
 			rtw_write8(padapter, REG_USB_HRPWM_8822B, ps_state);
 		}
 #endif
@@ -144,7 +144,7 @@ static void gethwreg(PADAPTER padapter, u8 variable, u8 *val)
 	case HW_VAR_CPWM:
 #ifdef CONFIG_LPS_LCLK
 		*val = rtw_read8(padapter, REG_USB_HCPWM_8822B);
-		/* RTW_INFO("##### REG_USB_HCPWM(0x%02x) = 0x%02x #####\n", REG_USB_HCPWM_8822B, *val); */
+		/* RTW_DBG("##### REG_USB_HCPWM(0x%02x) = 0x%02x #####\n", REG_USB_HCPWM_8822B, *val); */
 #endif /* CONFIG_LPS_LCLK */
 		break;
 	case HW_VAR_RPWM_TOG:
@@ -302,7 +302,7 @@ void rtl8822bu_set_hal_ops(PADAPTER padapter)
 
 	err = rtl8822bu_halmac_init_adapter(padapter);
 	if (err) {
-		RTW_INFO("%s: [ERROR]HALMAC initialize FAIL!\n", __func__);
+		RTW_ERR("%s: HALMAC initialize FAIL!\n", __func__);
 		return;
 	}
 
