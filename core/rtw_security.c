@@ -1942,6 +1942,7 @@ u32	rtw_aes_decrypt(_adapter *padapter, u8 *precvframe)
 
 		stainfo = rtw_get_stainfo(&padapter->stapriv , &prxattrib->ta[0]);
 		if (stainfo != NULL) {
+			int no;
 
 			if (IS_MCAST(prxattrib->ra)) {
 				static systime start = 0;
@@ -2009,7 +2010,6 @@ u32	rtw_aes_decrypt(_adapter *padapter, u8 *precvframe)
 			/*  add for CONFIG_IEEE80211W, debug */
 			RTW_DBG("@@@@@@@@@@@@@@@@@@ length=%d, prxattrib->hdrlen=%d, prxattrib->pkt_len=%d\n"
 			       , length, prxattrib->hdrlen, prxattrib->pkt_len);
-			int no;
 			/* test print PSK */
 			RTW_DBG("PSK key below:\n");
 			for (no = 0; no < 16; no++)
