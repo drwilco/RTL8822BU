@@ -215,8 +215,6 @@ extern uint rtw_drv_log_level;
 		} \
 	} while (0)
 
-#endif /* CONFIG_RTW_DEBUG */
-
 /* other debug APIs */
 #undef RTW_DBG_EXPR
 #define RTW_DBG_EXPR(EXPR) do { if (_DRV_DEBUG_ <= rtw_drv_log_level) EXPR; } while (0)

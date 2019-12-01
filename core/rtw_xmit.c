@@ -5149,7 +5149,7 @@ void wakeup_sta_to_xmit(_adapter *padapter, struct sta_info *psta)
 
 		if (psta_bmc->sleepq_len == 0) {
 			if (rtw_tim_map_is_set(padapter, pstapriv->tim_bitmap, 0)) {
-				RTW_DBG("wakeup to xmit, qlen==0\n"); */
+				RTW_DBG("wakeup to xmit, qlen==0\n");
 				RTW_DBG_DUMP("update_BCNTIM, tim=", pstapriv->tim_bitmap, pstapriv->aid_bmp_len);
 				/* upate BCN for TIM IE */
 				/* update_BCNTIM(padapter); */
@@ -5247,8 +5247,8 @@ void xmit_delivery_enabled_frames(_adapter *padapter, struct sta_info *psta)
 #endif /* CONFIG_TDLS */
 			rtw_tim_map_clear(padapter, pstapriv->tim_bitmap, psta->cmn.aid);
 
-			RTW_DBG("wakeup to xmit, qlen==0\n"); */
-			RTW_DBG_DUMP("update_BCNTIM, tim=", pstapriv->tim_bitmap, pstapriv->aid_bmp_len); */
+			RTW_DBG("wakeup to xmit, qlen==0\n");
+			RTW_DBG_DUMP("update_BCNTIM, tim=", pstapriv->tim_bitmap, pstapriv->aid_bmp_len);
 			/* upate BCN for TIM IE */
 			/* update_BCNTIM(padapter); */
 			update_beacon(padapter, _TIM_IE_, NULL, _TRUE);

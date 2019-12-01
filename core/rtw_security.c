@@ -2019,7 +2019,6 @@ u32	rtw_aes_decrypt(_adapter *padapter, u8 *precvframe)
 			for (no = 0; no < prxattrib->pkt_len; no++)
 				_RTW_DBG(" %02x ", pframe[no]);
 			_RTW_DBG("\n");
-			}
 #endif /* CONFIG_RTW_DEBUG */
 
 			res = aes_decipher(prwskey, prxattrib->hdrlen, pframe, length);
